@@ -1,0 +1,79 @@
+<html>
+
+<head>
+    <title>Let's Chat</title>
+    <link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
+    <script src="socket.io/socket.io.js"></script>
+    <script src="jquery/dist/jquery.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+    <script src="bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="js/main.js"></script>
+</head>
+
+<body class="container">
+    <div class="row d-flex justify-content-center text-info mt-3">
+        <h1>Let's Chat</h1>
+    </div>
+    <div class="row mt-5">
+        <table class="table table-sm">
+            <tbody>
+                <tr>
+                    <td><label for="username">Username</label></td>
+                    <td><input type="text" class="form-control" id="username" placeholder="Username"></td>
+                    <td><button class="btn btn-info ml-2 btn-block" style="max-width: 200px;" id="changename"
+                            type="button">Change username</button></td>
+                </tr>
+                <tr>
+                    <td><label for="roomid">Room ID</label></td>
+                    <td><select class="form-control" id="roomid">
+                            <option value="101">101</option>
+                            <option value="102">102</option>
+                            <option value="103">103</option>
+                        </select></td>
+                    <td><button class="btn btn-info ml-2 text-center btn-block" style="max-width: 200px;" id="join"
+                            type="button">Join</button></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="row">
+        <div class="card col-sm-9">
+            <div class="card-header row d-flex justify-content-between">
+                <div>Chat Section</div>
+                <div id="roomiddisplay"></div>
+            </div>
+            <div class="card-body" style="height: 25rem; overflow-y: scroll;" id="chat-card">
+                <table class="table table-sm" id="chat-table">
+                    <tbody id="chat-content">
+                        <!-- Chat content in here -->
+                    </tbody>
+                </table>
+            </div>
+            <div class="card-footer d-flex justify-content-end row" style="flex-wrap: nowrap;">
+                <input class="form-control mr-3" type="text" id="message" value="">
+                <button class="btn btn-info btn-block text-center" id="send" style="max-width: 100px;">Send</button>
+            </div>
+        </div>
+        <div class="card col-sm-3">
+            <div class="card-header row d-flex justify-content-between">
+                <div>Room member</div>
+                <div id="people-number"></div>
+            </div>
+            <div class="card-body overflow-auto" style="height: 25rem; overflow-y: scroll;">
+                <table class="table table-sm" id="member-table">
+                    <tbody id="room-member">
+                        <% if (data) { %>
+                            <% data.forEach(function(member){ %>
+
+                            <% }) %>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
