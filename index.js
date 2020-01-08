@@ -9,6 +9,7 @@ Array.prototype.remove = function () {
     }
     return this;
 };
+var ary = ['three', 'seven', 'eleven'];
 var express = require("express");
 var app = express();
 app.use(express.static("public"));
@@ -19,7 +20,7 @@ app.set("public", "");
 var server = require("http").Server(app);
 var io = require("socket.io")(server);
 server.listen(3000);
-var room = [];
+var roomMember = [];
 // tạo kết nối giữa client và server
 io.on("connection", function (socket) {
     var roomID;
@@ -36,19 +37,25 @@ io.on("connection", function (socket) {
     socket.on("join", function (data) {
         socket.join(data.room);
         roomID = data.room;
-        io.to(data.room).emit("server_send", data.username + " has joined!")
-        room.push(data.username)
-        io.to(data.room).emit("group_update", { group: room })
+        const index = roomMember.indexOf(socket.username);
+        if (index == -1) {
+            roomMember.push(socket.username)
+        }
+        io.to(data.room).emit("server_send", data.username + " has joined!");
+        io.to(data.room).emit("group_update", { group: roomMember });
     })
     socket.on('disconnect', function () {
-        room.remove(socket.username)
-        socket.to(roomID).emit("server_send", socket.username + " has left!")
-        io.to(data.room).emit("group_update", { group: room })
+        const index = roomMember.indexOf(socket.username);
+        if (index > -1) {
+            roomMember.splice(index, 1);
+        }
+        socket.to(roomID).emit("server_send", socket.username + " has left!");
+        socket.to(roomID).emit("group_update", { group: roomMember });
     });
 });
 
 // create route, display view
 
 app.get("/", function (req, res) {
-    res.render("homepage", {group: room});
+    res.render("homepage");
 });
