@@ -24,6 +24,12 @@ io.on("connection", function (socket) {
         //sau khi lắng nghe dữ liệu, server phát lại dữ liệu này đến các client khác
         socket.broadcast.to(roomID).emit('server_send', { message: '<div class="text-info mr-1">' + socket.username + ": </div>" + data.message, type: 1 });
     });
+    socket.on("is_typing", function () {
+        socket.broadcast.to(roomID).emit('server_send', { message: '<div class="text-primary mr-1">' + socket.username + " is typing...</div>", type: 3, username: socket.username});
+    });
+    socket.on("no_longer_typing", function () {
+        socket.broadcast.to(roomID).emit('no_longer_typing', {username: socket.username});
+    });
     socket.on("change_username", function (data) {
         socket.username = data.username;
         if (fresh == false && inGroup == true) {
