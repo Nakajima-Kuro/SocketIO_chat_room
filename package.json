@@ -17,6 +17,7 @@
     "nodemon": "^2.0.2",
     "popper": "^1.0.1",
     "socket.io-redis": "^5.2.0",
-    "socketio": "^1.0.0"
+    "socketio": "^1.0.0",
+    "webrtc-adapter": "^7.3.0"
   }
 }

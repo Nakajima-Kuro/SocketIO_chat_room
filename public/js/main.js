@@ -27,7 +27,8 @@ socket.on("server_send", function (data) {
 });
 socket.on("group_update", function (data) {
     $("#member-table").find('tr').remove();
-    data.group.forEach(member => $("#room-member").append('<tr style="height: 3.2rem;"><td class="text-info">' + member + "</td></tr>"));
+    data.group.forEach(member => $("#room-member").append('<tr style="height: 3.2rem;"><td class="text-info" style="max-width: 190px;">' + member + 
+    '</td><td style="width: 45px;"><button type="button" class="btn btn-sm btn-outline-info btn-block call" data-toggle="modal" data-target="#call-window" data-toggle="modal" data-target="#call-window">Call</button></td></tr>'));
     var numberOfPeople = $('#room-member tr').length;
     $("#people-number").empty().append(numberOfPeople);
 });

@@ -3,12 +3,9 @@
 <head>
     <title>Let's Chat</title>
     <link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="styles/main.css">
     <script src="socket.io/socket.io.js"></script>
     <script src="jquery/dist/jquery.slim.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
-        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
-        crossorigin="anonymous"></script>
-    <script src="bootstrap/dist/js/bootstrap.min.js"></script>
     <script src="js/main.js"></script>
 </head>
 
@@ -35,7 +32,7 @@
         </table>
     </div>
     <div class="row">
-        <div class="card col-sm-9">
+        <div class="card col-lg-9">
             <div class="card-header row d-flex justify-content-between">
                 <div>Chat Section</div>
                 <div id="roomiddisplay"></div>
@@ -52,25 +49,22 @@
                 <button class="btn btn-info btn-block text-center" id="send" style="max-width: 100px;">Send</button>
             </div>
         </div>
-        <div class="card col-sm-3">
+        <div class="card col-lg-3">
             <div class="card-header row d-flex justify-content-between">
                 <div>Room member</div>
                 <div id="people-number"></div>
             </div>
-            <div class="card-body overflow-auto" style="height: 25rem; overflow-y: scroll;">
+            <div class="mt-3 overflow-auto" style="height: 25rem; overflow-y: scroll;">
                 <table class="table table-sm" id="member-table">
                     <tbody id="room-member">
-
+                        <!-- Room member in here -->
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
-    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
-        Launch demo modal
-    </button>
-    <div class="modal bd-example-modal-xl fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-        aria-hidden="true">
+    <div class="modal bd-example-modal-xl fade" id="call-window" tabindex="-1" role="dialog"
+        aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
         <div class="modal-dialog modal-xl" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -79,15 +73,9 @@
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body container">
-                    <div class="row">
-                        <div class="col-6">
-                            <video autoplay playsinline class="mw-100"></video>
-                        </div>
-                        <div class="col-6">
-                            <video autoplay playsinline class="mw-100"></video>
-                        </div>
-                    </div>
+                <div class="modal-body d-flex justify-content-between">
+                    <video id="localVideo" autoplay playsinline style="max-width: 50%;"></video>
+                    <video id="remoteVideo" autoplay playsinline style="max-width: 50%;"></video>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-info" data-dismiss="modal">End Call</button>
@@ -95,6 +83,11 @@
             </div>
         </div>
     </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+    <script src="bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
     <script src="js/video-call.js"></script>
 </body>
 
