@@ -60,12 +60,42 @@
             <div class="card-body overflow-auto" style="height: 25rem; overflow-y: scroll;">
                 <table class="table table-sm" id="member-table">
                     <tbody id="room-member">
-                        
+
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+        Launch demo modal
+    </button>
+    <div class="modal bd-example-modal-xl fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-xl" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Video Call</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body container">
+                    <div class="row">
+                        <div class="col-6">
+                            <video autoplay playsinline class="mw-100"></video>
+                        </div>
+                        <div class="col-6">
+                            <video autoplay playsinline class="mw-100"></video>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-info" data-dismiss="modal">End Call</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="js/video-call.js"></script>
 </body>
 
 </html>
