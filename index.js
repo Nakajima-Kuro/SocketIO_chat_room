@@ -2,6 +2,7 @@
 var express = require("express");
 var app = express();
 app.use(express.static("public"));
+app.use(express.static("node_modules"));
 app.set("view engine", "ejs");
 app.set("views", "./views");
 app.set("public", "");
@@ -10,14 +11,16 @@ var server = require("http").Server(app);
 var io = require("socket.io")(server);
 server.listen(3000);
 var building = [];
-var roomMember = [];
+var roomMember = [];//luu username trong day
+var roomSocketID = [];//luu socket ID trong day
 // tạo kết nối giữa client và server
-io.on("connection", function (socket) {
+io.on("connection", function (socket) { 
     var roomID = "";
     var roomIndex;
     var userIndex;
     var fresh = true;
     var inGroup = false;
+    var peerID;
     socket.username = "anonymous";
     //server lắng nghe dữ liệu từ client
     socket.on("send_message", function (data) {
@@ -49,7 +52,9 @@ io.on("connection", function (socket) {
             socket.join(data.room);
             roomIndex = roomMember.length
             roomMember[roomIndex] = new Array();
-            roomMember[roomIndex].push(socket.username)
+            roomSocketID[roomIndex] = new Array();
+            roomMember[roomIndex].push(socket.username);
+            roomSocketID[roomIndex].push(socket.id);
             socket.to(data.room).emit("server_send");
             io.to(data.room).emit("server_send", { message: socket.username + " has joined!", type: 2 });
             io.to(data.room).emit("group_update", { group: roomMember[roomIndex] });
@@ -70,18 +75,40 @@ io.on("connection", function (socket) {
                 socket.join(data.room);
                 userIndex = roomMember[roomIndex].length
                 roomMember[roomIndex].push(socket.username)
+                roomSocketID[roomIndex].push(socket.id)
                 io.to(data.room).emit("server_send", { message: socket.username + " has joined!", type: 2 });
                 io.to(data.room).emit("group_update", { group: roomMember[roomIndex] });
                 inGroup = true;
+                // console.log(roomMember[roomIndex]);
+                // console.log(roomSocketID[roomIndex]);
             }
         }
         roomID = building[roomIndex]
-    })
+    });
+    socket.on('peerID', function(data){
+        peerID = data.peerID;
+    });
+    socket.on('request_peer_id', function(data){
+        // console.log("request_recived");
+        for (var i = 0; i < roomMember[roomIndex].length; i++) {
+            if (roomMember[roomIndex][i].localeCompare(data.username) == 0)//Trung ten
+            {
+                socket.broadcast.to(roomSocketID[roomIndex][i]).emit("get_peer_id", {socketID : socket.id})
+                // console.log("asking for peer ID");
+            }
+        }
+    });
+    socket.on('get_peer_id_respone', function(data){
+        // console.log("got the peer ID");
+        socket.broadcast.to(data.socketID).emit("request_peer_id_respone", {peerID : data.peerID})
+        // console.log("send the peer id to the caller");
+    });
     socket.on('disconnect', function () {
         if (fresh == false) {
             socket.leave(roomID);
             io.to(roomID).emit("server_send", { message: socket.username + " has left!", type: 2 });
             roomMember[roomIndex].splice(userIndex, 1);
+            roomSocketID[roomIndex].splice(userIndex, 1);
             io.to(roomID).emit("group_update", { group: roomMember[roomIndex] });
         }
     });
