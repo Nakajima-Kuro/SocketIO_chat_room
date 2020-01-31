@@ -93,14 +93,14 @@ io.on("connection", function (socket) {
         for (var i = 0; i < roomMember[roomIndex].length; i++) {
             if (roomMember[roomIndex][i].localeCompare(data.username) == 0)//Trung ten
             {
-                socket.broadcast.to(roomSocketID[roomIndex][i]).emit("get_peer_id", {socketID : socket.id})
+                socket.broadcast.to(roomSocketID[roomIndex][i]).emit("get_peer_id", {socketID : socket.id, username: socket.username})
                 // console.log("asking for peer ID");
             }
         }
     });
     socket.on('get_peer_id_respone', function(data){
         // console.log("got the peer ID");
-        socket.broadcast.to(data.socketID).emit("request_peer_id_respone", {peerID : data.peerID})
+        socket.broadcast.to(data.socketID).emit("request_peer_id_respone", {peerID : data.peerID, status: data.status})
         // console.log("send the peer id to the caller");
     });
     socket.on('disconnect', function () {
