@@ -17,12 +17,8 @@ class Building {
     }
 }
 // build server
-var createError = require('http-errors');
-var express = require('express');
-// var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
-
+var express = require("express");
+var port = process.env.PORT || 3000;
 var app = express();
 app.use(express.static("public"));
 app.use(express.static("node_modules"));
@@ -30,13 +26,9 @@ app.set("view engine", "ejs");
 app.set("views", "./views");
 app.set("public", "");
 
-// app.use(logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
-
 var server = require("http").Server(app);
 var io = require("socket.io")(server);
+server.listen(port);
 var building = [];//luu cac room_name trong day
 var roomMember = [];//luu username trong day
 var roomSocketID = [];//luu socket ID trong day
@@ -74,7 +66,8 @@ io.on("connection", function (socket) {
     });
     socket.on("change_username", function (data) {
         var currentName = socket.username;
-        if (socket.username != data.username) {
+        if(socket.username != data.username)
+        {
             socket.emit("server_send", { message: "Change name successful!", type: 2 })
             socket.username = data.username;
         }
@@ -113,7 +106,7 @@ io.on("connection", function (socket) {
             }
             var check = false;
             if (data.password != building[roomIndex].getPassword()) {//sai mk
-                socket.emit("join_respond", { status: 0 });
+                socket.emit("join_respond", {status: 0});
                 check = true;
             }
             else {
@@ -121,19 +114,19 @@ io.on("connection", function (socket) {
                     if (roomMember[roomIndex][i].localeCompare(socket.username) == 0)//Trung ten
                     {
                         socket.emit("server_send", { message: "This username has been taken", type: 2 })
-                        socket.emit("join_respond", { status: 2 })
+                        socket.emit("join_respond", {status: 2})
                         check = true
                         break;
                     }
                 }
             }
             if (check == false) {
-                socket.emit("join_respond", { status: 1 })
+                socket.emit("join_respond", {status: 1})
                 socket.join(data.room);
                 userIndex = roomMember[roomIndex].length
                 roomMember[roomIndex].push(socket.username)
                 roomSocketID[roomIndex].push(socket.id)
-                if (data.type == 0) {
+                if(data.type == 0){
                     io.to(data.room).emit("server_send", { message: socket.username + " has joined!", type: 2 });
                 }
                 io.to(data.room).emit("group_update", { group: roomMember[roomIndex] });
@@ -191,31 +184,14 @@ io.on("connection", function (socket) {
         socket.broadcast.to(roomID).emit('no_longer_typing', { username: socket.username });
         socket.leave(roomID);
     }
-    function splice(index) {
+    function splice(index)
+    {
         roomMember[roomIndex].splice(index, 1);
         roomSocketID[roomIndex].splice(index, 1);
     }
-});
-
-// catch 404 and forward to error handler
-app.use(function (req, res, next) {
-    next(createError(404));
-});
-
-// error handler
-app.use(function (err, req, res, next) {
-    // set locals, only providing error in development
-    res.locals.message = err.message;
-    res.locals.error = req.app.get('env') === 'development' ? err : {};
-
-    // render the error page
-    res.status(err.status || 500);
-    res.render('error', { err_status: err.status, err_mess: err.message });
 });
 
 // create route, display view
 app.get("/", function (req, res) {
     res.render("homepage");
 });
-
-module.exports = app;
