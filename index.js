@@ -27,7 +27,6 @@ app.set("public", "");
 
 var server = require("http").Server(app);
 var io = require("socket.io")(server);
-server.listen(3000);
 var building = [];//luu cac room_name trong day
 var roomMember = [];//luu username trong day
 var roomSocketID = [];//luu socket ID trong day
