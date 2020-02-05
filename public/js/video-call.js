@@ -1,3 +1,9 @@
+//convention status:
+//0: Disconnected
+//1: Connected
+//2: Busy
+
+var isBusy = false
 const mediaStreamConstraints = {
   video: true,
   audio: true
@@ -7,12 +13,8 @@ const peer = new Peer({
   key: 'lwjd5qra8257b9'
 });
 
-peer.on('open', function () {
-  socket.emit("peerID", { peerID: peer.id })
-  // console.log(peer.id);
-});
-
 function callInit(username) {
+  isBusy = true;
   $('#calling-status').removeClass('text-danger text-success').addClass('text-info glow').text('Calling...')
   navigator.mediaDevices.getUserMedia(mediaStreamConstraints)
     .then(gotLocalMediaStream).catch(handleLocalMediaStreamError)
@@ -20,13 +22,21 @@ function callInit(username) {
 }
 
 socket.on("get_peer_id", function (data) {
-  $('#caller-id').text(data.socketID)
-  $('#caller-name').text(data.username)
-  $("#call-incomming").modal();
+  if (isBusy == false) {
+    $('#caller-id').text(data.socketID)
+    $('#caller-name').text(data.username)
+    $("#call-incomming").modal();
+  }
+  else {
+    socket.emit("get_peer_id_respone", { peerID: peer.id, socketID: data.socketID, status: 2 })
+  }
   // console.log("send peer id back to the caller");
 })
 
 function callRespone(status) {
+  if (status == 1) {
+    isBusy = true;
+  }
   socket.emit("get_peer_id_respone", { peerID: peer.id, socketID: $('#caller-id').text(), status: status })
 }
 
@@ -46,12 +56,15 @@ socket.on("request_peer_id_respone", function (data) {
       call.close();
     })
   }
-  else {
+  else if (data.status == 0) {
     $('#calling-status').removeClass('text-info text-success glow').addClass('text-danger').text('Disconnected')
     setTimeout(
       function () {
         $('#call-window').modal('hide');
       }, 3000);
+  }
+  else {
+    busyNoti();
   }
 })
 
@@ -84,18 +97,31 @@ function disconnectedNoti() {
     function () {
       stopStreamedVideo(remoteVideo);
       $('#call-window').modal('hide');
+      isBusy = false;
+      // console.log("Disconnected");
+    }, 3000);
+}
+
+function busyNoti() {
+  $('#calling-status').removeClass('text-info text-success glow').addClass('text-danger').text('Busy')
+  setTimeout(
+    function () {
+      $('#call-window').modal('hide');
+      isBusy = false;
     }, 3000);
 }
 
 function stopStreamedVideo(videoElem) {
-  let stream = videoElem.srcObject;
-  let tracks = stream.getTracks();
+  if (videoElem != null) {
+    let stream = videoElem.srcObject;
+    let tracks = stream.getTracks();
 
-  tracks.forEach(function (track) {
-    track.stop();
-  });
+    tracks.forEach(function (track) {
+      track.stop();
+    });
 
-  videoElem.srcObject = null;
+    videoElem.srcObject = null;
+  }
 }
 // Video element where stream will be placed.
 const localVideo = document.querySelector('video#localVideo');
