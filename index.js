@@ -84,7 +84,7 @@ io.on("connection", function (socket) {
         //1: Host
         //2: Rename
         if (data.type == 1) { //room chua duoc tao (Host)
-            console.log("Host");
+            // console.log("Host");
             if (roomID != "") {
                 roomChange();
             }
@@ -101,7 +101,7 @@ io.on("connection", function (socket) {
             inGroup = true
         }
         else {  //Da co nguoi tao room nay
-            console.log("Join");
+            // console.log("Join");
             if (roomID != "") {
                 roomChange();
             }
@@ -141,8 +141,8 @@ io.on("connection", function (socket) {
             }
         }
         roomID = building[roomIndex].getName();
-        console.log(roomMember);
-        console.log(roomSocketID);
+        // console.log(roomMember);
+        // console.log(roomSocketID);
         // console.log(roomMember);
         // console.log(building);
     });
@@ -190,8 +190,8 @@ io.on("connection", function (socket) {
         }
         socket.broadcast.to(roomID).emit('no_longer_typing', { username: socket.username });
         socket.leave(roomID);
-        console.log(roomMember);
-        console.log(roomSocketID);
+        // console.log(roomMember);
+        // console.log(roomSocketID);
     }
     function splice(index) {
         roomMember[roomIndex].splice(index, 1);
