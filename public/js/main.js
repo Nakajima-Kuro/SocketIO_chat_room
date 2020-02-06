@@ -31,8 +31,18 @@ socket.on("server_send", function (data) {
 });
 socket.on("group_update", function (data) {
     $("#member-table").find('tr').remove();
-    data.group.forEach(member => $("#room-member").append('<tr style="height: 3.2rem;"><td class="text-info" style="max-width: 190px;">' + member +
-        '</td><td style="width: 45px;"><button type="button" id="' + member + '" onclick="callInit(this.id)" class="btn btn-sm btn-outline-info btn-block call" data-toggle="modal" data-target="#call-window">Call</button></td></tr>'));
+    data.group.forEach(function (member) {
+        if (member == username) {
+            $("#room-member").prepend('<tr style="height: 3.2rem;"><td class="text-info" style="max-width: 190px;">' + member +
+            '</td><td style="width: 45px;"></td></tr>');
+        }
+        else {
+            $("#room-member").append('<tr style="height: 3.2rem;"><td class="text-info" style="max-width: 190px;">' + member +
+                '</td><td style="width: 45px;"><button type="button" id="' + member +
+                '" onclick="callInit(this.id)" class="btn btn-sm btn-outline-info btn-block call" data-toggle="modal" data-target="#call-window">Call</button></td></tr>');
+        }
+
+    })
     var numberOfPeople = $('#room-member tr').length;
     $("#people-number").empty().append(numberOfPeople);
 });
@@ -52,21 +62,23 @@ socket.on("join_respond", function (data) {
     if (data.status == 0)//sai mk
     {
         $("#join-password-wrong").show();
+        $("#join-spinner").hide();
     }
     else if (data.status == 2)//trung ten
     {
         $("#join-name-taken").show();
+        $("#join-spinner").hide();
     }
-    else if (data.status == 1) {
+    else if (data.status == 1) {        
         if (roomCheck == true && room != $("#join-room-id").val())//dang o trong 1 room nao do
         {
             socket.emit("change_room");
         }
         if (room != $("#join-room-id").val()) {//vao room khac
             $("#chat-content tr").remove()
-            document.getElementById('room-iddisplay').innerHTML = "Room " + $("#join-room-id").val();
             room = $("#join-room-id").val();
             password = $("#join-room-password").val();
+            document.getElementById('room-iddisplay').innerHTML = "Room " + room;
         }
         roomCheck = true
         socket.emit("room_update")
@@ -75,7 +87,6 @@ socket.on("join_respond", function (data) {
 })
 //client gửi dữ liệu lên server
 $(document).ready(function () {
-    $("small").hide();
     //check xem da join room nao chua
     socket.emit("room_update")
     $("#send").click(function () {
@@ -94,16 +105,21 @@ $(document).ready(function () {
     });
 
     $('#changename').click(function () {
-        socket.emit("leave_room", { username: $("#username").val() })
-        socket.emit("change_username", { username: $("#username").val() })
-        username = $("#username").val()
-        if (roomCheck == true) {
-            socket.emit("join", { room: room, password: password, type: 2 });
+        if ($("#username").val() != "") {
+            socket.emit("leave_room", { username: $("#username").val() })
+            socket.emit("change_username", { username: $("#username").val() })
+            username = $("#username").val()
+            if (roomCheck == true) {
+                socket.emit("join", { room: room, password: password, type: 2 });
+            }
+        }
+        else {
+            $("#username-empty").show();
         }
     });
 
     $("#join-button").click(function () {
-        if($("#join-room-username").val() == ""){
+        if ($("#join-room-username").val() == "") {
             $("#join-name-empty").show();
         }
         else if ($("#join-room-id").val() == null) {
@@ -112,17 +128,21 @@ $(document).ready(function () {
         else {
             if (room != $("#join-room-id").val()) {
                 roomCheck == true;
-                socket.emit("change_username", { username: $("#join-room-username").val() })
+                if (username != $("#join-room-username").val()) {
+                    socket.emit("change_username", { username: $("#join-room-username").val() }),
+                        username = $("#join-room-username").val();
+                        $("#username").val($("#join-room-username").val());
+                }
                 socket.emit("join", { room: $("#join-room-id").val(), password: $("#join-room-password").val(), type: 0 });
+                $("#join-spinner").show();
             }
             else {
                 $("#join-modal").modal('hide')
             }
-            $("#username").val($("#join-room-username").val());
         }
     })
     $("#host-button").click(function () {
-        if($('#host-room-id').val() == ""){
+        if ($('#host-room-id').val() == "") {
             //room name empty
             $("#host-room-empty").show()
         }
@@ -131,11 +151,12 @@ $(document).ready(function () {
             $("#host-room-taken").show();
         }
         else {
+            $("#host-spinner").show();
             if (roomCheck == true && room != $("#host-room-id").val())//dang o trong 1 room nao do
             {
                 socket.emit("change_room");
             }
-            if (room != $("#host-room-id").val()) {//vao room khac
+            if (room != $("#host-room-id").val()) {//Tao mot room moi
                 $("#chat-content tr").remove()
                 room = $("#host-room-id").val();
                 password = $("#host-room-password").val();
@@ -145,6 +166,7 @@ $(document).ready(function () {
             roomCheck = true
             socket.emit("room_update")
             $("#host-modal").modal('hide')
+            $("#host-spinner").hide();
         }
     })
     $("#join-modal").on('show.bs.modal', function () {
@@ -163,6 +185,12 @@ $(document).ready(function () {
     $("#host-room-id").click(function () {
         $("#host-room-taken").hide()
         $("#host-room-empty").hide()
+    })
+    $("#username").click(function () {
+        $("#username-empty").hide()
+    })
+    $("#join-modal").on('hide.bs.modal', function(){
+        $("#join-spinner").hide();
     })
 });
 

@@ -66,8 +66,7 @@ io.on("connection", function (socket) {
     });
     socket.on("change_username", function (data) {
         var currentName = socket.username;
-        if(socket.username != data.username)
-        {
+        if (socket.username != data.username) {
             socket.emit("server_send", { message: "Change name successful!", type: 2 })
             socket.username = data.username;
         }
@@ -106,36 +105,36 @@ io.on("connection", function (socket) {
             }
             var check = false;
             if (data.password != building[roomIndex].getPassword()) {//sai mk
-                socket.emit("join_respond", {status: 0});
+                socket.emit("join_respond", { status: 0 });
                 check = true;
             }
             else {
-                for (var i = 0; i < roomMember[roomIndex].length; i++) {
+                for (let i = 0; i < roomMember[roomIndex].length; i++) {
                     if (roomMember[roomIndex][i].localeCompare(socket.username) == 0)//Trung ten
                     {
                         socket.emit("server_send", { message: "This username has been taken", type: 2 })
-                        socket.emit("join_respond", {status: 2})
+                        socket.emit("join_respond", { status: 2 })
                         check = true
                         break;
                     }
                 }
             }
             if (check == false) {
-                socket.emit("join_respond", {status: 1})
+                socket.emit("join_respond", { status: 1 })
                 socket.join(data.room);
                 userIndex = roomMember[roomIndex].length
                 roomMember[roomIndex].push(socket.username)
                 roomSocketID[roomIndex].push(socket.id)
-                if(data.type == 0){
+                if (data.type == 0) {
                     io.to(data.room).emit("server_send", { message: socket.username + " has joined!", type: 2 });
                 }
                 io.to(data.room).emit("group_update", { group: roomMember[roomIndex] });
                 inGroup = true;
-                // console.log(roomMember[roomIndex]);
-                // console.log(roomSocketID[roomIndex]);
             }
         }
         roomID = building[roomIndex].getName();
+        // console.log(roomMember[roomIndex]);
+        // console.log(roomSocketID[roomIndex]);
         // console.log(roomMember);
         // console.log(building);
     });
@@ -184,8 +183,7 @@ io.on("connection", function (socket) {
         socket.broadcast.to(roomID).emit('no_longer_typing', { username: socket.username });
         socket.leave(roomID);
     }
-    function splice(index)
-    {
+    function splice(index) {
         roomMember[roomIndex].splice(index, 1);
         roomSocketID[roomIndex].splice(index, 1);
     }

@@ -10,41 +10,33 @@
     <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="styles/main.css">
-    <script src="socket.io/socket.io.js"></script>
-    <script src="jquery/dist/jquery.slim.min.js"></script>
 </head>
 
 <body class="container">
-    <div class="row d-flex justify-content-center text-info mt-3">
+    <div class="row d-flex justify-content-center text-info mt-3 mb-5">
         <h1>Let's Chat</h1>
     </div>
-    <div class="row mt-5">
-        <table class="table table-sm">
-            <tbody>
-                <tr>
-                    <td><input type="text" class="form-control" id="username" placeholder="Username"></td>
-                    <td><button class="btn btn-info ml-2 btn-block" id="changename" type="button"
-                            style="max-width: 200px;">Change username</button></td>
-                </tr>
-                <tr>
-                    <td class="d-flex justify-content-start">
-                        <button class="btn btn-info text-center btn-block mr-2" type="button" data-toggle="modal"
-                            data-target="#join-modal" style="max-width: 230px;">Join room</button>
-                        <button class="btn btn-info text-center btn-block mt-0" type="button" data-toggle="modal"
-                            data-target="#host-modal" style="max-width: 230px;">Host room</button>
-                    </td>
-                    <td></td>
-                </tr>
-            </tbody>
-        </table>
+    <div class="row mb-3">
+        <div class="col-lg-5 mb-2">
+            <input type="text" class="form-control" id="username" placeholder="Username">
+            <small id="username-empty" class="form-text text-danger mb-2 pl-2">Don't you have a name?</small>
+        </div>
+        <div class="col-lg-7 mb-2 d-flex flex-row justify-content-start">
+            <button class="btn btn-info text-center" id="changename" type="button"
+                style="max-width: 300px; width: 100%; max-height: 38px;">Change username</button>
+            <button class="btn btn-info text-center ml-2" type="button" data-toggle="modal" data-target="#join-modal"
+                style="max-width: 300px; width: 100%; max-height: 38px;">Join room</button>
+            <button class="btn btn-info text-center ml-2" type="button" data-toggle="modal" data-target="#host-modal"
+                style="max-width: 300px; width: 100%; max-height: 38px;">Host room</button>
+        </div>
     </div>
     <div class="row">
-        <div class="card col-lg-9 parent">
+        <div class="card col-xl-9 parent">
             <div class="card-header row d-flex justify-content-between">
                 <div>Chat Section</div>
                 <div id="room-iddisplay"></div>
             </div>
-            <div class="card-body" style="height: 22.5rem;" id="chat-card">
+            <div class="card-body" style="height: 24rem;" id="chat-card">
                 <table class="table table-sm" id="chat-table">
                     <tbody id="chat-content">
                         <!-- Chat content in here -->
@@ -56,7 +48,7 @@
                 <button class="btn btn-info btn-block text-center" id="send" style="max-width: 100px;">Send</button>
             </div>
         </div>
-        <div class="card col-lg-3">
+        <div class="card col-xl-3">
             <div class="card-header row d-flex justify-content-between">
                 <div>Room member</div>
                 <div id="people-number"></div>
@@ -123,7 +115,7 @@
     <div class="modal bd-example-modal-md fade" id="join-modal" tabindex="-1" role="dialog"
         aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
         <div class="modal-dialog" role="document">
-            <div class="modal-content">
+            <div class="modal-content container-fluid">
                 <div class="modal-header">
                     <h5 class="modal-title">Join a room</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -150,7 +142,10 @@
                         <small id="join-password-wrong" class="form-text text-danger">Wrong password</small>
                     </div>
                 </div>
-                <div class="modal-footer">
+                <div class="modal-footer row">
+                    <div class="col-sm-3">
+                        <div id="join-spinner" class="spinner-grow text-info" role="status"></div>
+                    </div>
                     <div class="col-sm-4">
                         <button type="button" class="btn btn-secondary btn-block" data-dismiss="modal"
                             data-target="#join-host-modal">Cancel</button>
@@ -167,7 +162,7 @@
     <div class="modal bd-example-modal-md fade" id="host-modal" tabindex="-1" role="dialog"
         aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
         <div class="modal-dialog" role="document">
-            <div class="modal-content">
+            <div class="modal-content container-fluid">
                 <div class="modal-header">
                     <h5 class="modal-title">Host a room</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -180,7 +175,8 @@
                             <label for="host-room-id">Room name</label>
                             <input type="text" class="form-control mb-2" id="host-room-id" placeholder="Room name"
                                 list="exist-room">
-                            <small id="host-room-taken" class="form-text text-danger">This room name is already taken</small>
+                            <small id="host-room-taken" class="form-text text-danger">This room name is already
+                                taken</small>
                             <small id="host-room-empty" class="form-text text-danger">A room need a name</small>
                         </div>
                         <div class="form-group">
@@ -189,7 +185,10 @@
                         </div>
                     </form>
                 </div>
-                <div class="modal-footer">
+                <div class="modal-footer row">
+                    <div class="col-sm-3">
+                        <div id="host-spinner" class="spinner-grow text-info" role="status"></div>
+                    </div>
                     <div class="col-sm-4">
                         <button type="button" class="btn btn-secondary btn-block" data-dismiss="modal"
                             data-target="#join-host-modal">Cancel</button>
@@ -202,6 +201,13 @@
         </div>
     </div>
     <!-- //Host room -->
+    <script src="jquery/dist/jquery.slim.min.js"></script>
+    <script>
+        $("small").hide();
+        $("#join-spinner").hide();
+        $("#host-spinner").hide();
+    </script>
+    <script src="socket.io/socket.io.js"></script>
     <script src="peerjs/peer.min.js"></script>
     <script src="js/main.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"

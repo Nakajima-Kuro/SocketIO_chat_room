@@ -61,7 +61,7 @@ socket.on("request_peer_id_respone", function (data) {
     setTimeout(
       function () {
         $('#call-window').modal('hide');
-      }, 3000);
+      }, 2500);
   }
   else {
     busyNoti();
@@ -70,7 +70,6 @@ socket.on("request_peer_id_respone", function (data) {
 
 peer.on('call', function (call) {
   $('#calling-status').removeClass('text-info text-danger glow').addClass('text-success').text('Connected')
-  $('#call-window').modal();
   navigator.mediaDevices.getUserMedia(mediaStreamConstraints)
     .then(gotLocalMediaStream).catch(handleLocalMediaStreamError)
     .then(function () {
@@ -85,6 +84,7 @@ peer.on('call', function (call) {
   $('#end-call-button').click(function () {
     call.close()
   })
+  $('#call-window').modal();
 });
 
 $('#call-window').on('hidden.bs.modal', function () {
