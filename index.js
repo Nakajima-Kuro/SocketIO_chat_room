@@ -84,6 +84,9 @@ io.on("connection", function (socket) {
         //1: Host
         //2: Rename
         if (data.type == 1) { //room chua duoc tao (Host)
+            if (roomID != "") {
+                roomChange();
+            }
             var room = new Building(data.room, data.password);
             building.push(room);
             socket.join(data.room);
@@ -97,6 +100,9 @@ io.on("connection", function (socket) {
             inGroup = true
         }
         else {  //Da co nguoi tao room nay
+            if (roomID != "") {
+                roomChange();
+            }
             for (let i = 0; i < building.length; i++) {
                 if (building[i].getName() == data.room) {
                     roomIndex = i;
@@ -120,11 +126,11 @@ io.on("connection", function (socket) {
                 }
             }
             if (check == false) {
-                socket.emit("join_respond", { status: 1 })
                 socket.join(data.room);
                 userIndex = roomMember[roomIndex].length
                 roomMember[roomIndex].push(socket.username)
                 roomSocketID[roomIndex].push(socket.id)
+                socket.emit("join_respond", { status: 1 })
                 if (data.type == 0) {
                     io.to(data.room).emit("server_send", { message: socket.username + " has joined!", type: 2 });
                 }
@@ -133,8 +139,8 @@ io.on("connection", function (socket) {
             }
         }
         roomID = building[roomIndex].getName();
-        // console.log(roomMember[roomIndex]);
-        // console.log(roomSocketID[roomIndex]);
+        console.log(roomMember);
+        console.log(roomSocketID);
         // console.log(roomMember);
         // console.log(building);
     });
@@ -182,6 +188,8 @@ io.on("connection", function (socket) {
         }
         socket.broadcast.to(roomID).emit('no_longer_typing', { username: socket.username });
         socket.leave(roomID);
+        console.log(roomMember);
+        console.log(roomSocketID);
     }
     function splice(index) {
         roomMember[roomIndex].splice(index, 1);

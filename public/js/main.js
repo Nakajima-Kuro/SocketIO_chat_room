@@ -34,7 +34,7 @@ socket.on("group_update", function (data) {
     data.group.forEach(function (member) {
         if (member == username) {
             $("#room-member").prepend('<tr style="height: 3.2rem;"><td class="text-info" style="max-width: 190px;">' + member +
-            '</td><td style="width: 45px;"></td></tr>');
+                '</td><td style="width: 45px;"></td></tr>');
         }
         else {
             $("#room-member").append('<tr style="height: 3.2rem;"><td class="text-info" style="max-width: 190px;">' + member +
@@ -69,11 +69,7 @@ socket.on("join_respond", function (data) {
         $("#join-name-taken").show();
         $("#join-spinner").hide();
     }
-    else if (data.status == 1) {        
-        if (roomCheck == true && room != $("#join-room-id").val())//dang o trong 1 room nao do
-        {
-            socket.emit("change_room");
-        }
+    else if (data.status == 1) {
         if (room != $("#join-room-id").val()) {//vao room khac
             $("#chat-content tr").remove()
             room = $("#join-room-id").val();
@@ -131,7 +127,7 @@ $(document).ready(function () {
                 if (username != $("#join-room-username").val()) {
                     socket.emit("change_username", { username: $("#join-room-username").val() }),
                         username = $("#join-room-username").val();
-                        $("#username").val($("#join-room-username").val());
+                    $("#username").val($("#join-room-username").val());
                 }
                 socket.emit("join", { room: $("#join-room-id").val(), password: $("#join-room-password").val(), type: 0 });
                 $("#join-spinner").show();
@@ -189,7 +185,7 @@ $(document).ready(function () {
     $("#username").click(function () {
         $("#username-empty").hide()
     })
-    $("#join-modal").on('hide.bs.modal', function(){
+    $("#join-modal").on('hide.bs.modal', function () {
         $("#join-spinner").hide();
     })
 });
