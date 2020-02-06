@@ -148,10 +148,6 @@ $(document).ready(function () {
         }
         else {
             $("#host-spinner").show();
-            if (roomCheck == true && room != $("#host-room-id").val())//dang o trong 1 room nao do
-            {
-                socket.emit("change_room");
-            }
             if (room != $("#host-room-id").val()) {//Tao mot room moi
                 $("#chat-content tr").remove()
                 room = $("#host-room-id").val();
@@ -163,6 +159,7 @@ $(document).ready(function () {
             socket.emit("room_update")
             $("#host-modal").modal('hide')
             $("#host-spinner").hide();
+            $('#host-room-id').val("")
         }
     })
     $("#join-modal").on('show.bs.modal', function () {

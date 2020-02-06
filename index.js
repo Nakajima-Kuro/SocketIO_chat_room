@@ -84,6 +84,7 @@ io.on("connection", function (socket) {
         //1: Host
         //2: Rename
         if (data.type == 1) { //room chua duoc tao (Host)
+            console.log("Host");
             if (roomID != "") {
                 roomChange();
             }
@@ -100,6 +101,7 @@ io.on("connection", function (socket) {
             inGroup = true
         }
         else {  //Da co nguoi tao room nay
+            console.log("Join");
             if (roomID != "") {
                 roomChange();
             }
