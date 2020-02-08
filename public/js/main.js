@@ -56,8 +56,8 @@ socket.on("room_update", function (data) {
     existRoom = data.roomList;
     // $("#room-list").empty();
     for (let i = 0; i < data.roomList.length; i++) {
-        $('#room-list').append('<tr onclick="joinRoomInit(' + data.roomList[i] + ')" data-toggle="modal" data-target="#join-modal"><th scope="row">'
-            + (i + 1) + '</th><td>' + data.roomList[i] + '</td><td>' + data.people_num[i] + '</td></tr>')
+        $('#room-list').append('<tr onclick="joinRoomInit(' + data.roomList[i] + ')" data-toggle="modal" data-target="#join-modal"><th scope="row" width="20%">'
+            + (i + 1) + '</th><td width="55%">' + data.roomList[i] + '</td><td width="25%">' + data.people_num[i] + '</td></tr>')
     }
 })
 socket.on("join_respond", function (data) {

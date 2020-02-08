@@ -10,7 +10,6 @@
     <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="styles/main.css">
-    <link rel="stylesheet" href="bootstrap-select/css/bootstrap-select.min.css">
 </head>
 
 <body class="container">
@@ -127,92 +126,29 @@
                 </div>
                 <div class="modal-body container-fluid">
                     <div class="row mh-100">
-                        <div class="col-lg-3 col-sm-12 room-config border-right">
-                            <div class="form-group mt-3">
-                                <input type="text" class="form-control" id="room-search-input"
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <input type="text" class="form-control mt-3" id="room-search-input"
                                     placeholder="Search a room" onkeyup="roomFilter()">
                             </div>
                         </div>
-                        <div class="col-lg-9 room-suff">
-                            <table class="table table-hover room-list">
+                        <div class="col-lg-9">
+                            <table class="table fixed">
                                 <thead>
                                     <tr>
-                                        <th scope="col">#</th>
-                                        <th scope="col">Room name</th>
-                                        <th scope="col">Number of poeple</th>
+                                        <th scope="col" width="20%" class="align-middle">#</th>
+                                        <th scope="col" width="50%" class="align-middle">Room name</th>
+                                        <th scope="col" width="30%" class="align-middle">Number of poeple</th>
                                     </tr>
                                 </thead>
-                                <tbody id="room-list table-wrap">
-                                    <tr>
-                                        <td>as</td>
-                                        <td>asdasda</td>
-                                        <td>asdsadas</td>
-                                    </tr>
-                                    <tr>
-                                        <td>as</td>
-                                        <td>asdasda</td>
-                                        <td>asdsadas</td>
-                                    </tr>
-                                    <tr>
-                                        <td>as</td>
-                                        <td>asdasda</td>
-                                        <td>asdsadas</td>
-                                    </tr>
-                                    <tr>
-                                        <td>as</td>
-                                        <td>asdasda</td>
-                                        <td>asdsadas</td>
-                                    </tr>
-                                    <tr>
-                                        <td>as</td>
-                                        <td>asdasda</td>
-                                        <td>asdsadas</td>
-                                    </tr>
-                                    <tr>
-                                        <td>as</td>
-                                        <td>asdasda</td>
-                                        <td>asdsadas</td>
-                                    </tr>
-                                    <tr>
-                                        <td>as</td>
-                                        <td>asdasda</td>
-                                        <td>asdsadas</td>
-                                    </tr>
-                                    <tr>
-                                        <td>as</td>
-                                        <td>asdasda</td>
-                                        <td>asdsadas</td>
-                                    </tr>
-                                    <tr>
-                                        <td>as</td>
-                                        <td>asdasda</td>
-                                        <td>asdsadas</td>
-                                    </tr>
-                                    <tr>
-                                        <td>as</td>
-                                        <td>asdasda</td>
-                                        <td>asdsadas</td>
-                                    </tr>
-                                    <tr>
-                                        <td>as</td>
-                                        <td>asdasda</td>
-                                        <td>asdsadas</td>
-                                    </tr>
-                                    <tr>
-                                        <td>as</td>
-                                        <td>asdasda</td>
-                                        <td>asdsadas</td>
-                                    </tr>
-                                    <tr>
-                                        <td>as</td>
-                                        <td>asdasda</td>
-                                        <td>asdsadas</td>
-                                    </tr>
-                                    <tr>
-                                        <td>as</td>
-                                        <td>asdasda</td>
-                                        <td>asdsadas</td>
-                                    </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="row mh-100">
+                        <div class="col-lg-9 room-suff float-right">
+                            <table class="table table-hover fixed">
+                                <tbody id="room-list">
+                                    
                                 </tbody>
                             </table>
                         </div>
@@ -320,7 +256,6 @@
     </div>
     <!-- //Host room -->
     <script src="jquery/dist/jquery.slim.min.js"></script>
-    <!-- <script src="bootstrap-select/js/bootstrap-select.min.js"></script> -->
     <script src="js/init.js"></script>
     <script src="socket.io/socket.io.js"></script>
     <script src="peerjs/peer.min.js"></script>
