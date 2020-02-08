@@ -61,7 +61,7 @@ socket.on("request_peer_id_respone", function (data) {
     setTimeout(
       function () {
         $('#call-window').modal('hide');
-      }, 2500);
+      }, 1500);
   }
   else {
     busyNoti();
@@ -92,14 +92,14 @@ $('#call-window').on('hidden.bs.modal', function () {
 });
 
 function disconnectedNoti() {
-  $('#calling-status').removeClass('text-info text-success glow').addClass('text-danger').text('Disconnected')
+  $('#calling-status').removeClass('text-info text-success glow').addClass('text-danger').text('Disconnected');
   setTimeout(
     function () {
       stopStreamedVideo(remoteVideo);
       $('#call-window').modal('hide');
       isBusy = false;
       // console.log("Disconnected");
-    }, 3000);
+    }, 1500);
 }
 
 function busyNoti() {
@@ -108,7 +108,7 @@ function busyNoti() {
     function () {
       $('#call-window').modal('hide');
       isBusy = false;
-    }, 3000);
+    }, 2000);
 }
 
 function stopStreamedVideo(videoElem) {

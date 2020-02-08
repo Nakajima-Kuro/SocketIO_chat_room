@@ -10,6 +10,7 @@
     <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="bootstrap-select/css/bootstrap-select.min.css">
 </head>
 
 <body class="container">
@@ -19,12 +20,13 @@
     <div class="row mb-3">
         <div class="col-lg-5 mb-2">
             <input type="text" class="form-control" id="username" placeholder="Username">
-            <small id="username-empty" class="form-text text-danger mb-2 pl-2">Don't you have a name?</small>
+            <small id="username-empty" class="form-text text-danger mb-2 pl-2" style="display: none;">Don't you have a
+                name?</small>
         </div>
         <div class="col-lg-7 mb-2 d-flex flex-row justify-content-start">
             <button class="btn btn-info text-center" id="changename" type="button"
                 style="max-width: 300px; width: 100%; max-height: 38px;">Change username</button>
-            <button class="btn btn-info text-center ml-2" type="button" data-toggle="modal" data-target="#join-modal"
+            <button class="btn btn-info text-center ml-2" type="button" data-toggle="modal" data-target="#room-modal"
                 style="max-width: 300px; width: 100%; max-height: 38px;">Join room</button>
             <button class="btn btn-info text-center ml-2" type="button" data-toggle="modal" data-target="#host-modal"
                 style="max-width: 300px; width: 100%; max-height: 38px;">Host room</button>
@@ -36,8 +38,8 @@
                 <div>Chat Section</div>
                 <div id="room-iddisplay"></div>
             </div>
-            <div class="card-body" style="height: 24rem;" id="chat-card">
-                <table class="table table-sm" id="chat-table">
+            <div class="card-body" style="height: 25rem; padding-bottom: 0px !important;" id="chat-card">
+                <table class="table table-sm" id="chat-table" style="margin-bottom: 0px !important;">
                     <tbody id="chat-content">
                         <!-- Chat content in here -->
                     </tbody>
@@ -111,6 +113,125 @@
         </div>
     </div>
     <!-- //Get Call Window -->
+
+    <!-- Ava room -->
+    <div class="modal bd-example-modal-xl fade" id="room-modal" tabindex="-1" role="dialog"
+        aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog modal-xl" role="document">
+            <div class="modal-content container-fluid room-modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Join a room</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body container-fluid">
+                    <div class="row mh-100">
+                        <div class="col-lg-3 col-sm-12 room-config border-right">
+                            <div class="form-group mt-3">
+                                <input type="text" class="form-control" id="room-search-input"
+                                    placeholder="Search a room" onkeyup="roomFilter()">
+                            </div>
+                        </div>
+                        <div class="col-lg-9 room-suff">
+                            <table class="table table-hover room-list">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">#</th>
+                                        <th scope="col">Room name</th>
+                                        <th scope="col">Number of poeple</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="room-list table-wrap">
+                                    <tr>
+                                        <td>as</td>
+                                        <td>asdasda</td>
+                                        <td>asdsadas</td>
+                                    </tr>
+                                    <tr>
+                                        <td>as</td>
+                                        <td>asdasda</td>
+                                        <td>asdsadas</td>
+                                    </tr>
+                                    <tr>
+                                        <td>as</td>
+                                        <td>asdasda</td>
+                                        <td>asdsadas</td>
+                                    </tr>
+                                    <tr>
+                                        <td>as</td>
+                                        <td>asdasda</td>
+                                        <td>asdsadas</td>
+                                    </tr>
+                                    <tr>
+                                        <td>as</td>
+                                        <td>asdasda</td>
+                                        <td>asdsadas</td>
+                                    </tr>
+                                    <tr>
+                                        <td>as</td>
+                                        <td>asdasda</td>
+                                        <td>asdsadas</td>
+                                    </tr>
+                                    <tr>
+                                        <td>as</td>
+                                        <td>asdasda</td>
+                                        <td>asdsadas</td>
+                                    </tr>
+                                    <tr>
+                                        <td>as</td>
+                                        <td>asdasda</td>
+                                        <td>asdsadas</td>
+                                    </tr>
+                                    <tr>
+                                        <td>as</td>
+                                        <td>asdasda</td>
+                                        <td>asdsadas</td>
+                                    </tr>
+                                    <tr>
+                                        <td>as</td>
+                                        <td>asdasda</td>
+                                        <td>asdsadas</td>
+                                    </tr>
+                                    <tr>
+                                        <td>as</td>
+                                        <td>asdasda</td>
+                                        <td>asdsadas</td>
+                                    </tr>
+                                    <tr>
+                                        <td>as</td>
+                                        <td>asdasda</td>
+                                        <td>asdsadas</td>
+                                    </tr>
+                                    <tr>
+                                        <td>as</td>
+                                        <td>asdasda</td>
+                                        <td>asdsadas</td>
+                                    </tr>
+                                    <tr>
+                                        <td>as</td>
+                                        <td>asdasda</td>
+                                        <td>asdsadas</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer row">
+                    <div class="col-sm-3">
+                        <div id="suff-spinner" class="spinner-grow text-info" role="status"></div>
+                    </div>
+                    <div class="col-sm-3">
+                        <button type="button" class="btn btn-secondary btn-block" data-dismiss="modal"
+                            data-target="#join-host-modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- //Ava room -->
+
     <!-- Join room -->
     <div class="modal bd-example-modal-md fade" id="join-modal" tabindex="-1" role="dialog"
         aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
@@ -130,11 +251,8 @@
                         <small id="join-name-empty" class="form-text text-danger">You don't have a name?</small>
                     </div>
                     <div class="form-group">
-                        <label for="join-room-id">Select a room</label>
-                        <select class="form-control custom-select" id="join-room-id">
-
-                        </select>
-                        <small id="join-room-empty" class="text-danger">Please choose a room</small>
+                        <label for="join-room-id">Room name</label>
+                        <input class="form-control border" id="join-room-id" disabled>
                     </div>
                     <div class="form-group">
                         <label for="join-room-password">Password</label>
@@ -202,11 +320,8 @@
     </div>
     <!-- //Host room -->
     <script src="jquery/dist/jquery.slim.min.js"></script>
-    <script>
-        $("small").hide();
-        $("#join-spinner").hide();
-        $("#host-spinner").hide();
-    </script>
+    <!-- <script src="bootstrap-select/js/bootstrap-select.min.js"></script> -->
+    <script src="js/init.js"></script>
     <script src="socket.io/socket.io.js"></script>
     <script src="peerjs/peer.min.js"></script>
     <script src="js/main.js"></script>

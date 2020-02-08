@@ -41,7 +41,6 @@ socket.on("group_update", function (data) {
                 '</td><td style="width: 45px;"><button type="button" id="' + member +
                 '" onclick="callInit(this.id)" class="btn btn-sm btn-outline-info btn-block call" data-toggle="modal" data-target="#call-window">Call</button></td></tr>');
         }
-
     })
     var numberOfPeople = $('#room-member tr').length;
     $("#people-number").empty().append(numberOfPeople);
@@ -55,8 +54,11 @@ socket.on("no_longer_typing", function (data) {
 })
 socket.on("room_update", function (data) {
     existRoom = data.roomList;
-    $("#join-room-id").find('option').remove();
-    data.roomList.forEach(room => $('#join-room-id').append('<option value="' + room + '">' + room + '</option>'));
+    // $("#room-list").empty();
+    for (let i = 0; i < data.roomList.length; i++) {
+        $('#room-list').append('<tr onclick="joinRoomInit(' + data.roomList[i] + ')" data-toggle="modal" data-target="#join-modal"><th scope="row">'
+            + (i + 1) + '</th><td>' + data.roomList[i] + '</td><td>' + data.people_num[i] + '</td></tr>')
+    }
 })
 socket.on("join_respond", function (data) {
     if (data.status == 0)//sai mk
@@ -79,6 +81,7 @@ socket.on("join_respond", function (data) {
         roomCheck = true
         socket.emit("room_update")
         $("#join-modal").modal('hide')
+        $("#room-modal").modal('hide')
     }
 })
 //client gửi dữ liệu lên server
@@ -102,11 +105,9 @@ $(document).ready(function () {
 
     $('#changename').click(function () {
         if ($("#username").val() != "") {
-            socket.emit("leave_room", { username: $("#username").val() })
-            socket.emit("change_username", { username: $("#username").val() })
-            username = $("#username").val()
-            if (roomCheck == true) {
-                socket.emit("join", { room: room, password: password, type: 2 });
+            if ($("#username").val() != username) {
+                socket.emit("change_username", { username: $("#username").val() })
+                username = $("#username").val()
             }
         }
         else {
@@ -198,4 +199,31 @@ function sendMessage() {
     }
     $("#message").val('');
     $("#chat-card").scrollTop($("#chat-table").height());
+}
+
+function joinRoomInit(room) {
+    $("#join-room-username").val(username);
+    $("#join-room-id").val(room);
+}
+
+function roomFilter(){
+    // Declare variables
+  var input, filter, table, tr, td, i, txtValue;
+  input = document.getElementById("room-search-input");
+  filter = input.value.toUpperCase();
+  table = document.getElementById("room-list");
+  tr = table.getElementsByTagName("tr");
+
+  // Loop through all table rows, and hide those who don't match the search query
+  for (i = 0; i < tr.length; i++) {
+    td = tr[i].getElementsByTagName("td")[0];
+    if (td) {
+      txtValue = td.textContent || td.innerText;
+      if (txtValue.toUpperCase().indexOf(filter) > -1) {
+        tr[i].style.display = "";
+      } else {
+        tr[i].style.display = "none";
+      }
+    }
+  }
 }

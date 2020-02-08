@@ -37,7 +37,6 @@ var roomSocketID = [];//luu socket ID trong day
 // roomSocketID[0] = new Array();
 // tạo kết nối giữa client và server
 io.on("connection", function (socket) {
-    socket.emit("room_update", { roomList: building })
     var roomID = "";
     var roomIndex;
     var userIndex;
@@ -48,10 +47,12 @@ io.on("connection", function (socket) {
     socket.on("room_update", function () {
         // console.log("got room update request");
         var room_name = new Array();
+        var people_num = new Array();
         for (var i in building) {
             room_name.push(building[i].getName())
         }
-        io.emit("room_update", { roomList: room_name })
+        roomMember.forEach(room => people_num.push(room.length))
+        io.emit("room_update", { roomList: room_name, people_num: people_num })
     });
     //server lắng nghe dữ liệu từ client
     socket.on("send_message", function (data) {
@@ -67,15 +68,19 @@ io.on("connection", function (socket) {
     socket.on("change_username", function (data) {
         var currentName = socket.username;
         if (socket.username != data.username) {
-            socket.emit("server_send", { message: "Change name successful!", type: 2 })
             socket.username = data.username;
         }
         if (fresh == false && inGroup == true) {
-            socket.leave(roomID);
-            io.to(roomID).emit("server_send", { message: currentName + " has changed name to " + data.username, type: 2 });
-            splice(userIndex)
+            socket.broadcast.to(roomID).emit("server_send", { message: currentName + " has changed name to " + data.username, type: 2 });
+            for (let i = 0; i < roomMember[roomIndex].length; i++) {
+                if (roomMember[roomIndex][i] == currentName) {
+                    roomMember[roomIndex][i] = data.username;
+                    break;
+                }
+            }
             io.to(roomID).emit("group_update", { group: roomMember[roomIndex] });
         }
+        socket.emit("server_send", { message: "You has changed your name to " + data.username, type: 2 });
         fresh = false;
     })
     socket.on("join", function (data) {
@@ -96,51 +101,56 @@ io.on("connection", function (socket) {
             roomSocketID[roomIndex] = new Array();
             roomMember[roomIndex].push(socket.username);
             roomSocketID[roomIndex].push(socket.id);
-            socket.to(data.room).emit("server_send");
             io.to(data.room).emit("group_update", { group: roomMember[roomIndex] });
             inGroup = true
+            roomID = data.room;
         }
         else {  //Da co nguoi tao room nay
             // console.log("Join");
-            if (roomID != "") {
-                roomChange();
-            }
-            for (let i = 0; i < building.length; i++) {
-                if (building[i].getName() == data.room) {
-                    roomIndex = i;
-                    break;
+            try {
+                if (roomID != "") {
+                    roomChange();
                 }
-            }
-            var check = false;
-            if (data.password != building[roomIndex].getPassword()) {//sai mk
-                socket.emit("join_respond", { status: 0 });
-                check = true;
-            }
-            else {
-                for (let i = 0; i < roomMember[roomIndex].length; i++) {
-                    if (roomMember[roomIndex][i].localeCompare(socket.username) == 0)//Trung ten
-                    {
-                        socket.emit("server_send", { message: "This username has been taken", type: 2 })
-                        socket.emit("join_respond", { status: 2 })
-                        check = true
+                for (let i = 0; i < building.length; i++) {
+                    if (building[i].getName() == data.room) {
+                        roomIndex = i;
                         break;
                     }
                 }
-            }
-            if (check == false) {
-                socket.join(data.room);
-                userIndex = roomMember[roomIndex].length
-                roomMember[roomIndex].push(socket.username)
-                roomSocketID[roomIndex].push(socket.id)
-                socket.emit("join_respond", { status: 1 })
-                if (data.type == 0) {
-                    io.to(data.room).emit("server_send", { message: socket.username + " has joined!", type: 2 });
+                var check = false;
+                if (data.password != building[roomIndex].getPassword()) {//sai mk
+                    socket.emit("join_respond", { status: 0 });
+                    check = true;
                 }
-                io.to(data.room).emit("group_update", { group: roomMember[roomIndex] });
-                inGroup = true;
+                else {
+                    for (let i = 0; i < roomMember[roomIndex].length; i++) {
+                        if (roomMember[roomIndex][i].localeCompare(socket.username) == 0)//Trung ten
+                        {
+                            socket.emit("server_send", { message: "This username has been taken", type: 2 })
+                            socket.emit("join_respond", { status: 2 })
+                            check = true
+                            break;
+                        }
+                    }
+                }
+                if (check == false) {//Passed the Firewall
+                    socket.join(data.room);
+                    userIndex = roomMember[roomIndex].length
+                    roomMember[roomIndex].push(socket.username)
+                    roomSocketID[roomIndex].push(socket.id)
+                    socket.emit("join_respond", { status: 1 })
+                    if (data.type == 0) {
+                        io.to(data.room).emit("server_send", { message: socket.username + " has joined!", type: 2 });
+                    }
+                    io.to(data.room).emit("group_update", { group: roomMember[roomIndex] });
+                    inGroup = true;
+                    roomID = building[roomIndex].getName();
+                }
+            } catch (e) {
+                socket.emit("server_send", { message: "Something wrong...", type: 2 });
+                console.log(e);
             }
         }
-        roomID = building[roomIndex].getName();
         // console.log(roomMember);
         // console.log(roomSocketID);
         // console.log(roomMember);
@@ -178,15 +188,20 @@ io.on("connection", function (socket) {
                 break;
             }
         }
-        if (roomMember[roomIndex].length == 1 && roomID != "") {//alone in the room
-            roomMember.splice(roomIndex, 1);
-            roomSocketID.splice(roomIndex, 1);
-            building.splice(roomIndex, 1);
-        }
-        else {//there are still people in the room
-            splice(userIndex);
-            io.to(roomID).emit("server_send", { message: socket.username + " has left!", type: 2 });
-            io.to(roomID).emit("group_update", { group: roomMember[roomIndex] });
+        try {
+            if (roomMember[roomIndex].length == 1 && roomID != "") {//alone in the room
+                roomMember.splice(roomIndex, 1);
+                roomSocketID.splice(roomIndex, 1);
+                building.splice(roomIndex, 1);
+            }
+            else {//there are still people in the room
+                splice(userIndex);
+                io.to(roomID).emit("server_send", { message: socket.username + " has left!", type: 2 });
+                io.to(roomID).emit("group_update", { group: roomMember[roomIndex] });
+            }
+        } catch (e) {
+            socket.emit("server_send", { message: "Something wrong...", type: 2 });
+            console.log(e);
         }
         socket.broadcast.to(roomID).emit('no_longer_typing', { username: socket.username });
         socket.leave(roomID);
