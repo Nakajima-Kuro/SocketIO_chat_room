@@ -2,16 +2,18 @@ input::-webkit-calendar-picker-indicator {
   display: none;
 }
 
-.parent{
+.parent {
   height: 100%;
   overflow: hidden;
 }
 
-#chat-card{
+#chat-card {
   width: 100%;
   overflow-y: scroll;
-  padding-right: 17px; /* Increase/decrease this value for cross-browser compatibility */
-  box-sizing: content-box; /* So the width will be 100% + 17px */
+  padding-right: 17px;
+  /* Increase/decrease this value for cross-browser compatibility */
+  box-sizing: content-box;
+  /* So the width will be 100% + 17px */
 }
 
 .glow {
@@ -21,12 +23,10 @@ input::-webkit-calendar-picker-indicator {
 }
 
 .room-modal-content {
-
   height: 90% !important;
+}
 
-}   
-
-.modal-body{
+.modal-body {
   max-height: calc(100% - 71px - 62.6px) !important;
 }
 
@@ -34,14 +34,13 @@ input::-webkit-calendar-picker-indicator {
   overflow-y: scroll;
 }
 
-@media (min-width: 992px){
+@media (min-width: 992px) {
   .room-config {
     position: absolute;
     top: 0px;
     bottom: 0;
     overflow-y: hidden;
   }
-  
   .room-suff {
     right: 0;
     overflow-y: scroll;
@@ -49,14 +48,18 @@ input::-webkit-calendar-picker-indicator {
     position: absolute;
     height: 87%;
   }
+  .call-modal-content{
+    height: 92% !important;
+  }
 }
 
-.fixed{
-  table-layout:fixed;
+.fixed {
+  table-layout: fixed;
 }
 
 /* Important part */
-.modal-dialog{
+
+.modal-dialog {
   overflow-y: initial !important
 }
 

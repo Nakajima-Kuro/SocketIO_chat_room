@@ -55,10 +55,18 @@ io.on("connection", function (socket) {
         io.emit("room_update", { roomList: room_name, people_num: people_num })
     });
     //server lắng nghe dữ liệu từ client
+    //Message convention:
+        //1: normal message
+        //2: notify message
+        //3: is typing
+        //4: warning
     socket.on("send_message", function (data) {
         //sau khi lắng nghe dữ liệu, server phát lại dữ liệu này đến các client khác
         socket.broadcast.to(roomID).emit('server_send', { message: '<div class="text-info mr-1">' + socket.username + ": </div>" + data.message, type: 1 });
     });
+    socket.on("send_warning", function (data) {
+        socket.emit('server_send', {message: data.message, type: 4})
+    })
     socket.on("is_typing", function () {
         socket.broadcast.to(roomID).emit('server_send', { message: '<div class="text-primary mr-1">' + socket.username + " is typing...</div>", type: 3, username: socket.username });
     });

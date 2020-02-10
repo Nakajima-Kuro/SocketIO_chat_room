@@ -27,6 +27,14 @@ socket.on("server_send", function (data) {
     else if (data.type == 3 && !$("#" + id).length) {
         $("#chat-content").append('<tr class="is-typing" style="height: 3.2rem;" id = "' + id + '"><td class="d-flex">' + data.message + "</td></tr>");
     }
+    else if( data.type == 4){
+        newrow = '<tr style="height: 3.2rem;"><td class="d-flex"><div class="text-warning">' + data.message + "</div></td></tr>"
+        if (!$(".is-typing").length)
+            $("#chat-content").append(newrow);
+        else {
+            $(".is-typing").first().before(newrow);
+        }
+    }
     $("#chat-card").scrollTop($("#chat-table").height());
 });
 socket.on("group_update", function (data) {

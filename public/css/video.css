@@ -1,0 +1,22 @@
+a:hover {
+    cursor: pointer;
+}
+
+video {
+    transform: rotateY(180deg);
+    -webkit-transform: rotateY(180deg);
+    /* Safari and Chrome */
+    -moz-transform: rotateY(180deg);
+    /* Firefox */
+}
+
+#localVideo {
+    max-width: 10%;
+    width: 10%;
+    position: fixed;
+}
+
+#remoteVideo {
+    width: 100%;
+    max-width: 100%;
+}
