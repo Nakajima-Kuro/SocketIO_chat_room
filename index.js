@@ -1,19 +1,71 @@
 class Building {
-    constructor(name, password) {
-        this.name = name;
-        this.password = password;
+    constructor() {
+        this.roomList = new Array();//luu cac room
     }
-    validPassword(password) {
-        if (password == this.password) {
-            return true;
+    pushRoom(room) {
+        this.roomList.push(room)
+    }
+    getRoom(roomName) {
+        for (let i = 0; i < this.roomList.length; i++) {
+            if (roomName == this.roomList[i].getName()) {
+                return this.roomList[i];
+            }
         }
-        return false;
+    }
+    popUser(username, roomName) {
+        for (let i = 0; i < this.roomList.length; i++) {
+            if (roomName == this.roomList[i].getName()) {
+                if (this.roomList[i].getPopulation() == 1 && i != 0) {//if alone and room name is not "Public"
+                    this.roomList.splice(i, 1)
+                }
+                else {
+                    this.roomList[i].popUser(username)
+                }
+                break;
+            }
+        }
+    }
+    getRoomList() {
+        var roomList = [];
+        roomList.forEach(i => roomList.push({ roomName: i.getName(), roomPopulation: i.getPopulation() }))
+        return roomList;
+    }
+}
+class Room {
+    constructor(name, password) {
+        this.name = name;//ten phong
+        this.password = password;//password
+        this.roomMember = new Array();//luu cac user (co dang 1 class User)
+    }
+    getPopulation() {
+        return this.roomMember.length;
+    }
+    pushUser(user) {
+        this.roomMember.push(user);
+    }
+    popUser(username) {//dung building.popUser instead
+        try {
+            for (let i = 0; i < this.roomMember.length; i++) {
+                if (username == this.roomMember[i].getName()) {
+                    this.roomMember.splice(i, 1);
+                    break;
+                }
+            }
+        } catch (e) {
+            console.log("error");
+        }
+    }
+}
+class User {
+    constructor(name, id) {
+        this.name = name;
+        this.id = id;
     }
     getName() {
         return this.name;
     }
-    getPassword() {
-        return this.password;
+    getSocketID() {
+        return this.id;
     }
 }
 // build server
@@ -29,108 +81,87 @@ app.set("public", "");
 var server = require("http").Server(app);
 var io = require("socket.io")(server);
 server.listen(port);
-var building = [];//luu cac room_name trong day
-var roomMember = [];//luu username trong day
-var roomSocketID = [];//luu socket ID trong day
-// building.push("public");
-// roomMember[0] = new Array();
-// roomSocketID[0] = new Array();
+var building = new Building();//luu cac room_name trong day
+building.pushRoom(new Room("Public", ""));
+
 // tạo kết nối giữa client và server
 io.on("connection", function (socket) {
-    var roomID = "";
-    var roomIndex;
-    var userIndex;
-    var fresh = true;
-    var inGroup = false;
-    socket.username = "anonymous";
+    //Init
+    var self = new User("Anonymous", socket.id)
+    var room = building.getRoom("Public");
+    socket.join("Public")
+
+    //server lắng nghe dữ liệu từ client
+
     //Update room list
     socket.on("room_update", function () {
         // console.log("got room update request");
-        var room_name = new Array();
-        var people_num = new Array();
-        for (var i in building) {
-            room_name.push(building[i].getName())
-        }
-        roomMember.forEach(room => people_num.push(room.length))
-        io.emit("room_update", { roomList: room_name, people_num: people_num })
+        var roomList = building.getRoomList;
+        io.emit("room_update", { roomList: roomList })
     });
-    //server lắng nghe dữ liệu từ client
+
     //Message convention:
-        //1: normal message
-        //2: notify message
-        //3: is typing
-        //4: warning
+    //1: normal message
+    //2: notify message
+    //3: is typing
+    //4: warning
     socket.on("send_message", function (data) {
         //sau khi lắng nghe dữ liệu, server phát lại dữ liệu này đến các client khác
-        socket.broadcast.to(roomID).emit('server_send', { message: '<div class="text-info mr-1">' + socket.username + ": </div>" + data.message, type: 1 });
+        socket.broadcast.to(room.name).emit('server_send', { message: '<div class="text-info mr-1">' + socket.username + ": </div>" + data.message, type: 1 });
     });
     socket.on("send_warning", function (data) {
-        socket.emit('server_send', {message: data.message, type: 4})
+        socket.emit('server_send', { message: data.message, type: 4 })
     })
     socket.on("is_typing", function () {
-        socket.broadcast.to(roomID).emit('server_send', { message: '<div class="text-primary mr-1">' + socket.username + " is typing...</div>", type: 3, username: socket.username });
+        socket.broadcast.to(room.name).emit('server_send', { message: '<div class="text-primary mr-1">' + socket.username + " is typing...</div>", type: 3, username: socket.username });
     });
     socket.on("no_longer_typing", function () {
-        socket.broadcast.to(roomID).emit('no_longer_typing', { username: socket.username });
+        socket.broadcast.to(room.name).emit('no_longer_typing', { username: socket.username });
     });
+
+    //Change username
     socket.on("change_username", function (data) {
-        var currentName = socket.username;
-        if (socket.username != data.username) {
-            socket.username = data.username;
-        }
-        if (fresh == false && inGroup == true) {
-            socket.broadcast.to(roomID).emit("server_send", { message: currentName + " has changed name to " + data.username, type: 2 });
-            for (let i = 0; i < roomMember[roomIndex].length; i++) {
-                if (roomMember[roomIndex][i] == currentName) {
-                    roomMember[roomIndex][i] = data.username;
-                    break;
-                }
+        if (self.username != data.username) {
+            if (room.name != "Public") {
+                socket.broadcast.to(room.name).emit("server_send", { message: self.name + " has changed name to " + data.username, type: 2 });
+                io.to(room.name).emit("group_update", { group: room.roomMember });
             }
-            io.to(roomID).emit("group_update", { group: roomMember[roomIndex] });
+            self.username = data.username;
         }
         socket.emit("server_send", { message: "You has changed your name to " + data.username, type: 2 });
-        fresh = false;
     })
     socket.on("join", function (data) {
-        fresh = false;
         //0: Join
         //1: Host
         //2: Rename
         if (data.type == 1) { //room chua duoc tao (Host)
             // console.log("Host");
-            if (roomID != "") {
+            if (room.name != "Public") {
                 roomChange();
             }
-            var room = new Building(data.room, data.password);
-            building.push(room);
+            room = new Room(data.room, data.password);
+            building.pushRoom(room);
+            room.pushUser(self);
             socket.join(data.room);
-            roomIndex = roomMember.length
-            roomMember[roomIndex] = new Array();
-            roomSocketID[roomIndex] = new Array();
-            roomMember[roomIndex].push(socket.username);
-            roomSocketID[roomIndex].push(socket.id);
-            io.to(data.room).emit("group_update", { group: roomMember[roomIndex] });
-            inGroup = true
-            roomID = data.room;
+            io.to(data.room).emit("group_update", { group: room.roomMember });
         }
         else {  //Da co nguoi tao room nay
             // console.log("Join");
             try {
-                if (roomID != "") {
+                if (room.name != "") {
                     roomChange();
                 }
-                for (let i = 0; i < building.length; i++) {
-                    if (building[i].getName() == data.room) {
-                        roomIndex = i;
-                        break;
-                    }
-                }
                 var check = false;
-                if (data.password != building[roomIndex].getPassword()) {//sai mk
+                //Join convention
+                //0: wrong password
+                //1: Okay
+                //2: Name duplicate
+                var joinRoom = building.getRoom(data.room)
+                if (data.password != joinRoom.password) {//sai mk
                     socket.emit("join_respond", { status: 0 });
                     check = true;
                 }
-                else {
+                else { //mod den day roi, mai lam tiep
                     for (let i = 0; i < roomMember[roomIndex].length; i++) {
                         if (roomMember[roomIndex][i].localeCompare(socket.username) == 0)//Trung ten
                         {
@@ -152,17 +183,16 @@ io.on("connection", function (socket) {
                     }
                     io.to(data.room).emit("group_update", { group: roomMember[roomIndex] });
                     inGroup = true;
-                    roomID = building[roomIndex].getName();
+                    self.roomID = building[roomIndex].getName();
                 }
             } catch (e) {
                 socket.emit("server_send", { message: "Something wrong...", type: 2 });
                 console.log(e);
             }
         }
-        // console.log(roomMember);
-        // console.log(roomSocketID);
-        // console.log(roomMember);
-        // console.log(building);
+        console.log(building);
+        console.log(roomMember);
+        console.log(roomSocketID);
     });
     socket.on('request_peer_id', function (data) {
         // console.log("request_recived");
@@ -190,35 +220,8 @@ io.on("connection", function (socket) {
         roomChange();
     })
     function roomChange() {
-        for (let i = 0; i < building.length; i++) {
-            if (building[i].getName() == roomID) {
-                roomIndex = i;
-                break;
-            }
-        }
-        try {
-            if (roomMember[roomIndex].length == 1 && roomID != "") {//alone in the room
-                roomMember.splice(roomIndex, 1);
-                roomSocketID.splice(roomIndex, 1);
-                building.splice(roomIndex, 1);
-            }
-            else {//there are still people in the room
-                splice(userIndex);
-                io.to(roomID).emit("server_send", { message: socket.username + " has left!", type: 2 });
-                io.to(roomID).emit("group_update", { group: roomMember[roomIndex] });
-            }
-        } catch (e) {
-            socket.emit("server_send", { message: "Something wrong...", type: 2 });
-            console.log(e);
-        }
-        socket.broadcast.to(roomID).emit('no_longer_typing', { username: socket.username });
-        socket.leave(roomID);
-        // console.log(roomMember);
-        // console.log(roomSocketID);
-    }
-    function splice(index) {
-        roomMember[roomIndex].splice(index, 1);
-        roomSocketID[roomIndex].splice(index, 1);
+        socket.leave(room.name)
+        building.popUser(socket.username, room.name)
     }
 });
 
