@@ -1,10 +1,10 @@
 var socket = io();
-var username = "anonymous";
+var username = "Anonymous";
 var timeout = undefined;
 var existRoom = new Array();
 var roomCheck = false;
 var room = "";
-var password = ""
+var password = "";
 //client nhận dữ liệu từ server
 socket.on("server_send", function (data) {
     var id = data.username + "-is-typing";
@@ -27,7 +27,7 @@ socket.on("server_send", function (data) {
     else if (data.type == 3 && !$("#" + id).length) {
         $("#chat-content").append('<tr class="is-typing" style="height: 3.2rem;" id = "' + id + '"><td class="d-flex">' + data.message + "</td></tr>");
     }
-    else if( data.type == 4){
+    else if (data.type == 4) {
         newrow = '<tr style="height: 3.2rem;"><td class="d-flex"><div class="text-warning">' + data.message + "</div></td></tr>"
         if (!$(".is-typing").length)
             $("#chat-content").append(newrow);
@@ -40,17 +40,17 @@ socket.on("server_send", function (data) {
 socket.on("group_update", function (data) {
     $("#member-table").find('tr').remove();
     data.group.forEach(function (member) {
-        if (member == username) {
-            $("#room-member").prepend('<tr style="height: 3.2rem;"><td class="text-info" style="max-width: 190px;">' + member +
+        if (member.name == username || member.name == "Anonymous") {
+            $("#room-member").prepend('<tr style="height: 3.2rem;"><td class="text-info" style="max-width: 190px;">' + member.name +
                 '</td><td style="width: 45px;"></td></tr>');
         }
         else {
-            $("#room-member").append('<tr style="height: 3.2rem;"><td class="text-info" style="max-width: 190px;">' + member +
-                '</td><td style="width: 45px;"><button type="button" id="' + member +
-                '" onclick="callInit(this.id)" class="btn btn-sm btn-outline-info btn-block call" data-toggle="modal" data-target="#call-window">Call</button></td></tr>');
+            $("#room-member").append('<tr style="height: 3.2rem;"><td class="text-info" style="max-width: 190px;">' + member.name +
+                '</td><td style="width: 45px;"><button type="button" id="' + member.name +
+                '" onclick="callInit(this.id)" class="btn btn-sm btn-outline-info btn-block call">Call</button></td></tr>');
         }
     })
-    var numberOfPeople = $('#room-member tr').length;
+    var numberOfPeople = data.group.length;
     $("#people-number").empty().append(numberOfPeople);
 });
 socket.on("reset_chat", function () {
@@ -62,10 +62,10 @@ socket.on("no_longer_typing", function (data) {
 })
 socket.on("room_update", function (data) {
     existRoom = data.roomList;
-    // $("#room-list").empty();
+    $("#room-list").empty();
     for (let i = 0; i < data.roomList.length; i++) {
-        $('#room-list').append('<tr onclick="joinRoomInit(' + data.roomList[i] + ')" data-toggle="modal" data-target="#join-modal"><th scope="row" width="20%">'
-            + (i + 1) + '</th><td width="55%">' + data.roomList[i] + '</td><td width="25%">' + data.people_num[i] + '</td></tr>')
+        $('#room-list').append('<tr onclick="joinRoomInit(\'' + data.roomList[i].roomName + '\')" data-toggle="modal" data-target="#join-modal"><th scope="row" width="20%">'
+            + (i + 1) + '</th><td width="55%">' + data.roomList[i].roomName + '</td><td width="25%">' + data.roomList[i].roomPopulation + '</td></tr>')
     }
 })
 socket.on("join_respond", function (data) {
@@ -87,7 +87,6 @@ socket.on("join_respond", function (data) {
             document.getElementById('room-iddisplay').innerHTML = "Room " + room;
         }
         roomCheck = true
-        socket.emit("room_update")
         $("#join-modal").modal('hide')
         $("#room-modal").modal('hide')
     }
@@ -151,24 +150,30 @@ $(document).ready(function () {
             //room name empty
             $("#host-room-empty").show()
         }
-        else if (existRoom.indexOf($('#host-room-id').val()) != -1) {
+        else if (existRoom.map(function (e) { return e.roomName }).indexOf($('#host-room-id').val()) != -1) {
             //room name taken
             $("#host-room-taken").show();
         }
         else {
-            $("#host-spinner").show();
-            if (room != $("#host-room-id").val()) {//Tao mot room moi
-                $("#chat-content tr").remove()
-                room = $("#host-room-id").val();
-                password = $("#host-room-password").val();
-                socket.emit("join", { room: $("#host-room-id").val(), password: $("#host-room-password").val(), type: 1 });
-                document.getElementById('room-iddisplay').innerHTML = "Room " + $("#host-room-id").val();
+            var regex = /[^a-zA-Z0-9]/;
+            if (regex.test($("#host-room-id").val())) {
+                $('#host-room-regex-error').show()
             }
-            roomCheck = true
-            socket.emit("room_update")
-            $("#host-modal").modal('hide')
-            $("#host-spinner").hide();
-            $('#host-room-id').val("")
+            else {
+                $("#host-spinner").show();
+                if (room != $("#host-room-id").val()) {//Tao mot room moi
+                    $("#chat-content tr").remove()
+                    room = $("#host-room-id").val();
+                    password = $("#host-room-password").val();
+                    socket.emit("join", { room: $("#host-room-id").val(), password: $("#host-room-password").val(), type: 1 });
+                    document.getElementById('room-iddisplay').innerHTML = "Room " + $("#host-room-id").val();
+                }
+                roomCheck = true
+                socket.emit("room_update")
+                $("#host-modal").modal('hide')
+                $("#host-spinner").hide();
+                $('#host-room-id').val("")
+            }
         }
     })
     $("#join-modal").on('show.bs.modal', function () {
@@ -187,6 +192,7 @@ $(document).ready(function () {
     $("#host-room-id").click(function () {
         $("#host-room-taken").hide()
         $("#host-room-empty").hide()
+        $("#host-room-regex-error").hide()
     })
     $("#username").click(function () {
         $("#username-empty").hide()
@@ -214,24 +220,24 @@ function joinRoomInit(room) {
     $("#join-room-id").val(room);
 }
 
-function roomFilter(){
+function roomFilter() {
     // Declare variables
-  var input, filter, table, tr, td, i, txtValue;
-  input = document.getElementById("room-search-input");
-  filter = input.value.toUpperCase();
-  table = document.getElementById("room-list");
-  tr = table.getElementsByTagName("tr");
+    var input, filter, table, tr, td, i, txtValue;
+    input = document.getElementById("room-search-input");
+    filter = input.value.toUpperCase();
+    table = document.getElementById("room-list");
+    tr = table.getElementsByTagName("tr");
 
-  // Loop through all table rows, and hide those who don't match the search query
-  for (i = 0; i < tr.length; i++) {
-    td = tr[i].getElementsByTagName("td")[0];
-    if (td) {
-      txtValue = td.textContent || td.innerText;
-      if (txtValue.toUpperCase().indexOf(filter) > -1) {
-        tr[i].style.display = "";
-      } else {
-        tr[i].style.display = "none";
-      }
+    // Loop through all table rows, and hide those who don't match the search query
+    for (i = 0; i < tr.length; i++) {
+        td = tr[i].getElementsByTagName("td")[0];
+        if (td) {
+            txtValue = td.textContent || td.innerText;
+            if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                tr[i].style.display = "";
+            } else {
+                tr[i].style.display = "none";
+            }
+        }
     }
-  }
 }

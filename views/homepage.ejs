@@ -14,9 +14,9 @@
 </head>
 
 <body class="container">
-    <div class="row d-flex justify-content-center text-info mt-3 mb-5">
-        <h1>Let's Chat</h1>
-    </div>
+    <nav class="navbar navbar-light bg-white mb-1">
+        <span class="navbar-brand h1 text-info text-center" style="width: 100%;">Let's chat</span>
+    </nav>
     <div class="row mb-3">
         <div class="col-lg-5 mb-2">
             <input type="text" class="form-control" id="username" placeholder="Username">
@@ -36,7 +36,7 @@
         <div class="card col-xl-9 parent">
             <div class="card-header row d-flex justify-content-between">
                 <div>Chat Section</div>
-                <div id="room-iddisplay"></div>
+                <div id="room-iddisplay">Room Public</div>
             </div>
             <div class="card-body" style="height: 25rem; padding-bottom: 0px !important;" id="chat-card">
                 <table class="table table-sm" id="chat-table" style="margin-bottom: 0px !important;">
@@ -239,6 +239,8 @@
                             <small id="host-room-taken" class="form-text text-danger">This room name is already
                                 taken</small>
                             <small id="host-room-empty" class="form-text text-danger">A room need a name</small>
+                            <small id="host-room-regex-error" class="form-text text-danger">Name can't contain
+                                <strong>special character</strong></small>
                         </div>
                         <div class="form-group">
                             <label for="host-room-password">Password</label>
@@ -262,6 +264,32 @@
         </div>
     </div>
     <!-- //Host room -->
+
+    <!-- No name call warning -->
+    <div class="modal bd-example-modal-md fade" id="call-no-name" tabindex="-1" role="dialog"
+        aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content container-fluid">
+                <div class="modal-header">
+                    <h5 class="modal-title">Please add a name first.</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <h6>For security reason, please change your name first.</h6>
+                    <h6>Then you will be able to call other people.</h6>
+                </div>
+                <div class="modal-footer row">
+                    <div class="col-sm-4">
+                        <button type="button" class="btn btn-secondary btn-block" data-dismiss="modal"
+                            data-target="#join-host-modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- //No name call warning -->
     <script src="jquery/dist/jquery.slim.min.js"></script>
     <script src="js/init.js"></script>
     <script src="socket.io/socket.io.js"></script>
