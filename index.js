@@ -161,29 +161,23 @@ io.on("connection", function (socket) {
                     socket.emit("join_respond", { status: 0 });
                     check = true;
                 }
-                else { //mod den day roi, mai lam tiep
-                    for (let i = 0; i < roomMember[roomIndex].length; i++) {
-                        if (roomMember[roomIndex][i].localeCompare(socket.username) == 0)//Trung ten
-                        {
-                            socket.emit("server_send", { message: "This username has been taken", type: 2 })
-                            socket.emit("join_respond", { status: 2 })
-                            check = true
-                            break;
-                        }
+                else {
+                    pos = room.roomMember.map(function (e) { return e.name; }).indexOf(self.name);
+                    if (pos != -1) {
+                        socket.emit("server_send", { message: "This username has been taken", type: 2 })
+                        socket.emit("join_respond", { status: 2 })
+                        check = true
                     }
                 }
                 if (check == false) {//Passed the Firewall
                     socket.join(data.room);
-                    userIndex = roomMember[roomIndex].length
-                    roomMember[roomIndex].push(socket.username)
-                    roomSocketID[roomIndex].push(socket.id)
+                    room = building.getRoom(data.room)
+                    room.pushUser(self);
                     socket.emit("join_respond", { status: 1 })
                     if (data.type == 0) {
                         io.to(data.room).emit("server_send", { message: socket.username + " has joined!", type: 2 });
                     }
                     io.to(data.room).emit("group_update", { group: roomMember[roomIndex] });
-                    inGroup = true;
-                    self.roomID = building[roomIndex].getName();
                 }
             } catch (e) {
                 socket.emit("server_send", { message: "Something wrong...", type: 2 });
