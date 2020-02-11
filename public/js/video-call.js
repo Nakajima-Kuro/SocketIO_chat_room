@@ -14,11 +14,17 @@ const peer = new Peer({
 });
 
 function callInit(username) {
-  isBusy = true;
-  $('#calling-status').removeClass('text-danger text-success').addClass('text-info glow').text('Calling...')
-  navigator.mediaDevices.getUserMedia(mediaStreamConstraints)
-    .then(gotLocalMediaStream).catch(handleLocalMediaStreamError)
-    .then(socket.emit("request_peer_id", { username: username }))
+  if ($("#username").val() != "") {
+    isBusy = true;
+    $('#calling-status').removeClass('text-danger text-success').addClass('text-info glow').text('Calling...')
+    navigator.mediaDevices.getUserMedia(mediaStreamConstraints)
+      .then(gotLocalMediaStream).catch(handleLocalMediaStreamError)
+      .then(socket.emit("request_peer_id", { username: username }))
+    $("#call-window").modal()
+  }
+  else {
+    $("#call-no-name").modal();
+  }
 }
 
 socket.on("get_peer_id", function (data) {

@@ -7,28 +7,29 @@ class Building {
     }
     getRoom(roomName) {
         for (let i = 0; i < this.roomList.length; i++) {
-            if (roomName == this.roomList[i].getName()) {
+            if (roomName == this.roomList[i].name) {
                 return this.roomList[i];
             }
         }
     }
     popUser(username, roomName) {
         for (let i = 0; i < this.roomList.length; i++) {
-            if (roomName == this.roomList[i].getName()) {
+            if (roomName == this.roomList[i].name) {
                 if (this.roomList[i].getPopulation() == 1 && i != 0) {//if alone and room name is not "Public"
                     this.roomList.splice(i, 1)
+                    return 1;
                 }
                 else {
                     this.roomList[i].popUser(username)
+                    return 0;
                 }
-                break;
             }
         }
     }
     getRoomList() {
-        var roomList = [];
-        roomList.forEach(i => roomList.push({ roomName: i.getName(), roomPopulation: i.getPopulation() }))
-        return roomList;
+        var roomListSimple = [];
+        this.roomList.forEach(i => roomListSimple.push({ roomName: i.name, roomPopulation: i.getPopulation() }))
+        return roomListSimple;
     }
 }
 class Room {
@@ -46,7 +47,7 @@ class Room {
     popUser(username) {//dung building.popUser instead
         try {
             for (let i = 0; i < this.roomMember.length; i++) {
-                if (username == this.roomMember[i].getName()) {
+                if (username == this.roomMember[i].name) {
                     this.roomMember.splice(i, 1);
                     break;
                 }
@@ -61,7 +62,7 @@ class Room {
             return this.roomMember[index];
         }
         else {
-            return 0
+            return -1
         }
     }
 }
@@ -98,15 +99,15 @@ io.on("connection", function (socket) {
     //Init
     var self = new User("Anonymous", socket.id)
     var room = building.getRoom("Public");
-    socket.join("Public")
-
+    socket.join("Public");
+    room.pushUser(self)
+    io.to(room.name).emit("group_update", { group: room.roomMember });
     //server lắng nghe dữ liệu từ client
 
     //Update room list
     socket.on("room_update", function () {
         // console.log("got room update request");
-        var roomList = building.getRoomList;
-        io.emit("room_update", { roomList: roomList })
+        io.emit("room_update", { roomList: building.getRoomList() })
     });
 
     //Message convention:
@@ -116,28 +117,35 @@ io.on("connection", function (socket) {
     //4: warning
     socket.on("send_message", function (data) {
         //sau khi lắng nghe dữ liệu, server phát lại dữ liệu này đến các client khác
-        socket.broadcast.to(room.name).emit('server_send', { message: '<div class="text-info mr-1">' + socket.username + ": </div>" + data.message, type: 1 });
+        socket.broadcast.to(room.name).emit('server_send', { message: '<div class="text-info mr-1">' + self.name + ": </div>" + data.message, type: 1 });
     });
     socket.on("send_warning", function (data) {
         socket.emit('server_send', { message: data.message, type: 4 })
     })
     socket.on("is_typing", function () {
-        socket.broadcast.to(room.name).emit('server_send', { message: '<div class="text-primary mr-1">' + socket.username + " is typing...</div>", type: 3, username: socket.username });
+        socket.broadcast.to(room.name).emit('server_send', { message: '<div class="text-primary mr-1">' + self.name + " is typing...</div>", type: 3, username: self.name });
     });
     socket.on("no_longer_typing", function () {
-        socket.broadcast.to(room.name).emit('no_longer_typing', { username: socket.username });
+        socket.broadcast.to(room.name).emit('no_longer_typing', { username: self.name });
     });
 
     //Change username
     socket.on("change_username", function (data) {
-        if (self.username != data.username) {
-            if (room.name != "Public") {
-                socket.broadcast.to(room.name).emit("server_send", { message: self.name + " has changed name to " + data.username, type: 2 });
+        try {
+            if (room.getUser(data.username) == -1) {
+                if (room.name != "Public") {
+                    socket.broadcast.to(room.name).emit("server_send", { message: self.name + " has changed name to " + data.username, type: 2 });
+                }
+                self.name = data.username;
+                socket.emit("server_send", { message: "You has changed your name to " + self.name, type: 2 });
                 io.to(room.name).emit("group_update", { group: room.roomMember });
             }
-            self.username = data.username;
+            else {
+                socket.emit("server_send", { message: "There is a person with that name. Please choose another name. ", type: 2 });
+            }
+        } catch (e) {
+            socket.emit("server_send", { message: "Something wrong...", type: 2 });
         }
-        socket.emit("server_send", { message: "You has changed your name to " + data.username, type: 2 });
     })
     socket.on("join", function (data) {
         //0: Join
@@ -145,9 +153,7 @@ io.on("connection", function (socket) {
         //2: Rename
         if (data.type == 1) { //room chua duoc tao (Host)
             // console.log("Host");
-            if (room.name != "Public") {
-                roomChange();
-            }
+            roomChange();
             room = new Room(data.room, data.password);
             building.pushRoom(room);
             room.pushUser(self);
@@ -157,9 +163,6 @@ io.on("connection", function (socket) {
         else {  //Da co nguoi tao room nay
             // console.log("Join");
             try {
-                if (room.name != "") {
-                    roomChange();
-                }
                 var check = false;
                 //Join convention
                 //0: wrong password
@@ -171,7 +174,7 @@ io.on("connection", function (socket) {
                     check = true;
                 }
                 else {
-                    pos = room.roomMember.map(function (e) { return e.name; }).indexOf(self.name);
+                    pos = joinRoom.roomMember.map(function (e) { return e.name; }).indexOf(self.name);
                     if (pos != -1) {
                         socket.emit("server_send", { message: "This username has been taken", type: 2 })
                         socket.emit("join_respond", { status: 2 })
@@ -180,44 +183,51 @@ io.on("connection", function (socket) {
                 }
                 if (check == false) {//Passed the Firewall
                     socket.join(data.room);
-                    room = building.getRoom(data.room)
-                    room.pushUser(self);
+                    roomTemp = building.getRoom(data.room)
+                    roomTemp.pushUser(self);
+                    roomChange();
+                    room = roomTemp;
                     socket.emit("join_respond", { status: 1 })
                     if (data.type == 0) {
-                        io.to(data.room).emit("server_send", { message: socket.username + " has joined!", type: 2 });
+                        io.to(data.room).emit("server_send", { message: self.name + " has joined!", type: 2 });
                     }
-                    io.to(data.room).emit("group_update", { group: roomMember[roomIndex] });
+                    io.to(data.room).emit("group_update", { group: room.roomMember });
                 }
             } catch (e) {
                 socket.emit("server_send", { message: "Something wrong...", type: 2 });
                 console.log(e);
             }
         }
-        console.log(building);
-        console.log(roomMember);
-        console.log(roomSocketID);
+        // console.log(room);
+        // console.log(building.roomList);
     });
     socket.on('request_peer_id', function (data) {
         // console.log("request_recived");
         var callee = room.getUser(data.username);
-        socket.broadcast.to(callee.id).emit("get_peer_id", { socketID: socket.id, username: socket.username })
+        socket.broadcast.to(callee.id).emit("get_peer_id", { socketID: socket.id, username: self.name })
     });
     socket.on('get_peer_id_respone', function (data) {
         // console.log("got the peer ID");
-        socket.broadcast.to(self.id).emit("request_peer_id_respone", { peerID: data.peerID, status: data.status })
-        // console.log("send the peer id to the caller");
+        socket.broadcast.to(data.socketID).emit("request_peer_id_respone", { peerID: data.peerID, status: data.status })
+        // console.log("send the peer id to the caller");        
     });
     socket.on('disconnect', function () {
-        if (fresh == false) {
-            roomChange();
-        }
+        roomChange();
     });
     socket.on('change_room', function () {
         roomChange();
     });
     function roomChange() {
+        if (room.name != "Public") {
+            socket.broadcast.to(room.name).emit("server_send", { message: self.name + " has left", type: 2 })
+        }
         socket.leave(room.name)
-        building.popUser(socket.username, room.name)
+        var i = building.popUser(self.name, room.name)
+        if(i == 1){
+            io.emit("room_update", { roomList: building.getRoomList() })
+        }
+        io.to(room.name).emit("group_update", { group: room.roomMember });
+        // console.log(building.roomList);
     };
 });
 
