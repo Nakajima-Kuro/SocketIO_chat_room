@@ -55,6 +55,15 @@ class Room {
             console.log("error");
         }
     }
+    getUser(username) {
+        var index = this.roomMember.map(function (e) { return e.name }).indexOf(username)
+        if (index != -1) {
+            return this.roomMember[index];
+        }
+        else {
+            return 0
+        }
+    }
 }
 class User {
     constructor(name, id) {
@@ -190,19 +199,12 @@ io.on("connection", function (socket) {
     });
     socket.on('request_peer_id', function (data) {
         // console.log("request_recived");
-        fresh = false;
-        for (var i = 0; i < roomMember[roomIndex].length; i++) {
-            if (roomMember[roomIndex][i].localeCompare(data.username) == 0)//Trung ten
-            {
-                socket.broadcast.to(roomSocketID[roomIndex][i]).emit("get_peer_id", { socketID: socket.id, username: socket.username })
-                // console.log("asking for peer ID");
-            }
-        }
+        var callee = room.getUser(data.username);
+        socket.broadcast.to(callee.id).emit("get_peer_id", { socketID: socket.id, username: socket.username })
     });
     socket.on('get_peer_id_respone', function (data) {
-        fresh = false;
         // console.log("got the peer ID");
-        socket.broadcast.to(data.socketID).emit("request_peer_id_respone", { peerID: data.peerID, status: data.status })
+        socket.broadcast.to(self.id).emit("request_peer_id_respone", { peerID: data.peerID, status: data.status })
         // console.log("send the peer id to the caller");
     });
     socket.on('disconnect', function () {
@@ -212,11 +214,11 @@ io.on("connection", function (socket) {
     });
     socket.on('change_room', function () {
         roomChange();
-    })
+    });
     function roomChange() {
         socket.leave(room.name)
         building.popUser(socket.username, room.name)
-    }
+    };
 });
 
 // create route, display view
