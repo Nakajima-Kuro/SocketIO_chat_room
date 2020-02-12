@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="css/video.css">
     <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 
 <body class="container">
@@ -38,15 +39,28 @@
                 <div>Chat Section</div>
                 <div id="room-iddisplay">Room Public</div>
             </div>
-            <div class="card-body" style="height: 25rem; padding-bottom: 0px !important;" id="chat-card">
-                <table class="table table-sm" id="chat-table" style="margin-bottom: 0px !important;">
-                    <tbody id="chat-content">
+            <div class="card-body" style="height: 25rem; padding: 0px !important;" id="chat-card">
+                <table class="table table-sm table-borderless" id="chat-table" style="margin-bottom: 0px !important;">
+                    <tbody id="chat-content" class="mr-3">
                         <!-- Chat content in here -->
                     </tbody>
                 </table>
             </div>
             <div class="card-footer d-flex justify-content-end row" style="flex-wrap: nowrap;">
-                <input class="form-control mr-3" type="text" id="message" value="">
+                <div class="input-group mr-3">
+                    <div class="input-group-prepend">
+                        <div class="btn-group dropup">
+                            <button type="button" class="btn btn-light dropdown-toggle border" data-toggle="dropdown"
+                                aria-haspopup="true" aria-expanded="false">
+                                <i class="fa fa-smile-o" style="font-size: large;"></i>
+                            </button>
+                            <div class="dropdown-menu bg-light" id="icon-list" style="max-height: 17rem; width: 20rem; overflow: scroll;">
+                                <!-- Emoji list go here -->
+                            </div>
+                        </div>
+                    </div>
+                    <input class="form-control" type="text" id="message" value="">
+                </div>
                 <button class="btn btn-info btn-block text-center" id="send" style="max-width: 100px;">Send</button>
             </div>
         </div>

@@ -37,6 +37,7 @@ class Room {
         this.name = name;//ten phong
         this.password = password;//password
         this.roomMember = new Array();//luu cac user (co dang 1 class User)
+        this.messageList = new Array();//Luu cac doan message vao day
     }
     getPopulation() {
         return this.roomMember.length;
@@ -64,6 +65,10 @@ class Room {
         else {
             return -1
         }
+    }
+    addMessage(username, message) {
+        this.messageList.push({ username: username, message: message })
+        // console.log(this.messageList);
     }
 }
 class User {
@@ -117,7 +122,10 @@ io.on("connection", function (socket) {
     //4: warning
     socket.on("send_message", function (data) {
         //sau khi lắng nghe dữ liệu, server phát lại dữ liệu này đến các client khác
-        socket.broadcast.to(room.name).emit('server_send', { message: '<div class="text-info mr-1">' + self.name + ": </div>" + data.message, type: 1 });
+        if(room.name != "Public"){
+            room.addMessage(self.name, data.message)
+        }
+        socket.broadcast.to(room.name).emit('server_send', { message: data.message, username: self.name, type: 1 });
     });
     socket.on("send_warning", function (data) {
         socket.emit('server_send', { message: data.message, type: 4 })
@@ -187,7 +195,7 @@ io.on("connection", function (socket) {
                     roomTemp.pushUser(self);
                     roomChange();
                     room = roomTemp;
-                    socket.emit("join_respond", { status: 1 })
+                    socket.emit("join_respond", { status: 1, messageList: room.messageList })
                     if (data.type == 0) {
                         io.to(data.room).emit("server_send", { message: self.name + " has joined!", type: 2 });
                     }
@@ -223,7 +231,7 @@ io.on("connection", function (socket) {
         }
         socket.leave(room.name)
         var i = building.popUser(self.name, room.name)
-        if(i == 1){
+        if (i == 1) {
             io.emit("room_update", { roomList: building.getRoomList() })
         }
         io.to(room.name).emit("group_update", { group: room.roomMember });

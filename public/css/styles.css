@@ -63,6 +63,27 @@ input::-webkit-calendar-picker-indicator {
   overflow-y: initial !important
 }
 
+#chat-content {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.cell-break {
+  word-break: break-all;
+}
+
+.chat-name{
+  width: 6rem;
+}
+
+.chat-line{
+  height: 3.2rem;
+}
+
+.dropdown-toggle::after {
+  display: none !important;
+}
+
 ::-webkit-scrollbar {
   display: none;
 }

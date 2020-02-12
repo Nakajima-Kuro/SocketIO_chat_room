@@ -8,8 +8,10 @@ var password = "";
 //client nhận dữ liệu từ server
 socket.on("server_send", function (data) {
     var id = data.username + "-is-typing";
+    lastChat = false;
     if (data.type == 1) {
-        newrow = '<tr style="height: 3.2rem;"><td class="d-flex">' + data.message + "</td></tr>";
+        var newrow = '<tr class="chat-line"><td class="text-break text-right align-middle" colspan="2">' + data.message + '</td>'
+            + '<td class="text-info chat-name text-right align-middle">' + data.username + '</td></tr>'
         if (!$(".is-typing").length)
             $("#chat-content").append(newrow);
         else {
@@ -17,7 +19,7 @@ socket.on("server_send", function (data) {
         }
     }
     else if (data.type == 2) {
-        newrow = '<tr style="height: 3.2rem;"><td class="d-flex"><div class="text-success">' + data.message + "</div></td></tr>"
+        var newrow = '<tr class="chat-line"><td class="text-success" colspan="3">' + data.message + "</td></tr>"
         if (!$(".is-typing").length)
             $("#chat-content").append(newrow);
         else {
@@ -25,10 +27,10 @@ socket.on("server_send", function (data) {
         }
     }
     else if (data.type == 3 && !$("#" + id).length) {
-        $("#chat-content").append('<tr class="is-typing" style="height: 3.2rem;" id = "' + id + '"><td class="d-flex">' + data.message + "</td></tr>");
+        $("#chat-content").append('<tr class="is-typing chat-line" id = "' + id + '"><td class="d-flex" colspan="3">' + data.message + "</td></tr>");
     }
     else if (data.type == 4) {
-        newrow = '<tr style="height: 3.2rem;"><td class="d-flex"><div class="text-warning">' + data.message + "</div></td></tr>"
+        newrow = '<tr class="chat-line"><td class="d-flex text-warning" colspan="3">' + data.message + "</td></tr>"
         if (!$(".is-typing").length)
             $("#chat-content").append(newrow);
         else {
@@ -85,6 +87,11 @@ socket.on("join_respond", function (data) {
             room = $("#join-room-id").val();
             password = $("#join-room-password").val();
             document.getElementById('room-iddisplay').innerHTML = "Room " + room;
+            data.messageList.forEach(function (message) {
+                newrow = '<tr style="height: 3.2rem;" class="mw-100"><td class="d-flex"><div class="text-info mr-1">' + message.username
+                    + ": </div>" + message.message + "</td></tr>";
+                $("#chat-content").append(newrow);
+            })
         }
         roomCheck = true
         $("#join-modal").modal('hide')
@@ -204,8 +211,8 @@ $(document).ready(function () {
 
 function sendMessage() {
     socket.emit("send_message", { message: $("#message").val() })
-    var newrow = '<tr style="height: 3.2rem;"><td class="d-flex">' + '<div class="text-info mr-1">'
-        + username + ": </div>" + $("#message").val() + "</td></tr>"
+    var newrow = '<tr class="chat-line"><td class="text-info chat-name align-middle">' + username + '</td>' +
+        '<td class="text-break align-middle" colspan="2">' + $("#message").val() + "</td></tr>"
     if (!$(".is-typing").length)
         $("#chat-content").append(newrow);
     else {
@@ -240,4 +247,8 @@ function roomFilter() {
             }
         }
     }
+}
+
+function addIcon(emoji){
+    $("#message").val($("#message").val() + $(emoji).html()).focus();
 }
