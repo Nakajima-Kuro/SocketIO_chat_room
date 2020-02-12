@@ -48,7 +48,7 @@ input::-webkit-calendar-picker-indicator {
     position: absolute;
     height: 87%;
   }
-  .call-modal-content{
+  .call-modal-content {
     height: 92% !important;
   }
 }
@@ -72,16 +72,21 @@ input::-webkit-calendar-picker-indicator {
   word-break: break-all;
 }
 
-.chat-name{
+.chat-name {
   width: 6rem;
 }
 
-.chat-line{
+.chat-line {
   height: 3.2rem;
 }
 
 .dropdown-toggle::after {
   display: none !important;
+}
+
+#message:focus, #message:active {
+  outline: none !important;
+  box-shadow: none;
 }
 
 ::-webkit-scrollbar {
