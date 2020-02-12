@@ -11,7 +11,7 @@ socket.on("server_send", function (data) {
     lastChat = false;
     if (data.type == 1) {
         var newrow = '<tr class="chat-line"><td class="text-break text-right align-middle" colspan="2">' + data.message + '</td>'
-            + '<td class="text-info chat-name text-right align-middle">' + data.username + '</td></tr>'
+            + '<td class="text-info chat-name text-center align-middle">' + data.username + '</td></tr>'
         if (!$(".is-typing").length)
             $("#chat-content").append(newrow);
         else {
@@ -19,7 +19,7 @@ socket.on("server_send", function (data) {
         }
     }
     else if (data.type == 2) {
-        var newrow = '<tr class="chat-line"><td class="text-success" colspan="3">' + data.message + "</td></tr>"
+        var newrow = '<tr class="chat-line"><td class="text-success align-middle pl-3" colspan="3">' + data.message + "</td></tr>"
         if (!$(".is-typing").length)
             $("#chat-content").append(newrow);
         else {
@@ -27,10 +27,10 @@ socket.on("server_send", function (data) {
         }
     }
     else if (data.type == 3 && !$("#" + id).length) {
-        $("#chat-content").append('<tr class="is-typing chat-line" id = "' + id + '"><td class="d-flex" colspan="3">' + data.message + "</td></tr>");
+        $("#chat-content").append('<tr class="is-typing chat-line" id = "' + id + '"><td class="align-middle" colspan="3">' + data.message + "</td></tr>");
     }
     else if (data.type == 4) {
-        newrow = '<tr class="chat-line"><td class="d-flex text-warning" colspan="3">' + data.message + "</td></tr>"
+        newrow = '<tr class="chat-line"><td class="align-middle text-warning" colspan="3">' + data.message + "</td></tr>"
         if (!$(".is-typing").length)
             $("#chat-content").append(newrow);
         else {
@@ -120,8 +120,36 @@ $(document).ready(function () {
     $('#changename').click(function () {
         if ($("#username").val() != "") {
             if ($("#username").val() != username) {
-                socket.emit("change_username", { username: $("#username").val() })
-                username = $("#username").val()
+                // Declare variables
+                var table, tr, td, txtValue, check = false;
+                table = document.getElementById("room-member");
+                tr = table.getElementsByTagName("tr");
+
+                // Loop through all table rows, and hide those who don't match the search query
+                for (let i = 0; i < tr.length; i++) {
+                    td = tr[i].getElementsByTagName("td")[0];
+                    if (td) {
+                        txtValue = td.textContent || td.innerText;
+                        // console.log(txtValue);
+                        // console.log($("#username").val());
+                        if (txtValue.localeCompare($("#username").val()) == 0) {
+                            check = true;
+                            break;
+                        }
+                    }
+                }
+                if (check == false) {
+                    username = $("#username").val()
+                    socket.emit("change_username", { username: $("#username").val() })
+                }
+                else {
+                    var newrow = '<tr class="chat-line"><td class="text-success align-middle pl-3" colspan="3">There is a person with that name. Please choose another name.</td></tr>'
+                    if (!$(".is-typing").length)
+                        $("#chat-content").append(newrow);
+                    else {
+                        $(".is-typing").first().before(newrow);
+                    }
+                }
             }
         }
         else {
@@ -211,7 +239,7 @@ $(document).ready(function () {
 
 function sendMessage() {
     socket.emit("send_message", { message: $("#message").val() })
-    var newrow = '<tr class="chat-line"><td class="text-info chat-name align-middle">' + username + '</td>' +
+    var newrow = '<tr class="chat-line"><td class="text-info chat-name text-center align-middle">' + username + '</td>' +
         '<td class="text-break align-middle" colspan="2">' + $("#message").val() + "</td></tr>"
     if (!$(".is-typing").length)
         $("#chat-content").append(newrow);
@@ -249,6 +277,6 @@ function roomFilter() {
     }
 }
 
-function addIcon(emoji){
+function addIcon(emoji) {
     $("#message").val($("#message").val() + $(emoji).html()).focus();
 }

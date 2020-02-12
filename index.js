@@ -139,18 +139,13 @@ io.on("connection", function (socket) {
 
     //Change username
     socket.on("change_username", function (data) {
-        try {
-            if (room.getUser(data.username) == -1) {
-                if (room.name != "Public") {
-                    socket.broadcast.to(room.name).emit("server_send", { message: self.name + " has changed name to " + data.username, type: 2 });
-                }
-                self.name = data.username;
-                socket.emit("server_send", { message: "You has changed your name to " + self.name, type: 2 });
-                io.to(room.name).emit("group_update", { group: room.roomMember });
+        try {//viec check trung ten da duoc kiem tra phia client de giam ganh nang cho server
+            if (room.name != "Public") {
+                socket.broadcast.to(room.name).emit("server_send", { message: self.name + " has changed name to " + data.username, type: 2 });
             }
-            else {
-                socket.emit("server_send", { message: "There is a person with that name. Please choose another name. ", type: 2 });
-            }
+            self.name = data.username;
+            socket.emit("server_send", { message: "You has changed your name to " + self.name, type: 2 });
+            io.to(room.name).emit("group_update", { group: room.roomMember });
         } catch (e) {
             socket.emit("server_send", { message: "Something wrong...", type: 2 });
         }
@@ -183,7 +178,7 @@ io.on("connection", function (socket) {
                 }
                 else {
                     pos = joinRoom.roomMember.map(function (e) { return e.name; }).indexOf(self.name);
-                    if (pos != -1) {
+                    if (pos != -1) {//da co nguoi voi ten nay
                         socket.emit("server_send", { message: "This username has been taken", type: 2 })
                         socket.emit("join_respond", { status: 2 })
                         check = true
