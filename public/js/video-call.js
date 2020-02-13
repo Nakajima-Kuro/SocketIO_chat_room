@@ -3,7 +3,10 @@
 //1: Connected
 //2: Busy
 
-var isBusy = false
+var hasWebcam = false;
+var isBusy = false;
+var callerID = "";
+
 const mediaStreamConstraints = {
   video: true,
   audio: true
@@ -15,12 +18,16 @@ const peer = new Peer({
 
 function callInit(username) {
   if ($("#username").val() != "") {
-    isBusy = true;
     $('#calling-status').removeClass('text-danger text-success').addClass('text-info glow').text('Calling...')
     navigator.mediaDevices.getUserMedia(mediaStreamConstraints)
       .then(gotLocalMediaStream).catch(handleLocalMediaStreamError)
-      .then(socket.emit("request_peer_id", { username: username }))
-    $("#call-window").modal()
+      .then(function () {
+        if (hasWebcam == true) {
+          isBusy = true;
+          socket.emit("request_peer_id", { username: username })
+          $("#call-window").modal()
+        }
+      })
   }
   else {
     $("#call-no-name").modal();
@@ -29,6 +36,7 @@ function callInit(username) {
 
 socket.on("get_peer_id", function (data) {
   if (isBusy == false) {
+    callerID = data.socketID;
     $('#caller-id').text(data.socketID)
     $('#caller-name').text(data.username)
     $("#call-incomming").modal();
@@ -74,15 +82,30 @@ socket.on("request_peer_id_respone", function (data) {
   }
 })
 
+socket.on("webcam_fail", function () {
+  $('#calling-status').removeClass('text-info text-success glow').addClass('text-danger').text('Error')
+  setTimeout(
+    function () {
+      $('#call-window').modal('hide');
+    }, 1500);
+})
+
 peer.on('call', function (call) {
   $('#calling-status').removeClass('text-info text-danger glow').addClass('text-success').text('Connected')
   navigator.mediaDevices.getUserMedia(mediaStreamConstraints)
     .then(gotLocalMediaStream).catch(handleLocalMediaStreamError)
     .then(function () {
-      call.answer(localStream);
-      call.on('stream', (remoteStream) => {
-        remoteVideo.srcObject = remoteStream
-      });
+      if (hasWebcam == true) {
+        call.answer(localStream);
+        call.on('stream', (remoteStream) => {
+          remoteVideo.srcObject = remoteStream
+        });
+        $('#call-window').modal();
+      }
+      else {
+        socket.emit("webcam_fail", { caller: callerID })
+        isBusy = false
+      }
     })
   call.on('close', function () {
     disconnectedNoti()
@@ -90,10 +113,10 @@ peer.on('call', function (call) {
   $('#end-call-button').click(function () {
     call.close()
   })
-  $('#call-window').modal();
 });
 
 $('#call-window').on('hidden.bs.modal', function () {
+  isBusy = false;
   stopStreamedVideo(localVideo);
 });
 
@@ -136,6 +159,7 @@ let localStream;
 
 // Handles success by adding the MediaStream to the video element.
 function gotLocalMediaStream(mediaStream) {
+  hasWebcam = true;
   localStream = mediaStream;
   localVideo.srcObject = mediaStream;
 }
@@ -143,4 +167,6 @@ function gotLocalMediaStream(mediaStream) {
 // Handles error by logging a message to the console with the error message.
 function handleLocalMediaStreamError(error) {
   console.log('navigator.getUserMedia error: ', error);
+  alert("There is something wrong with you webcam\n" + error)
+  hasWebcam = false;
 }

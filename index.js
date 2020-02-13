@@ -12,7 +12,7 @@ class Building {
             }
         }
     }
-    popUser(username, roomName) {
+    popUser(userID, roomName) {
         for (let i = 0; i < this.roomList.length; i++) {
             if (roomName == this.roomList[i].name) {
                 if (this.roomList[i].getPopulation() == 1 && i != 0) {//if alone and room name is not "Public"
@@ -20,7 +20,7 @@ class Building {
                     return 1;
                 }
                 else {
-                    this.roomList[i].popUser(username)
+                    this.roomList[i].popUser(userID)
                     return 0;
                 }
             }
@@ -45,10 +45,10 @@ class Room {
     pushUser(user) {
         this.roomMember.push(user);
     }
-    popUser(username) {//dung building.popUser instead
+    popUser(userID) {//dung building.popUser instead
         try {
             for (let i = 0; i < this.roomMember.length; i++) {
-                if (username == this.roomMember[i].name) {
+                if (userID == this.roomMember[i].id) {
                     this.roomMember.splice(i, 1);
                     break;
                 }
@@ -207,6 +207,7 @@ io.on("connection", function (socket) {
     socket.on('request_peer_id', function (data) {
         // console.log("request_recived");
         var callee = room.getUser(data.username);
+        // console.log(callee);
         socket.broadcast.to(callee.id).emit("get_peer_id", { socketID: socket.id, username: self.name })
     });
     socket.on('get_peer_id_respone', function (data) {
@@ -214,6 +215,9 @@ io.on("connection", function (socket) {
         socket.broadcast.to(data.socketID).emit("request_peer_id_respone", { peerID: data.peerID, status: data.status })
         // console.log("send the peer id to the caller");        
     });
+    socket.on('webcam_fail', function(data){
+        socket.broadcast.to(data.caller).emit("webcam_fail")
+    })
     socket.on('disconnect', function () {
         roomChange();
     });
@@ -225,7 +229,7 @@ io.on("connection", function (socket) {
             socket.broadcast.to(room.name).emit("server_send", { message: self.name + " has left", type: 2 })
         }
         socket.leave(room.name)
-        var i = building.popUser(self.name, room.name)
+        var i = building.popUser(self.id, room.name)
         if (i == 1) {
             io.emit("room_update", { roomList: building.getRoomList() })
         }

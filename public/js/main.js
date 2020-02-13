@@ -43,13 +43,13 @@ socket.on("group_update", function (data) {
     $("#member-table").find('tr').remove();
     data.group.forEach(function (member) {
         if (member.name == username || member.name == "Anonymous") {
-            $("#room-member").prepend('<tr style="height: 3.2rem;"><td class="text-info" style="max-width: 190px;">' + member.name +
+            $("#room-member").prepend('<tr style="height: 3.2rem;"><td class="text-info align-middle" style="max-width: 190px;">' + member.name +
                 '</td><td style="width: 45px;"></td></tr>');
         }
         else {
-            $("#room-member").append('<tr style="height: 3.2rem;"><td class="text-info" style="max-width: 190px;">' + member.name +
-                '</td><td style="width: 45px;"><button type="button" id="' + member.name +
-                '" onclick="callInit(this.id)" class="btn btn-sm btn-outline-info btn-block call">Call</button></td></tr>');
+            $("#room-member").append('<tr style="height: 3.2rem;"><td class="text-info align-middle" style="max-width: 190px;">' + member.name +
+                '</td><td style="width: 45px;" class="align-middle"><button type="button" id="' + member.name +
+                '" onclick="callInit(this.id)" class="btn btn-sm btn-outline-info btn-block call"><i class="fa fa-video-camera" aria-hidden="true"></i></button></td></tr>');
         }
     })
     var numberOfPeople = data.group.length;
@@ -143,12 +143,8 @@ $(document).ready(function () {
                     socket.emit("change_username", { username: $("#username").val() })
                 }
                 else {
-                    var newrow = '<tr class="chat-line"><td class="text-success align-middle pl-3" colspan="3">There is a person with that name. Please choose another name.</td></tr>'
-                    if (!$(".is-typing").length)
-                        $("#chat-content").append(newrow);
-                    else {
-                        $(".is-typing").first().before(newrow);
-                    }
+                    var warning = "There is a person with that name. Please choose another name."
+                    selfWarning(warning)
                 }
             }
         }
@@ -238,16 +234,19 @@ $(document).ready(function () {
 });
 
 function sendMessage() {
-    socket.emit("send_message", { message: $("#message").val() })
-    var newrow = '<tr class="chat-line"><td class="text-info chat-name text-center align-middle">' + username + '</td>' +
-        '<td class="text-break align-middle" colspan="2">' + $("#message").val() + "</td></tr>"
-    if (!$(".is-typing").length)
-        $("#chat-content").append(newrow);
-    else {
-        $(".is-typing").first().before(newrow);
+    if ($("#message").val() != "") {
+        socket.emit("send_message", { message: $("#message").val() })
+        var newrow = '<tr class="chat-line"><td class="text-info chat-name text-center align-middle">' + username + '</td>' +
+            '<td class="text-break align-middle" colspan="2">' + $("#message").val() + "</td></tr>"
+        //neu co dong Somebody + is typing => chen message len tren dong do
+        if (!$(".is-typing").length)
+            $("#chat-content").append(newrow);
+        else {
+            $(".is-typing").first().before(newrow);
+        }
+        $("#message").val('');
+        $("#chat-card").scrollTop($("#chat-table").height());
     }
-    $("#message").val('');
-    $("#chat-card").scrollTop($("#chat-table").height());
 }
 
 function joinRoomInit(room) {
@@ -279,4 +278,13 @@ function roomFilter() {
 
 function addIcon(emoji) {
     $("#message").val($("#message").val() + $(emoji).html()).focus();
+}
+
+function selfWarning(message) {
+    var newrow = '<tr class="chat-line"><td class="text-success align-middle pl-3" colspan="3">' + message + '</td></tr>'
+    if (!$(".is-typing").length)
+        $("#chat-content").append(newrow);
+    else {
+        $(".is-typing").first().before(newrow);
+    }
 }
