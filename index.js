@@ -6,23 +6,21 @@ class Building {
         this.roomList.push(room)
     }
     getRoom(roomName) {
-        for (let i = 0; i < this.roomList.length; i++) {
-            if (roomName == this.roomList[i].name) {
-                return this.roomList[i];
-            }
+        var index = this.roomList.map(function (e) { return e.name }).indexOf(roomName)
+        if (index != -1) {
+            return this.roomList[index];
         }
     }
     popUser(userID, roomName) {
-        for (let i = 0; i < this.roomList.length; i++) {
-            if (roomName == this.roomList[i].name) {
-                if (this.roomList[i].getPopulation() == 1 && i != 0) {//if alone and room name is not "Public"
-                    this.roomList.splice(i, 1)
-                    return 1;
-                }
-                else {
-                    this.roomList[i].popUser(userID)
-                    return 0;
-                }
+        var index = this.roomList.map(function (e) { return e.name }).indexOf(roomName)
+        if (index != -1) {
+            if (this.roomList[index].getPopulation() == 1 && index != 0) {//if alone and room name is not "Public"
+                this.roomList.splice(index, 1)
+                return 1;
+            }
+            else {
+                this.roomList[index].popUser(userID)
+                return 0;
             }
         }
     }
@@ -122,7 +120,7 @@ io.on("connection", function (socket) {
     //4: warning
     socket.on("send_message", function (data) {
         //sau khi lắng nghe dữ liệu, server phát lại dữ liệu này đến các client khác
-        if(room.name != "Public"){
+        if (room.name != "Public") {
             room.addMessage(self.name, data.message)
         }
         socket.broadcast.to(room.name).emit('server_send', { message: data.message, username: self.name, type: 1 });
@@ -215,7 +213,7 @@ io.on("connection", function (socket) {
         socket.broadcast.to(data.socketID).emit("request_peer_id_respone", { peerID: data.peerID, status: data.status })
         // console.log("send the peer id to the caller");        
     });
-    socket.on('webcam_fail', function(data){
+    socket.on('webcam_fail', function (data) {
         socket.broadcast.to(data.caller).emit("webcam_fail")
     })
     socket.on('disconnect', function () {

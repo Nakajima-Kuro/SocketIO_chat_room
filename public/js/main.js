@@ -204,6 +204,7 @@ $(document).ready(function () {
                 $("#host-modal").modal('hide')
                 $("#host-spinner").hide();
                 $('#host-room-id').val("")
+                $("#host-room-password").val("")
             }
         }
     })
