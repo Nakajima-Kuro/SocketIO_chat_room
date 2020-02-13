@@ -45,11 +45,9 @@ class Room {
     }
     popUser(userID) {//dung building.popUser instead
         try {
-            for (let i = 0; i < this.roomMember.length; i++) {
-                if (userID == this.roomMember[i].id) {
-                    this.roomMember.splice(i, 1);
-                    break;
-                }
+            var index = this.roomMember.map(function (e) { return e.id }).indexOf(userID)
+            if (index != -1) {
+                this.roomMember.splice(index, 1);
             }
         } catch (e) {
             console.log("error");
