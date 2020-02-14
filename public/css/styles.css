@@ -93,6 +93,11 @@ input::-webkit-calendar-picker-indicator {
   box-shadow: none;
 }
 
+.main-chat-group{
+  height: calc(100% - 140px);
+  min-height: 300px;
+}
+
 ::-webkit-scrollbar {
   display: none;
 }
