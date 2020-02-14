@@ -54,7 +54,8 @@
                                 aria-haspopup="true" aria-expanded="false">
                                 <i class="fa fa-smile-o" style="font-size: large;"></i>
                             </button>
-                            <div class="dropdown-menu bg-light" id="icon-list" style="max-height: 17rem; width: 20rem; overflow: scroll;">
+                            <div class="dropdown-menu bg-light" id="icon-list"
+                                style="max-height: 17rem; width: 20rem; overflow: scroll;">
                                 <!-- Emoji list go here -->
                             </div>
                         </div>
@@ -304,6 +305,30 @@
         </div>
     </div>
     <!-- //No name call warning -->
+    <!-- Being kicked modal -->
+    <div class="modal bd-example-modal-md fade" id="kicked-modal" tabindex="-1" role="dialog"
+        aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content container-fluid">
+                <div class="modal-header">
+                    <h5 class="modal-title">You have been kicked</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <h6>You have been kicked by <span id="kicker" class="text-info"></span></h6>
+                </div>
+                <div class="modal-footer row">
+                    <div class="col-sm-4">
+                        <button type="button" class="btn btn-secondary btn-block" data-dismiss="modal"
+                            data-target="#join-host-modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- //Being kicked modal -->
     <script src="jquery/dist/jquery.slim.min.js"></script>
     <script src="js/init.js"></script>
     <script src="socket.io/socket.io.js"></script>

@@ -200,6 +200,14 @@ io.on("connection", function (socket) {
         // console.log(room);
         // console.log(building.roomList);
     });
+    socket.on('kick_user', function(data){
+        if(room.name == "Public"){
+            socket.emit("server_send", { message: "You can't kick people in Public room", type: 4 });
+        }
+        else{
+            socket.broadcast.to(room.getUser(data.username).id).emit("kick_user", { kicker: self.name })
+        }
+    })
     socket.on('request_peer_id', function (data) {
         // console.log("request_recived");
         var callee = room.getUser(data.username);
