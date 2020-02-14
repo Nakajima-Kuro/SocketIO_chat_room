@@ -31,11 +31,12 @@ class Building {
     }
 }
 class Room {
-    constructor(name, password) {
+    constructor(name, password, admin) {
         this.name = name;//ten phong
         this.password = password;//password
         this.roomMember = new Array();//luu cac user (co dang 1 class User)
         this.messageList = new Array();//Luu cac doan message vao day
+        this.admin = admin
     }
     getPopulation() {
         return this.roomMember.length;
@@ -153,11 +154,11 @@ io.on("connection", function (socket) {
         if (data.type == 1) { //room chua duoc tao (Host)
             // console.log("Host");
             roomChange();
-            room = new Room(data.room, data.password);
+            room = new Room(data.room, data.password, self);
             building.pushRoom(room);
             room.pushUser(self);
             socket.join(data.room);
-            io.to(data.room).emit("group_update", { group: room.roomMember });
+            io.to(data.room).emit("group_update", { group: room.roomMember, admin: room.admin });
         }
         else {  //Da co nguoi tao room nay
             // console.log("Join");
@@ -190,7 +191,7 @@ io.on("connection", function (socket) {
                     if (data.type == 0) {
                         io.to(data.room).emit("server_send", { message: self.name + " has joined!", type: 2 });
                     }
-                    io.to(data.room).emit("group_update", { group: room.roomMember });
+                    io.to(data.room).emit("group_update", { group: room.roomMember, admin: room.admin });
                 }
             } catch (e) {
                 socket.emit("server_send", { message: "Something wrong...", type: 2 });

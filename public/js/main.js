@@ -3,7 +3,7 @@ var username = "Anonymous";
 var timeout = undefined;
 var existRoom = new Array();
 var roomCheck = false;
-var room = "";
+var room = "Public";
 var password = "";
 //client nhận dữ liệu từ server
 socket.on("server_send", function (data) {
@@ -42,20 +42,37 @@ socket.on("server_send", function (data) {
 });
 socket.on("group_update", function (data) {
     $("#member-table").find('tr').remove();
-    data.group.forEach(function (member) {
-        if (member.name == username || member.name == "Anonymous") {
-            $("#room-member").prepend('<tr style="height: 3.2rem;"><td class="text-info align-middle" style="max-width: 190px;">' + member.name +
-                '</td><td style="width: 45px;"></td></tr>');
-        }
-        else {
-            $("#room-member").append('<tr style="height: 3.2rem;"><td class="text-info align-middle" style="max-width: 190px;">' + member.name +
-                '</td><td style="width: 45px;" class="align-middle">' +
-                '<div class="btn-group" role="group">' +
-                '<button type="button" id="' + member.name + '" onclick="callInit(this.id)" class="btn btn-sm btn-outline-info call"><i class="fa fa-video-camera" aria-hidden="true"></i></button>' +
-                '<button type="button" id="' + member.name + '" onclick="kickInit(this.id)" class="btn btn-sm btn-outline-danger"><i class="fa fa-times" aria-hidden="true"></i></button>' +
-                '</div></td></tr>');
-        }
-    })
+    if(room != "Public" && data.admin.name == username){
+        data.group.forEach(function (member) {
+            if (member.name == username || member.name == "Anonymous") {
+                $("#room-member").prepend('<tr style="height: 3.2rem;"><td class="text-info align-middle" style="max-width: 190px;">' + member.name +
+                    '</td><td style="width: 45px;"></td></tr>');
+            }
+            else {
+                $("#room-member").append('<tr style="height: 3.2rem;"><td class="text-info align-middle" style="max-width: 190px;">' + member.name +
+                    '</td><td style="width: 45px;" class="align-middle">' +
+                    '<div class="btn-group" role="group">' +
+                    '<button type="button" id="' + member.name + '" onclick="callInit(this.id)" class="btn btn-sm btn-outline-info call"><i class="fa fa-video-camera" aria-hidden="true"></i></button>' +
+                    '<button type="button" id="' + member.name + '" onclick="kickInit(this.id)" class="btn btn-sm btn-outline-danger"><i class="fa fa-times" aria-hidden="true"></i></button>' +
+                    '</div></td></tr>');
+            }
+        })
+    }
+    else{
+        data.group.forEach(function (member) {
+            if (member.name == username || member.name == "Anonymous") {
+                $("#room-member").prepend('<tr style="height: 3.2rem;"><td class="text-info align-middle" style="max-width: 190px;">' + member.name +
+                    '</td><td style="width: 45px;"></td></tr>');
+            }
+            else {
+                $("#room-member").append('<tr style="height: 3.2rem;"><td class="text-info align-middle" style="max-width: 190px;">' + member.name +
+                    '</td><td style="width: 45px;" class="align-middle">' +
+                    '<div class="btn-group" role="group">' +
+                    '<button type="button" id="' + member.name + '" onclick="callInit(this.id)" class="btn btn-sm btn-outline-info call"><i class="fa fa-video-camera" aria-hidden="true"></i></button>' +
+                    '</div></td></tr>');
+            }
+        })
+    }
     var numberOfPeople = data.group.length;
     $("#people-number").empty().append(numberOfPeople);
 });
