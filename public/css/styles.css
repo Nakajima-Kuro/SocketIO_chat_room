@@ -53,6 +53,10 @@ input::-webkit-calendar-picker-indicator {
   }
 }
 
+.pointer:hover{
+  cursor: pointer;
+}
+
 .fixed {
   table-layout: fixed;
 }

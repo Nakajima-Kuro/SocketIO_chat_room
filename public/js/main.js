@@ -87,7 +87,7 @@ socket.on("room_update", function (data) {
     existRoom = data.roomList;
     $("#room-list").empty();
     for (let i = 0; i < data.roomList.length; i++) {
-        $('#room-list').append('<tr onclick="joinRoomInit(\'' + data.roomList[i].roomName + '\')" data-toggle="modal" data-target="#join-modal"><th scope="row" width="20%">'
+        $('#room-list').append('<tr class="pointer" onclick="joinRoomInit(\'' + data.roomList[i].roomName + '\')" data-toggle="modal" data-target="#join-modal"><th scope="row" width="20%">'
             + (i + 1) + '</th><td width="55%">' + data.roomList[i].roomName + '</td><td width="25%">' + data.roomList[i].roomPopulation + '</td></tr>')
     }
 })
