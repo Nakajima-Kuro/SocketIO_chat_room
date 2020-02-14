@@ -142,7 +142,7 @@ io.on("connection", function (socket) {
             }
             self.name = data.username;
             socket.emit("server_send", { message: "You has changed your name to " + self.name, type: 2 });
-            io.to(room.name).emit("group_update", { group: room.roomMember });
+            io.to(room.name).emit("group_update", { group: room.roomMember, admin: room.admin });
         } catch (e) {
             socket.emit("server_send", { message: "Something wrong...", type: 2 });
         }
@@ -158,6 +158,7 @@ io.on("connection", function (socket) {
             building.pushRoom(room);
             room.pushUser(self);
             socket.join(data.room);
+            // console.log(room.admin);
             io.to(data.room).emit("group_update", { group: room.roomMember, admin: room.admin });
         }
         else {  //Da co nguoi tao room nay
@@ -203,7 +204,7 @@ io.on("connection", function (socket) {
     });
     socket.on('kick_user', function(data){
         if(room.name == "Public"){
-            socket.emit("server_send", { message: "You can't kick people in Public room", type: 4 });
+            socket.emit("server_send", { message: "So you want to hack, huh? BAM!! 2 steps ahead, ha ha!!!", type: 4 });
         }
         else{
             socket.broadcast.to(room.getUser(data.username).id).emit("kick_user", { kicker: self.name })
@@ -238,7 +239,7 @@ io.on("connection", function (socket) {
         if (i == 1) {
             io.emit("room_update", { roomList: building.getRoomList() })
         }
-        io.to(room.name).emit("group_update", { group: room.roomMember });
+        io.to(room.name).emit("group_update", { group: room.roomMember, admin: room.admin });
         // console.log(building.roomList);
     };
 });
