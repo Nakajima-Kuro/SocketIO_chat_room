@@ -207,7 +207,9 @@ io.on("connection", function (socket) {
             socket.emit("server_send", { message: "So you want to hack, huh? BAM!! 2 steps ahead, ha ha!!!", type: 4 });
         }
         else{
-            socket.broadcast.to(room.getUser(data.username).id).emit("kick_user", { kicker: self.name })
+            var kickee = room.getUser(data.username);
+            io.to(room.name).emit("server_send", { message: kickee.name + " has been kicked by " + self.name, type: 2 })
+            socket.broadcast.to(kickee.id).emit("kick_user", { kicker: self.name })
         }
     })
     socket.on('request_peer_id', function (data) {

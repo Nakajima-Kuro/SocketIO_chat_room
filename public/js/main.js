@@ -120,6 +120,7 @@ socket.on("join_respond", function (data) {
             })
         }
         roomCheck = true
+        $("#join-room-password").val("")
         $("#join-modal").modal('hide')
         $("#room-modal").modal('hide')
         socket.emit("room_update")
