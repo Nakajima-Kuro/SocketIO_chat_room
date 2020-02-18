@@ -1,3 +1,32 @@
+class GroupVideoCall {
+  constructor(peerList) {
+    this.peerList = peerList
+    this.videoNum = 1;
+    this.fresh = true;
+  }
+  deleteVideo(peer) {
+    $("#" + peer).remove();
+    this.videoNum -= 1;
+    if (this.videoNum == 1 && this.fresh == false) {
+      isBusy = false;
+      stopStreamedVideo(localGroupVideo);
+      $("#call-window-group").modal('hide');
+    }
+  }
+  addVideo(peer) {
+    if (!$("#" + peer).length) {
+      if (this.videoNum < 4)
+        $("#group-call-row1").append('<div class="col" id="' + peer + '">' +
+          '<video class="col px-0" autoplay playsinline style="width: 100%;"></video>' +
+          '</div>')
+      else
+        $("#group-call-row2").append('<div class="col" id="' + peer + '">' +
+          '<video class="col px-0" autoplay playsinline style="width: 100%;"></video>' +
+          '</div>')
+      this.videoNum += 1
+    }
+  }
+}
 //convention status:
 //0: Disconnected
 //1: Connected
@@ -6,6 +35,10 @@
 var hasWebcam = false;
 var isBusy = false;
 var callerID = "";
+var callType;
+var groupCall = new GroupVideoCall();
+//1: 1 - 1 call
+//2: group call
 
 const mediaStreamConstraints = {
   video: true,
@@ -14,6 +47,11 @@ const mediaStreamConstraints = {
 
 const peer = new Peer({
   key: 'lwjd5qra8257b9'
+});
+
+peer.on('open', function (id) {
+  socket.emit("init", { peerID: id })
+  console.log(id);
 });
 
 function callInit(username) {
@@ -50,6 +88,7 @@ socket.on("get_peer_id", function (data) {
 function callRespone(status) {
   if (status == 1) {
     isBusy = true;
+    callType = 1;
   }
   socket.emit("get_peer_id_respone", { peerID: peer.id, socketID: $('#caller-id').text(), status: status })
 }
@@ -91,28 +130,46 @@ socket.on("webcam_fail", function () {
 })
 
 peer.on('call', function (call) {
-  $('#calling-status').removeClass('text-info text-danger glow').addClass('text-success').text('Connected')
-  navigator.mediaDevices.getUserMedia(mediaStreamConstraints)
-    .then(gotLocalMediaStream).catch(handleLocalMediaStreamError)
-    .then(function () {
-      if (hasWebcam == true) {
-        call.answer(localStream);
-        call.on('stream', (remoteStream) => {
-          remoteVideo.srcObject = remoteStream
-        });
-        $('#call-window').modal();
-      }
-      else {
-        socket.emit("webcam_fail", { caller: callerID })
-        isBusy = false
-      }
+  if (callType == 1) {
+    $('#calling-status').removeClass('text-info text-danger glow').addClass('text-success').text('Connected')
+    navigator.mediaDevices.getUserMedia(mediaStreamConstraints)
+      .then(gotLocalMediaStream).catch(handleLocalMediaStreamError)
+      .then(function () {
+        if (hasWebcam == true) {
+          call.answer(localStream);
+          call.on('stream', (remoteStream) => {
+            remoteVideo.srcObject = remoteStream
+          });
+          $('#call-window').modal();
+        }
+        else {
+          socket.emit("webcam_fail", { caller: callerID })
+          isBusy = false
+        }
+      })
+    call.on('close', function () {
+      disconnectedNoti()
     })
-  call.on('close', function () {
-    disconnectedNoti()
-  })
-  $('#end-call-button').click(function () {
-    call.close()
-  })
+    $('#end-call-button').click(function () {
+      call.close()
+    })
+  } else {
+    // console.log("got group call");
+    groupCall.fresh = false;
+    call.answer(localStream);
+    groupCall.addVideo(call.peer)
+    const remoteVideo = document.getElementById(call.peer).getElementsByTagName('video')[0]
+    call.on('stream', (remoteStream) => {
+      remoteVideo.srcObject = remoteStream//nhet them video moi vao html
+    });
+    call.on('close', function () {
+      stopStreamedVideo(remoteVideo);
+      groupCall.deleteVideo(call.peer)
+    })
+    $('#end-group-call-button').click(function () {
+      call.close()
+    })
+  }
 });
 
 $('#call-window').on('hidden.bs.modal', function () {
@@ -143,11 +200,13 @@ function busyNoti() {
 function stopStreamedVideo(videoElem) {
   if (videoElem != null) {
     let stream = videoElem.srcObject;
-    let tracks = stream.getTracks();
+    if (stream != null) {
+      let tracks = stream.getTracks();
 
-    tracks.forEach(function (track) {
-      track.stop();
-    });
+      tracks.forEach(function (track) {
+        track.stop();
+      });
+    }
 
     videoElem.srcObject = null;
   }

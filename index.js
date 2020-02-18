@@ -36,7 +36,8 @@ class Room {
         this.password = password;//password
         this.roomMember = new Array();//luu cac user (co dang 1 class User)
         this.messageList = new Array();//Luu cac doan message vao day
-        this.admin = admin
+        this.admin = admin;
+        this.onlineList = [];
     }
     getPopulation() {
         return this.roomMember.length;
@@ -67,9 +68,15 @@ class Room {
         this.messageList.push({ username: username, message: message })
         // console.log(this.messageList);
     }
+    addNewOnlineVideo(peerID) {
+        this.onlineList.push(peerID)
+    }
+    resetOnlineList(onlineList) {
+        this.onlineList = onlineList;
+    }
 }
 class User {
-    constructor(name, id) {
+    constructor(name, id, peerID) {
         this.name = name;
         this.id = id;
     }
@@ -103,7 +110,11 @@ io.on("connection", function (socket) {
     var room = building.getRoom("Public");
     socket.join("Public");
     room.pushUser(self)
-    io.to(room.name).emit("group_update", { group: room.roomMember });
+    groupUpdate();
+    socket.on("init", function (data) {
+        //Init
+        self.peerID = data.peerID;
+    })
     //server lắng nghe dữ liệu từ client
 
     //Update room list
@@ -142,7 +153,7 @@ io.on("connection", function (socket) {
             }
             self.name = data.username;
             socket.emit("server_send", { message: "You has changed your name to " + self.name, type: 2 });
-            io.to(room.name).emit("group_update", { group: room.roomMember, admin: room.admin });
+            groupUpdate();
         } catch (e) {
             socket.emit("server_send", { message: "Something wrong...", type: 2 });
         }
@@ -159,7 +170,7 @@ io.on("connection", function (socket) {
             room.pushUser(self);
             socket.join(data.room);
             // console.log(room.admin);
-            io.to(data.room).emit("group_update", { group: room.roomMember, admin: room.admin });
+            groupUpdate();
         }
         else {  //Da co nguoi tao room nay
             // console.log("Join");
@@ -192,7 +203,7 @@ io.on("connection", function (socket) {
                     if (data.type == 0) {
                         io.to(data.room).emit("server_send", { message: self.name + " has joined!", type: 2 });
                     }
-                    io.to(data.room).emit("group_update", { group: room.roomMember, admin: room.admin });
+                    groupUpdate();
                 }
             } catch (e) {
                 socket.emit("server_send", { message: "Something wrong...", type: 2 });
@@ -202,11 +213,11 @@ io.on("connection", function (socket) {
         // console.log(room);
         // console.log(building.roomList);
     });
-    socket.on('kick_user', function(data){
-        if(room.name == "Public"){
+    socket.on('kick_user', function (data) {
+        if (room.name == "Public") {
             socket.emit("server_send", { message: "So you want to hack, huh? BAM!! 2 steps ahead, ha ha!!!", type: 4 });
         }
-        else{
+        else {
             var kickee = room.getUser(data.username);
             io.to(room.name).emit("server_send", { message: kickee.name + " has been kicked by " + self.name, type: 2 })
             socket.broadcast.to(kickee.id).emit("kick_user", { kicker: self.name })
@@ -223,6 +234,20 @@ io.on("connection", function (socket) {
         socket.broadcast.to(data.socketID).emit("request_peer_id_respone", { peerID: data.peerID, status: data.status })
         // console.log("send the peer id to the caller");        
     });
+    socket.on('group_call_request', function (data) {
+        var peerList = [self.peerID];
+        for (let i = 1; i < data.groupCallMember.length; i++) {
+            peerList.push(room.getUser(data.groupCallMember[i]).peerID);
+        }
+        for (let i = 1; i < data.groupCallMember.length; i++) {
+            socket.broadcast.to(room.getUser(data.groupCallMember[i]).id).emit("group_call_request", { caller: self.name })
+        }
+        socket.broadcast.to(room.name).emit("group_call_online_update", { onlineList: [self.peerID] })
+    })
+    socket.on("group_call_online_update", function (data) {
+        room.onlineList = data.onlineList;
+        socket.broadcast.to(room.name).emit("group_call_online_update", { onlineList: data.onlineList })
+    })
     socket.on('webcam_fail', function (data) {
         socket.broadcast.to(data.caller).emit("webcam_fail")
     })
@@ -241,9 +266,21 @@ io.on("connection", function (socket) {
         if (i == 1) {
             io.emit("room_update", { roomList: building.getRoomList() })
         }
-        io.to(room.name).emit("group_update", { group: room.roomMember, admin: room.admin });
+        groupUpdate();
         // console.log(building.roomList);
     };
+    function groupUpdate() {
+        var memberName = []
+        room.roomMember.forEach(function (member) {
+            memberName.push(member.name)
+        })
+        if (room.name == "Public") {
+            io.to(room.name).emit("group_update", { group: memberName });
+        }
+        else {
+            io.to(room.name).emit("group_update", { group: memberName, admin: room.admin });
+        }
+    }
 });
 
 // create route, display view

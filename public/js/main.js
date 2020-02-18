@@ -4,7 +4,7 @@ var timeout = undefined;
 var existRoom = new Array();
 var roomCheck = false;
 var room = "Public";
-var password = "";
+var roomMember = new Array();
 //client nhận dữ liệu từ server
 socket.on("server_send", function (data) {
     var id = data.username + "-is-typing";
@@ -41,35 +41,46 @@ socket.on("server_send", function (data) {
     $("#chat-card").scrollTop($("#chat-table").height());
 });
 socket.on("group_update", function (data) {
+    roomMember = data.group;
     $("#member-table").find('tr').remove();
-    if(room != "Public" && data.admin.name == username){
+    $("#group-call-member").find('tr').remove();
+    var i = 1;
+    if (room != "Public" && data.admin.name == username) {
         data.group.forEach(function (member) {
-            if (member.name == username || member.name == "Anonymous") {
-                $("#room-member").prepend('<tr style="height: 3.2rem;"><td class="text-info align-middle" style="max-width: 190px;">' + member.name +
+            if (member == username || member == "Anonymous") {
+                $("#room-member").prepend('<tr style="height: 3.2rem;"><td class="text-info align-middle" style="max-width: 190px;">' + member +
                     '</td><td style="width: 45px;"></td></tr>');
             }
             else {
-                $("#room-member").append('<tr style="height: 3.2rem;"><td class="text-info align-middle" style="max-width: 190px;">' + member.name +
+                $("#room-member").append('<tr style="height: 3.2rem;"><td class="text-info align-middle" style="max-width: 190px;">' + member +
                     '</td><td style="width: 45px;" class="align-middle">' +
                     '<div class="btn-group" role="group">' +
-                    '<button type="button" id="' + member.name + '" onclick="callInit(this.id)" class="btn btn-sm btn-outline-info call"><i class="fa fa-video-camera" aria-hidden="true"></i></button>' +
-                    '<button type="button" id="' + member.name + '" onclick="kickInit(this.id)" class="btn btn-sm btn-outline-danger"><i class="fa fa-times" aria-hidden="true"></i></button>' +
+                    '<button type="button" id="' + member + '" onclick="callInit(this.id)" class="btn btn-sm btn-outline-info call"><i class="fa fa-video-camera" aria-hidden="true"></i></button>' +
+                    '<button type="button" id="' + member + '" onclick="kickInit(this.id)" class="btn btn-sm btn-outline-danger"><i class="fa fa-times" aria-hidden="true"></i></button>' +
                     '</div></td></tr>');
+                $("#group-call-member").append('<tr id="group-call-' + member + '" onclick="groupCallPush(' + member + ')">' +
+                    '<td width="15%">' + i + '</td><td class="text-info align-middle user" width="70%">' + member +
+                    '</td><td><i class="fa fa-check text-info" aria-hidden="true" style="display: none;" width="15%"></i></td></tr>');
+                i++;
             }
         })
     }
-    else{
+    else {
         data.group.forEach(function (member) {
-            if (member.name == username || member.name == "Anonymous") {
-                $("#room-member").prepend('<tr style="height: 3.2rem;"><td class="text-info align-middle" style="max-width: 190px;">' + member.name +
+            if (member == username || member == "Anonymous") {
+                $("#room-member").prepend('<tr style="height: 3.2rem;"><td class="text-info align-middle" style="max-width: 190px;">' + member +
                     '</td><td style="width: 45px;"></td></tr>');
             }
             else {
-                $("#room-member").append('<tr style="height: 3.2rem;"><td class="text-info align-middle" style="max-width: 190px;">' + member.name +
+                $("#room-member").append('<tr style="height: 3.2rem;"><td class="text-info align-middle" style="max-width: 190px;">' + member +
                     '</td><td style="width: 45px;" class="align-middle">' +
                     '<div class="btn-group" role="group">' +
-                    '<button type="button" id="' + member.name + '" onclick="callInit(this.id)" class="btn btn-sm btn-outline-info call"><i class="fa fa-video-camera" aria-hidden="true"></i></button>' +
+                    '<button type="button" id="' + member + '" onclick="callInit(this.id)" class="btn btn-sm btn-outline-info call"><i class="fa fa-video-camera" aria-hidden="true"></i></button>' +
                     '</div></td></tr>');
+                $("#group-call-member").append('<tr id="group-call-' + member + '" onclick="groupCallPush(' + member + ')">' +
+                    '<td width="15%">' + i + '</td><td class="text-info align-middle user" width="70%">' + member +
+                    '</td><td><i class="fa fa-check text-info" aria-hidden="true" style="display: none;" width="15%"></i></td></tr>');
+                i++;
             }
         })
     }

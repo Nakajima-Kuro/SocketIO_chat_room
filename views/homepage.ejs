@@ -67,8 +67,10 @@
         </div>
         <div class="card col-xl-3" style="height: 100%;">
             <div class="card-header row d-flex justify-content-between">
-                <div>Room member</div>
-                <div id="people-number"></div>
+                <div><span id="people-number" class="text-info"></span> people</div>
+                <!-- group-call button -->
+                <button type="button" class="btn btn-sm btn-outline-info call" onclick="groupCallHit()">Group Call<i
+                        class="fa fa-video-camera ml-2" aria-hidden="true"></i></button>
             </div>
             <div class="mt-3 overflow-auto" style="height: 100%; overflow-y: scroll;">
                 <table class="table table-sm" id="member-table">
@@ -79,6 +81,7 @@
             </div>
         </div>
     </div>
+    <!-- <button class="btn btn-outline-info btn-block" data-toggle="modal" data-target="#call-window-group">Trigger</button> -->
     <!-- Call Window -->
     <div class="modal bd-example-modal-lg fade" id="call-window" tabindex="-1" role="dialog"
         aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
@@ -109,6 +112,124 @@
         </div>
     </div>
     <!-- //Call Window -->
+    <!-- Group Call Window -->
+    <div class="modal bd-example-modal-xl fade" id="call-window-group" tabindex="-1" role="dialog"
+        aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog modal-xl" role="document">
+            <div class="modal-content call-modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Video Call</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body container-fluid">
+                    <div id="group-call-row1" class="row d-flex justify-content-center">
+                        <div class="col">
+                            <video id="localGroupVideo" autoplay playsinline
+                                style="max-width: 100%; max-height: 100%;"></video>
+                        </div>
+                        <!-- Remote group video -->
+                    </div>
+                    <div id="group-call-row2" class="row d-flex justify-content-center">
+                        <!-- Remote group video -->
+                    </div>
+                </div>
+                <div class="modal-footer d-flex justify-content-end">
+                    <button onclick="stopGroupCall()" type="button" id="end-group-call-button" class="btn btn-info"
+                        data-dismiss="modal">End
+                        Call</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- //Group Call Window -->
+    <!-- Group call init -->
+    <div class="modal bd-example-modal-xl fade" id="group-call-init" tabindex="-1" role="dialog"
+        aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content container-fluid room-modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Join a room</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body container-fluid">
+                    <div class="row mh-100">
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <input type="text" class="form-control mt-2" id="people-search-input"
+                                    placeholder="Search" onkeyup="groupCallFilter()">
+                            </div>
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="group-check-all" onclick="groupSelectAll()">
+                                <label class="form-check-label" for="group-check-all">Select all</label>
+                            </div>
+                        </div>
+                        <div class="col-lg-9">
+                            <table class="table fixed">
+                                <thead>
+                                    <tr>
+                                        <th scope="col" width="15%" class="align-middle">#</th>
+                                        <th scope="col" width="70%" class="align-middle">Name</th>
+                                        <th scope="col" width="15%" class="align-middle"></th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="row mh-100">
+                        <div class="col-lg-9 room-suff float-right">
+                            <table class="table table-hover fixed">
+                                <tbody id="group-call-member">
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer row">
+                    <div class="col-sm-3">
+                        <div id="group-call-spinner" class="spinner-grow text-info" role="status"></div>
+                    </div>
+                    <div class="col-sm-3">
+                        <button type="button" class="btn btn-secondary btn-block" data-dismiss="modal"
+                            data-target="#group-call-init">Close</button>
+                    </div>
+                    <div class="col-sm-3">
+                        <button type="button" class="btn btn-info btn-block" data-dismiss="modal"
+                            data-target="#group-call-init" onclick="groupCallInit()">Call</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- //Group call init -->
+    <!-- Group call incoming -->
+    <div class="modal bd-example-modal-md fade" id="group-call-incomming" tabindex="-1" role="dialog"
+        aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Video Call</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <h6><span id="group-caller-name" class="text-info"></span> made a group video call.</h6>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" onclick="groupCallRespone(1)" class="btn btn-success"
+                        data-dismiss="modal">Answer</button>
+                    <button type="button" onclick="groupCallRespone(0)" class="btn btn-danger"
+                        data-dismiss="modal">Decline</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- //Group call imcoming -->
     <!-- Get Call Window -->
     <div class="modal bd-example-modal-md fade" id="call-incomming" tabindex="-1" role="dialog"
         aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
@@ -340,6 +461,7 @@
     <script src="bootstrap/dist/js/bootstrap.min.js"></script>
     <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
     <script src="js/video-call.js"></script>
+    <script src="js/group-call.js"></script>
 </body>
 
 </html>

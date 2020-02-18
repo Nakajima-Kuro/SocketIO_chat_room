@@ -88,6 +88,10 @@ input::-webkit-calendar-picker-indicator {
   display: none !important;
 }
 
+.display-none{
+  display: none;
+}
+
 #message:focus, #message:active {
   outline: none !important;
   box-shadow: none;
