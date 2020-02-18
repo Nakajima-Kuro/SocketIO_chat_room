@@ -96,6 +96,14 @@ function groupCallRespone(status) {
     }
 }
 
+$('#call-window-group').on('hidden.bs.modal', function () {
+    groupCall = new GroupVideoCall();
+});
+
+function AddCallee(){
+    $("#group-call-init").modal('show')
+}
+
 function stopGroupCall() {
     isBusy = false;
     stopStreamedVideo(localGroupVideo);

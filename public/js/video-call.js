@@ -51,7 +51,6 @@ const peer = new Peer({
 
 peer.on('open', function (id) {
   socket.emit("init", { peerID: id })
-  console.log(id);
 });
 
 function callInit(username) {

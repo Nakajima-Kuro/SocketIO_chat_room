@@ -118,7 +118,7 @@
         <div class="modal-dialog modal-xl" role="document">
             <div class="modal-content call-modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Video Call</h5>
+                    <h5 class="modal-title">Group Call</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -135,17 +135,18 @@
                         <!-- Remote group video -->
                     </div>
                 </div>
-                <div class="modal-footer d-flex justify-content-end">
+                <div class="modal-footer">
+                    <button type="button" id="end-group-call-button" class="btn btn-success mr-3"
+                        onclick="AddCallee()">Add</button>
                     <button onclick="stopGroupCall()" type="button" id="end-group-call-button" class="btn btn-info"
-                        data-dismiss="modal">End
-                        Call</button>
+                        data-dismiss="modal">End Call</button>
                 </div>
             </div>
         </div>
     </div>
     <!-- //Group Call Window -->
     <!-- Group call init -->
-    <div class="modal bd-example-modal-xl fade" id="group-call-init" tabindex="-1" role="dialog"
+    <div class="modal bd-example-modal-lg fade" id="group-call-init" tabindex="-1" role="dialog"
         aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content container-fluid room-modal-content">
@@ -163,7 +164,8 @@
                                     placeholder="Search" onkeyup="groupCallFilter()">
                             </div>
                             <div class="form-check">
-                                <input type="checkbox" class="form-check-input" id="group-check-all" onclick="groupSelectAll()">
+                                <input type="checkbox" class="form-check-input" id="group-check-all"
+                                    onclick="groupSelectAll()">
                                 <label class="form-check-label" for="group-check-all">Select all</label>
                             </div>
                         </div>
