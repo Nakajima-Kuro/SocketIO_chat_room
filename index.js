@@ -113,6 +113,7 @@ io.on("connection", function (socket) {
         room.pushUser(self)
         groupUpdate();
         self.peerID = data.peerID;
+        io.emit("room_update", { roomList: building.getRoomList() })
     })
     //server lắng nghe dữ liệu từ client
 
@@ -184,7 +185,7 @@ io.on("connection", function (socket) {
                     socket.emit("join_respond", { status: 0 });
                     check = true;
                 }
-                else {
+                else if(joinRoom.name != "Public" || self.name != "Anonymous"){
                     pos = joinRoom.roomMember.map(function (e) { return e.name; }).indexOf(self.name);
                     if (pos != -1) {//da co nguoi voi ten nay
                         socket.emit("server_send", { message: "This username has been taken", type: 2 })

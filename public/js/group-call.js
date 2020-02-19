@@ -53,10 +53,12 @@ function groupCallInit() {
             isBusy = true;
             groupCallMember.unshift(username)
             groupCall.peerList = [peer.id]
-            socket.emit("group_call_request", { groupCallMember: groupCallMember, type: 'new' })
             navigator.mediaDevices.getUserMedia(mediaStreamConstraints)
                 .then(gotGroupLocalMediaStream).catch(handleLocalMediaStreamError)
-            $("#call-window-group").modal();
+            if(hasWebcam == true){
+                socket.emit("group_call_request", { groupCallMember: groupCallMember, type: 'new' })
+                $("#call-window-group").modal();
+            }
         }
     }
     else {
