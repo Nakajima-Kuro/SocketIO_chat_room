@@ -5,6 +5,8 @@ var existRoom = new Array();
 var roomCheck = false;
 var room = "Public";
 var roomMember = new Array();
+var inVideoCall = '(In video call)'
+
 //client nhận dữ liệu từ server
 socket.on("server_send", function (data) {
     var id = data.username + "-is-typing";
@@ -47,10 +49,18 @@ socket.on("group_update", function (data) {
     var i = 1;
     data.group.forEach(function (member) {
         if (member != username && member != "Anonymous") {
-            $("#group-call-member").append('<tr id="group-call-' + member + '" onclick="groupCallPush(' + member + ')">' +
-                '<td width="15%">' + i + '</td><td class="text-info align-middle user" width="70%">' + member +
-                '<span class="text-success ml-1"></span>'+
-                '</td><td><i class="fa fa-check text-info" aria-hidden="true" style="display: none;" width="15%"></i></td></tr>');
+            if (data.onlineName.indexOf(member) == -1) {
+                $("#group-call-member").append('<tr class="pointer" id="group-call-' + member + '" onclick="groupCallPush(' + member + ')">' +
+                    '<td width="15%">' + i + '</td><td class="text-info align-middle user" width="70%">' + member +
+                    '<span class="text-success ml-2"></span>' +
+                    '</td><td><i class="fa fa-check text-info" aria-hidden="true" style="display: none;" width="15%"></i></td></tr>');
+            }
+            else {
+                $("#group-call-member").append('<tr class="pointer" id="group-call-' + member + '" onclick="groupCallPush(' + member + ')">' +
+                    '<td width="15%">' + i + '</td><td class="text-info align-middle user" width="70%">' + member +
+                    '<span class="text-success ml-2">' + inVideoCall + '</span>' +
+                    '</td><td><i class="fa fa-check text-info" aria-hidden="true" style="display: none;" width="15%"></i></td></tr>');
+            }
             i++;
         }
     })

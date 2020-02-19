@@ -13,7 +13,7 @@ function groupSelectAll() {
     if (document.getElementById("group-check-all").checked == true) {
         var table = $("#group-call-member tr")
         table.each(function () {
-            if ($(this).find('span').text() != '(In group video call)') {
+            if ($(this).find('span').text() != inVideoCall) {
                 $(this).find('i').show();
             }
 
@@ -28,9 +28,13 @@ function groupSelectAll() {
 }
 
 function groupCallPush(user) {
-    if($("#group-call-" + user.id).find('span').text() != '(In group video call)')
+    if($("#group-call-" + user.id).find('span').text() != inVideoCall)
     {
         $("#group-call-" + user.id).find('i').toggle();
+    }
+    else{
+        $("#group-call-join-name").text(user.id)
+        $("#group-call-join-confirm").modal()
     }
 }
 
@@ -56,7 +60,6 @@ function groupCallInit() {
         }
     }
     else {
-        socket.emit("group_call_online_update", { onlineList: groupCall.peerList })
         socket.emit("group_call_request", { groupCallMember: groupCallMember, type: 'add' })
     }
     table.each(function () {
@@ -78,7 +81,7 @@ socket.on("group_call_online_update", function (data) {
 
 socket.on('group_call_status', function (data) {
     if (data.status == 'in') {
-        $("#group-call-" + data.username).find('span').text('(In group video call)')
+        $("#group-call-" + data.username).find('span').text('')
     }
     else if (data.status == 'out') {
         $("#group-call-" + data.username).find('span').empty()
@@ -91,10 +94,12 @@ function groupCallRespone(status) {
             .then(gotGroupLocalMediaStream).catch(handleLocalMediaStreamError)
             .then(function () {
                 if (hasWebcam == true) {
+                    if($('#group-call-init').is(':visible') == true){
+                        $("#group-call-init").modal('hide')
+                    }
                     socket.emit("group_call_status", { status: 'in' })
                     groupCall.fresh = false;
                     groupCall.peerList.push(peer.id);
-                    socket.emit("group_call_online_update", { onlineList: groupCall.peerList })
                     isBusy = true;
                     $("#call-window-group").modal();
                     for (let i = 0; i < groupCall.peerList.length; i++) {

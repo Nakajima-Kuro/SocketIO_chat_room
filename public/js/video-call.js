@@ -5,25 +5,33 @@ class GroupVideoCall {
     this.fresh = true;
   }
   deleteVideo(peer) {
+    var index = this.peerList.indexOf(peer);
     $("#" + peer).remove();
+    if (index < 3) {
+      $("#group-call-row1").append($("#" + this.peerList[this.peerList.length - 1]))
+    }
     this.videoNum -= 1;
     if (this.videoNum == 1 && this.fresh == false) {
       isBusy = false;
-      stopStreamedVideo(localGroupVideo);
       $("#call-window-group").modal('hide');
     }
+    this.peerList.splice(index, 1)
   }
   addVideo(peer) {
-    if (!$("#" + peer).length) {
+    if (!$("#" + peer).length) {//neu chua ton tai video voi peerID nay
+      this.videoNum += 1
       if (this.videoNum < 4)
         $("#group-call-row1").append('<div class="col" id="' + peer + '">' +
           '<video class="col px-0" autoplay playsinline style="width: 100%;"></video>' +
           '</div>')
-      else
-        $("#group-call-row2").append('<div class="col" id="' + peer + '">' +
+      else if (this.videoNum == 4)
+        $("#group-call-row2").append('<div class="col-4" id="' + peer + '">' +
           '<video class="col px-0" autoplay playsinline style="width: 100%;"></video>' +
           '</div>')
-      this.videoNum += 1
+      else
+        $("#group-call-row2").append('<div class="col-4" id="' + peer + '">' +
+          '<video class="col px-0" autoplay playsinline style="width: 100%;"></video>' +
+          '</div>')
     }
   }
 }

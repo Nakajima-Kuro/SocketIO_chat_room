@@ -66,13 +66,10 @@ class Room {
     }
     addMessage(username, message) {
         this.messageList.push({ username: username, message: message })
-        // console.log(this.messageList);
     }
-    addNewOnlineVideo(peerID) {
-        this.onlineList.push(peerID)
-    }
-    resetOnlineList(onlineList) {
-        this.onlineList = onlineList;
+    getOnlineName() {
+        var onlineName = []
+        return onlineName
     }
 }
 class User {
@@ -106,13 +103,15 @@ building.pushRoom(new Room("Public", ""));
 // tạo kết nối giữa client và server
 io.on("connection", function (socket) {
     //Init
-    var self = new User("Anonymous", socket.id)
-    var room = building.getRoom("Public");
-    socket.join("Public");
-    room.pushUser(self)
-    groupUpdate();
+    var self = new User()
+    var room = new Room()
     socket.on("init", function (data) {
         //Init
+        self = new User("Anonymous", socket.id)
+        room = building.getRoom("Public");
+        socket.join("Public");
+        room.pushUser(self)
+        groupUpdate();
         self.peerID = data.peerID;
     })
     //server lắng nghe dữ liệu từ client
@@ -245,18 +244,28 @@ io.on("connection", function (socket) {
             }
             socket.broadcast.to(room.name).emit("group_call_online_update", { onlineList: [self.peerID] })
         }
-        else if(data.type == 'add'){
+        else if (data.type == 'add') {
             for (let i = 0; i < data.groupCallMember.length; i++) {
                 socket.broadcast.to(room.getUser(data.groupCallMember[i]).id).emit("group_call_request", { caller: self.name })
             }
         }
     })
-    socket.on("group_call_online_update", function (data) {
-        room.onlineList = data.onlineList;
-        socket.broadcast.to(room.name).emit("group_call_online_update", { onlineList: data.onlineList })
-    })
-    socket.on('group_call_status', function(data){
-        socket.to(room.name).emit("group_call_status", { username: self.name, status: data.status })
+    socket.on('group_call_status', function (data) {
+        if (data.status == 'in') {
+            room.onlineList.push(self)
+        }
+        else if (data.status == 'out') {
+            var index = room.onlineList.map(function (e) { return e.id }).indexOf(self.id)
+            if (index != -1) {
+                room.onlineList.splice(index, 1)
+            }
+        }
+        var onlinePeer = [];
+        room.onlineList.forEach(function (user) {
+            onlinePeer.push(user.peerID)
+        })
+        socket.broadcast.to(room.name).emit("group_call_online_update", { onlineList: onlinePeer })
+        groupUpdate();
     })
     socket.on('webcam_fail', function (data) {
         socket.broadcast.to(data.caller).emit("webcam_fail")
@@ -284,11 +293,17 @@ io.on("connection", function (socket) {
         room.roomMember.forEach(function (member) {
             memberName.push(member.name)
         })
+
+        var onlineName = [];//who are in video call
+        room.onlineList.forEach(function (user) {
+            onlineName.push(user.name)
+        })
+
         if (room.name == "Public") {
-            io.to(room.name).emit("group_update", { group: memberName });
+            io.to(room.name).emit("group_update", { group: memberName, onlineName: onlineName });
         }
         else {
-            io.to(room.name).emit("group_update", { group: memberName, admin: room.admin });
+            io.to(room.name).emit("group_update", { group: memberName, onlineName: onlineName, admin: room.admin });
         }
     }
 });
