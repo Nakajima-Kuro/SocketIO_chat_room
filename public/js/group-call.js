@@ -32,7 +32,7 @@ function groupCallPush(user) {
     {
         $("#group-call-" + user.id).find('i').toggle();
     }
-    else{
+    else if($('#call-window-group').is(':visible') == false){
         $("#group-call-join-name").text(user.id)
         $("#group-call-join-confirm").modal()
     }
