@@ -13,10 +13,13 @@ function groupSelectAll() {
     if (document.getElementById("group-check-all").checked == true) {
         var table = $("#group-call-member tr")
         table.each(function () {
-            $(this).find('i').show();
+            if ($(this).find('span').text() != '(In group video call)') {
+                $(this).find('i').show();
+            }
+
         });
     }
-    else{
+    else {
         var table = $("#group-call-member tr")
         table.each(function () {
             $(this).find('i').hide();
@@ -25,26 +28,40 @@ function groupSelectAll() {
 }
 
 function groupCallPush(user) {
-    $("#group-call-" + user.id).find('i').toggle();
+    if($("#group-call-" + user.id).find('span').text() != '(In group video call)')
+    {
+        $("#group-call-" + user.id).find('i').toggle();
+    }
 }
 
 function groupCallInit() {
-    groupCallMember = new Array();
     var table = $("#group-call-member tr")
+    groupCallMember = new Array();
     table.each(function () {
         if ($(this).find('i').is(":visible")) {
             groupCallMember.push($(this).find('.user').text())
         }
     });
-    if (groupCallMember.length > 0) {
-        groupCallMember.unshift(username)
-        groupCall.peerList = [peer.id]
-        socket.emit("group_call_request", { groupCallMember: groupCallMember })
-        $("#group-call-member").find('i').hide();
-        navigator.mediaDevices.getUserMedia(mediaStreamConstraints)
-            .then(gotGroupLocalMediaStream).catch(handleLocalMediaStreamError)
-        $("#call-window-group").modal();
+    $("#group-call-init").modal('hide')
+    if ($('#call-window-group').is(':visible') == false) {
+        if (groupCallMember.length > 0) {
+            socket.emit("group_call_status", { status: 'in' })
+            isBusy = true;
+            groupCallMember.unshift(username)
+            groupCall.peerList = [peer.id]
+            socket.emit("group_call_request", { groupCallMember: groupCallMember, type: 'new' })
+            navigator.mediaDevices.getUserMedia(mediaStreamConstraints)
+                .then(gotGroupLocalMediaStream).catch(handleLocalMediaStreamError)
+            $("#call-window-group").modal();
+        }
     }
+    else {
+        socket.emit("group_call_online_update", { onlineList: groupCall.peerList })
+        socket.emit("group_call_request", { groupCallMember: groupCallMember, type: 'add' })
+    }
+    table.each(function () {
+        $(this).find('i').hide();
+    });
 }
 
 socket.on("group_call_request", function (data) {
@@ -59,15 +76,25 @@ socket.on("group_call_online_update", function (data) {
     groupCall.peerList = data.onlineList;
 })
 
+socket.on('group_call_status', function (data) {
+    if (data.status == 'in') {
+        $("#group-call-" + data.username).find('span').text('(In group video call)')
+    }
+    else if (data.status == 'out') {
+        $("#group-call-" + data.username).find('span').empty()
+    }
+})
+
 function groupCallRespone(status) {
     if (status == 1) {
-        groupCall.fresh = false;
-        groupCall.peerList.push(peer.id);
-        socket.emit("group_call_online_update", { onlineList: groupCall.peerList })
         navigator.mediaDevices.getUserMedia(mediaStreamConstraints)
             .then(gotGroupLocalMediaStream).catch(handleLocalMediaStreamError)
             .then(function () {
                 if (hasWebcam == true) {
+                    socket.emit("group_call_status", { status: 'in' })
+                    groupCall.fresh = false;
+                    groupCall.peerList.push(peer.id);
+                    socket.emit("group_call_online_update", { onlineList: groupCall.peerList })
                     isBusy = true;
                     $("#call-window-group").modal();
                     for (let i = 0; i < groupCall.peerList.length; i++) {
@@ -98,16 +125,15 @@ function groupCallRespone(status) {
 
 $('#call-window-group').on('hidden.bs.modal', function () {
     groupCall = new GroupVideoCall();
+    isBusy = false
+    stopStreamedVideo(localGroupVideo);
+    socket.emit("group_call_status", { status: 'out' })
 });
 
-function AddCallee(){
-    $("#group-call-init").modal('show')
-}
-
-function stopGroupCall() {
-    isBusy = false;
-    stopStreamedVideo(localGroupVideo);
-}
+$("#add-new-callee").click(function (event) {
+    event.preventDefault();
+    $("#group-call-init").modal()
+});
 
 // Video element where stream will be placed.
 const localGroupVideo = document.querySelector('video#localGroupVideo');

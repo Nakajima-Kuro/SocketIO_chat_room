@@ -235,18 +235,28 @@ io.on("connection", function (socket) {
         // console.log("send the peer id to the caller");        
     });
     socket.on('group_call_request', function (data) {
-        var peerList = [self.peerID];
-        for (let i = 1; i < data.groupCallMember.length; i++) {
-            peerList.push(room.getUser(data.groupCallMember[i]).peerID);
+        if (data.type == 'new') {
+            var peerList = [self.peerID];
+            for (let i = 1; i < data.groupCallMember.length; i++) {
+                peerList.push(room.getUser(data.groupCallMember[i]).peerID);
+            }
+            for (let i = 1; i < data.groupCallMember.length; i++) {
+                socket.broadcast.to(room.getUser(data.groupCallMember[i]).id).emit("group_call_request", { caller: self.name })
+            }
+            socket.broadcast.to(room.name).emit("group_call_online_update", { onlineList: [self.peerID] })
         }
-        for (let i = 1; i < data.groupCallMember.length; i++) {
-            socket.broadcast.to(room.getUser(data.groupCallMember[i]).id).emit("group_call_request", { caller: self.name })
+        else if(data.type == 'add'){
+            for (let i = 0; i < data.groupCallMember.length; i++) {
+                socket.broadcast.to(room.getUser(data.groupCallMember[i]).id).emit("group_call_request", { caller: self.name })
+            }
         }
-        socket.broadcast.to(room.name).emit("group_call_online_update", { onlineList: [self.peerID] })
     })
     socket.on("group_call_online_update", function (data) {
         room.onlineList = data.onlineList;
         socket.broadcast.to(room.name).emit("group_call_online_update", { onlineList: data.onlineList })
+    })
+    socket.on('group_call_status', function(data){
+        socket.to(room.name).emit("group_call_status", { username: self.name, status: data.status })
     })
     socket.on('webcam_fail', function (data) {
         socket.broadcast.to(data.caller).emit("webcam_fail")

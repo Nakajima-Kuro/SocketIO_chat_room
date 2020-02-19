@@ -168,6 +168,9 @@ peer.on('call', function (call) {
     $('#end-group-call-button').click(function () {
       call.close()
     })
+    $('#call-window-group').on('hidden.bs.modal', function () {
+      call.close()
+    });
   }
 });
 

@@ -45,6 +45,15 @@ socket.on("group_update", function (data) {
     $("#member-table").find('tr').remove();
     $("#group-call-member").find('tr').remove();
     var i = 1;
+    data.group.forEach(function (member) {
+        if (member != username && member != "Anonymous") {
+            $("#group-call-member").append('<tr id="group-call-' + member + '" onclick="groupCallPush(' + member + ')">' +
+                '<td width="15%">' + i + '</td><td class="text-info align-middle user" width="70%">' + member +
+                '<span class="text-success ml-1"></span>'+
+                '</td><td><i class="fa fa-check text-info" aria-hidden="true" style="display: none;" width="15%"></i></td></tr>');
+            i++;
+        }
+    })
     if (room != "Public" && data.admin.name == username) {
         data.group.forEach(function (member) {
             if (member == username || member == "Anonymous") {
@@ -58,10 +67,6 @@ socket.on("group_update", function (data) {
                     '<button type="button" id="' + member + '" onclick="callInit(this.id)" class="btn btn-sm btn-outline-info call"><i class="fa fa-video-camera" aria-hidden="true"></i></button>' +
                     '<button type="button" id="' + member + '" onclick="kickInit(this.id)" class="btn btn-sm btn-outline-danger"><i class="fa fa-times" aria-hidden="true"></i></button>' +
                     '</div></td></tr>');
-                $("#group-call-member").append('<tr id="group-call-' + member + '" onclick="groupCallPush(' + member + ')">' +
-                    '<td width="15%">' + i + '</td><td class="text-info align-middle user" width="70%">' + member +
-                    '</td><td><i class="fa fa-check text-info" aria-hidden="true" style="display: none;" width="15%"></i></td></tr>');
-                i++;
             }
         })
     }
@@ -77,10 +82,6 @@ socket.on("group_update", function (data) {
                     '<div class="btn-group" role="group">' +
                     '<button type="button" id="' + member + '" onclick="callInit(this.id)" class="btn btn-sm btn-outline-info call"><i class="fa fa-video-camera" aria-hidden="true"></i></button>' +
                     '</div></td></tr>');
-                $("#group-call-member").append('<tr id="group-call-' + member + '" onclick="groupCallPush(' + member + ')">' +
-                    '<td width="15%">' + i + '</td><td class="text-info align-middle user" width="70%">' + member +
-                    '</td><td><i class="fa fa-check text-info" aria-hidden="true" style="display: none;" width="15%"></i></td></tr>');
-                i++;
             }
         })
     }
