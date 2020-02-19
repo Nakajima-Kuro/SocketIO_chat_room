@@ -1,4 +1,5 @@
 var groupCallMember = [];
+var groupTimeOut = 3000
 
 function groupCallHit() {
     if (username == "Anonymous" || username == "") {
@@ -28,11 +29,10 @@ function groupSelectAll() {
 }
 
 function groupCallPush(user) {
-    if($("#group-call-" + user.id).find('span').text() != inVideoCall)
-    {
+    if ($("#group-call-" + user.id).find('span').text() != inVideoCall) {
         $("#group-call-" + user.id).find('i').toggle();
     }
-    else if($('#call-window-group').is(':visible') == false){
+    else if ($('#call-window-group').is(':visible') == false) {
         $("#group-call-join-name").text(user.id)
         $("#group-call-join-confirm").modal()
     }
@@ -85,13 +85,27 @@ socket.on('group_call_status', function (data) {
     }
 })
 
+socket.on('group_call_status', function (data) {
+    if (data.type == 'join') {
+        $("#group-calling-status").empty().append('<span class="text-info">' + data.username + '</span> has joined')
+        groupTimeOut = 3000
+    }
+    else if (data.type == 'left') {
+        $("#group-calling-status").empty().append('<span class="text-info">' + data.username + '</span> has joined')
+        groupTimeOut = 3000
+    }
+    setTimeout(function () {
+        $("#group-calling-status").empty();
+    }, groupTimeOut);
+})
+
 function groupCallRespone(status) {
     if (status == 1) {
         navigator.mediaDevices.getUserMedia(mediaStreamConstraints)
             .then(gotGroupLocalMediaStream).catch(handleLocalMediaStreamError)
             .then(function () {
                 if (hasWebcam == true) {
-                    if($('#group-call-init').is(':visible') == true){
+                    if ($('#group-call-init').is(':visible') == true) {
                         $("#group-call-init").modal('hide')
                     }
                     socket.emit("group_call_status", { status: 'in' })
