@@ -74,11 +74,6 @@ socket.on("group_call_request", function (data) {
     }
 })
 
-socket.on("group_call_online_update", function (data) {
-    // console.log(data.onlineList);
-    groupCall.peerList = data.onlineList;
-})
-
 socket.on('group_call_status', function (data) {
     if (data.status == 'in') {
         $("#group-call-" + data.username).find('span').text('')
@@ -99,7 +94,6 @@ function groupCallRespone(status) {
                     }
                     socket.emit("group_call_status", { status: 'in' })
                     groupCall.fresh = false;
-                    groupCall.peerList.push(peer.id);
                     isBusy = true;
                     $("#call-window-group").modal();
                     for (let i = 0; i < groupCall.peerList.length; i++) {

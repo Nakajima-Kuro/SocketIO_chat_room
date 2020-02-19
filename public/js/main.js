@@ -1,3 +1,41 @@
+class GroupVideoCall {
+    constructor(peerList) {
+        this.peerList = peerList
+        this.videoNum = 1;
+        this.fresh = true;
+    }
+    deleteVideo(peer) {
+        var index = this.peerList.indexOf(peer);
+        $("#" + peer).remove();
+        if (index < 3) {
+            $("#group-call-row1").append($("#" + this.peerList[this.peerList.length - 1]))
+        }
+        this.videoNum -= 1;
+        if (this.videoNum == 1 && this.fresh == false) {
+            isBusy = false;
+            $("#call-window-group").modal('hide');
+        }
+        this.peerList.splice(index, 1)
+    }
+    addVideo(peer) {
+        if (!$("#" + peer).length) {//neu chua ton tai video voi peerID nay
+            this.videoNum += 1
+            if (this.videoNum < 4)
+                $("#group-call-row1").append('<div class="col" id="' + peer + '">' +
+                    '<video class="col px-0" autoplay playsinline style="width: 100%;"></video>' +
+                    '</div>')
+            else if (this.videoNum == 4)
+                $("#group-call-row2").append('<div class="col-4" id="' + peer + '">' +
+                    '<video class="col px-0" autoplay playsinline style="width: 100%;"></video>' +
+                    '</div>')
+            else
+                $("#group-call-row2").append('<div class="col-4" id="' + peer + '">' +
+                    '<video class="col px-0" autoplay playsinline style="width: 100%;"></video>' +
+                    '</div>')
+        }
+    }
+}
+
 var socket = io();
 var username = "Anonymous";
 var timeout = undefined;
@@ -44,6 +82,7 @@ socket.on("server_send", function (data) {
 });
 socket.on("group_update", function (data) {
     roomMember = data.group;
+    groupCall.peerList = data.onlinePeer
     $("#member-table").find('tr').remove();
     $("#group-call-member").find('tr').remove();
     var i = 1;

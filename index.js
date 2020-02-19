@@ -235,14 +235,10 @@ io.on("connection", function (socket) {
     });
     socket.on('group_call_request', function (data) {
         if (data.type == 'new') {
-            var peerList = [self.peerID];
-            for (let i = 1; i < data.groupCallMember.length; i++) {
-                peerList.push(room.getUser(data.groupCallMember[i]).peerID);
-            }
-            for (let i = 1; i < data.groupCallMember.length; i++) {
-                socket.broadcast.to(room.getUser(data.groupCallMember[i]).id).emit("group_call_request", { caller: self.name })
-            }
-            socket.broadcast.to(room.name).emit("group_call_online_update", { onlineList: [self.peerID] })
+            data.groupCallMember.forEach(function (user) {
+                socket.broadcast.to(room.getUser(user).id).emit("group_call_request", { caller: self.name })
+            })
+            groupUpdate();
         }
         else if (data.type == 'add') {
             for (let i = 0; i < data.groupCallMember.length; i++) {
@@ -260,11 +256,6 @@ io.on("connection", function (socket) {
                 room.onlineList.splice(index, 1)
             }
         }
-        var onlinePeer = [];
-        room.onlineList.forEach(function (user) {
-            onlinePeer.push(user.peerID)
-        })
-        socket.broadcast.to(room.name).emit("group_call_online_update", { onlineList: onlinePeer })
         groupUpdate();
     })
     socket.on('webcam_fail', function (data) {
@@ -295,15 +286,17 @@ io.on("connection", function (socket) {
         })
 
         var onlineName = [];//who are in video call
+        var onlinePeer = []
         room.onlineList.forEach(function (user) {
             onlineName.push(user.name)
+            onlinePeer.push(user.peerID)
         })
 
         if (room.name == "Public") {
-            io.to(room.name).emit("group_update", { group: memberName, onlineName: onlineName });
+            io.to(room.name).emit("group_update", { group: memberName, onlineName: onlineName, onlinePeer: onlinePeer });
         }
         else {
-            io.to(room.name).emit("group_update", { group: memberName, onlineName: onlineName, admin: room.admin });
+            io.to(room.name).emit("group_update", { group: memberName, onlineName: onlineName, admin: room.admin, onlinePeer: onlinePeer });
         }
     }
 });
