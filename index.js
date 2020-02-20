@@ -114,6 +114,7 @@ io.on("connection", function (socket) {
         groupUpdate();
         self.peerID = data.peerID;
         io.emit("room_update", { roomList: building.getRoomList() })
+        socket.emit("init")
     })
     //server lắng nghe dữ liệu từ client
 

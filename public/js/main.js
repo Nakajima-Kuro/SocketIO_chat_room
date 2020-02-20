@@ -45,6 +45,10 @@ var room = "Public";
 var roomMember = new Array();
 var inVideoCall = '(In video call)'
 
+socket.on('init', function(){
+    $(".loader-wrapper").fadeOut('slow');
+})
+
 //client nhận dữ liệu từ server
 socket.on("server_send", function (data) {
     var id = data.username + "-is-typing";
