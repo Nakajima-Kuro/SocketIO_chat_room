@@ -1,0 +1,27 @@
+.theme-body-light{
+    background-color: #fffdf9;
+}
+.theme-body-dark{
+    background-color: #242F3F;
+}
+
+.theme-header-light{
+    background-color: #f7f7f7;
+}
+.theme-header-dark{
+    background-color: rgb(60, 60, 60);
+}
+
+.theme-text-light{
+    color: black;
+}
+.theme-text-dark{
+    color: white;
+}
+
+.theme-content-light{
+    background-color: white;
+}
+.theme-content-dark{
+    background-color: rgb(45, 45, 45);
+}
