@@ -56,7 +56,7 @@ socket.on("server_send", function (data) {
     if (data.type == 1) {
         var message = htmlFilter(data.message)
         var newrow = '<tr class="chat-line"><td class="text-info chat-name align-middle pl-3">'
-            + data.username + ': <span class="text-dark text-break text-center">' + message + '</span></td></tr>'
+            + data.username + ': <span class="text-break text-center theme-text-light">' + message + '</span></td></tr>'
         if (!$(".is-typing").length)
             $("#chat-content").append(newrow);
         else {
@@ -343,7 +343,7 @@ function sendMessage() {
         var message = htmlFilter($("#message").val())
         socket.emit("send_message", { message: message })
         var newrow = '<tr class="chat-line"><td class="text-info chat-name align-middle pl-3">'
-            + username + ': <span class="text-dark text-break text-center">' + message + '</span></td></tr>'
+            + username + ': <span class="text-break text-center theme-text-light">' + message + '</span></td></tr>'
         //neu co dong Somebody + is typing => chen message len tren dong do
         if (!$(".is-typing").length)
             $("#chat-content").append(newrow);

@@ -53,6 +53,11 @@ input::-webkit-calendar-picker-indicator {
   }
 }
 
+.btn:focus,.btn:active {
+  outline: none !important;
+  box-shadow: none;
+}
+
 .pointer:hover{
   cursor: pointer;
 }
@@ -98,7 +103,7 @@ input::-webkit-calendar-picker-indicator {
 }
 
 .main-chat-group{
-  height: calc(100% - 140px);
+  height: calc(100% - 160px);
   min-height: 300px;
 }
 

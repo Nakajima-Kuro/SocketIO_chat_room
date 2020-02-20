@@ -20,8 +20,8 @@
     <div class="container">
         <nav class="navbar navbar-light pb-0">
             <span class="navbar-brand h1 text-info text-center" style="width: 100%;">
-                <button class="btn btn-sm btn-info float-right" onclick="changeTheme()">
-                    <i></i>
+                <button class="btn btn-sm float-right" onclick="changeTheme()">
+                    <img id="theme-icon" src="assets/sunny.svg" style="height: 25px;">
                 </button>
                 Let's chat
             </span>
@@ -64,7 +64,7 @@
                 <div class="card-footer d-flex justify-content-end row theme-header-light" style="flex-wrap: nowrap;">
                     <div class="input-group mr-3">
                         <div class="btn-group dropup">
-                            <button type="button" class="btn btn-light dropdown-toggle border" data-toggle="dropdown"
+                            <button type="button" class="btn theme-emoji-light dropdown-toggle border" data-toggle="dropdown"
                                 aria-haspopup="true" aria-expanded="false">
                                 <i class="fa fa-smile-o" style="font-size: large;"></i>
                             </button>
@@ -73,7 +73,7 @@
                                 <!-- Emoji list go here -->
                             </div>
                         </div>
-                        <input class="form-control" type="text" id="message" value="" placeholder="Your message...">
+                        <input class="form-control theme-message" type="text" id="message" value="" placeholder="Your message...">
                     </div>
                     <button class="btn btn-info btn-block text-center" id="send" style="max-width: 70px;">Send</button>
                 </div>
