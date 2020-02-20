@@ -1,3 +1,28 @@
+class Queue{
+    constructor(){
+        this.queue = []
+    }
+    push(item){
+        this.queue.push(item)
+    }
+    pop(){
+        var item = this.queue[0]
+        this.queue.splice(0, 1)
+        return item;
+    }
+    top(){
+        return this.queue[0]
+    }
+    size(){
+        return this.queue.length
+    }
+    remove(item){
+        var index = this.queue.indexOf(item);
+        if(index != -1){
+            this.queue.splice(index, 1)
+        }
+    }
+}
 $("small").hide();
 $("#join-spinner").hide();
 $("#suff-spinner").hide();

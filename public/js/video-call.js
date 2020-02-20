@@ -3,11 +3,11 @@
 //1: Connected
 //2: Busy
 
-var hasWebcam = false;
-var isBusy = false;
-var callerID = "";
+window.hasWebcam = false;
+window.isBusy = false;
+window.callerID = "";
 var callType;
-var groupCall = new GroupVideoCall();
+window.groupCall = new GroupVideoCall();
 //1: 1 - 1 call
 //2: group call
 
@@ -131,6 +131,7 @@ peer.on('call', function (call) {
     const remoteVideo = document.getElementById(call.peer).getElementsByTagName('video')[0]
     call.on('stream', (remoteStream) => {
       remoteVideo.srcObject = remoteStream//nhet them video moi vao html
+      updateAvaCall()
     });
     call.on('close', function () {
       stopStreamedVideo(remoteVideo);

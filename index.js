@@ -248,13 +248,13 @@ io.on("connection", function (socket) {
         }
     })
     socket.on('group_call_status', function (data) {
-        if (data.status == 'in') {
+        if (data.status == 'join') {
             room.onlineList.push(self)
             room.onlineList.forEach(function(user){
                 socket.broadcast.to(user.id).emit("group_call_status", { username: self.name, type: 'join' })
             })
         }
-        else if (data.status == 'out') {
+        else if (data.status == 'left') {
             var index = room.onlineList.map(function (e) { return e.id }).indexOf(self.id)
             if (index != -1) {
                 room.onlineList.splice(index, 1)
