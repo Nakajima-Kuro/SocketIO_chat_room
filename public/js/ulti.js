@@ -40,6 +40,7 @@ function lightToDark() {
     $('.theme-btn').addClass('theme-btn-dark')
     $('.theme-modal-header').addClass('theme-modal-header-dark')
     $('.theme-modal-footer').addClass('theme-modal-footer-dark')
+    $('.theme-cross').addClass('theme-cross-dark')
     $.cookie("theme", "dark", { expires: 7 });
 }
 
@@ -69,5 +70,6 @@ function darkToLight() {
     $('.theme-main-section').removeClass('border-info')
     $('.theme-modal-header').removeClass('theme-modal-header-dark')
     $('.theme-modal-footer').removeClass('theme-modal-footer-dark')
+    $('.theme-cross').removeClass('theme-cross-dark')
     $.cookie("theme", "light", { expires: 7 });
 }
