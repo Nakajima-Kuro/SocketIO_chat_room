@@ -58,7 +58,6 @@ socket.on('init', function () {
         }
     }
     if($.cookie('username') != null){
-        username = $.cookie('username')
         $("#username").val(username);
     }
     $(".loader-wrapper").fadeOut('slow');
