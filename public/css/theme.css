@@ -44,6 +44,10 @@
     margin-right: -15px !important;
 }
 
+.theme-btn{
+    overflow: hidden;
+}
+
 .theme-btn-dark:before {
     border-radius: 50%;
     background: #5BC0DE;
