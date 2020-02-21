@@ -46,6 +46,19 @@ var roomMember = new Array();
 var inVideoCall = '(In video call)'
 
 socket.on('init', function () {
+    switch($.cookie('theme')){
+        case 'dark':{
+            lightToDark();
+            break;
+        }
+        default:{
+            break;
+        }
+    }
+    if($.cookie('username') != null){
+        username = $.cookie('username')
+        $("#username").val(username);
+    }
     $(".loader-wrapper").fadeOut('slow');
     setTimeout(function () {
         // un-lock scroll position
@@ -61,8 +74,15 @@ socket.on("server_send", function (data) {
     lastChat = false;
     if (data.type == 1) {
         var message = htmlFilter(data.message)
-        var newrow = '<tr class="chat-line"><td class="text-info chat-name align-middle pl-3">'
-            + data.username + ': <span class="text-break text-center theme-text-light">' + message + '</span></td></tr>'
+        var newrow;
+        if (currentTheme == 0) {
+            newrow = '<tr class="chat-line"><td class="text-info chat-name align-middle pl-3">'
+                + data.username + ': <span class="text-break text-center theme-text-light">' + message + '</span></td></tr>'
+        }
+        else if (currentTheme == 1) {
+            newrow = '<tr class="chat-line"><td class="text-info chat-name align-middle pl-3">'
+                + data.username + ': <span class="text-break text-center theme-text-dark">' + message + '</span></td></tr>'
+        }
         if (!$(".is-typing").length)
             $("#chat-content").append(newrow);
         else {
@@ -250,6 +270,7 @@ $(document).ready(function () {
                 }
                 if (check == false) {
                     username = $("#username").val()
+                    $.cookie("username", username, { expires: 7 });
                     socket.emit("change_username", { username: $("#username").val() })
                 }
                 else {
@@ -276,6 +297,7 @@ $(document).ready(function () {
                 if (username != $("#join-room-username").val()) {
                     socket.emit("change_username", { username: $("#join-room-username").val() }),
                         username = $("#join-room-username").val();
+                        $.cookie("username", username, { expires: 7 });
                     $("#username").val($("#join-room-username").val());
                 }
                 socket.emit("join", { room: $("#join-room-id").val(), password: $("#join-room-password").val(), type: 0 });
@@ -348,8 +370,15 @@ function sendMessage() {
     if ($("#message").val() != "") {
         var message = htmlFilter($("#message").val())
         socket.emit("send_message", { message: message })
-        var newrow = '<tr class="chat-line"><td class="text-info chat-name align-middle pl-3">'
-            + username + ': <span class="text-break text-center theme-text-light">' + message + '</span></td></tr>'
+        var newrow;
+        if (currentTheme == 0) {
+            newrow = '<tr class="chat-line"><td class="text-info chat-name align-middle pl-3">'
+                + username + ': <span class="text-break text-center theme-text-light">' + message + '</span></td></tr>'
+        }
+        else if (currentTheme == 1) {
+            newrow = '<tr class="chat-line"><td class="text-info chat-name align-middle pl-3">'
+                + username + ': <span class="text-break text-center theme-text-dark">' + message + '</span></td></tr>'
+        }
         //neu co dong Somebody + is typing => chen message len tren dong do
         if (!$(".is-typing").length)
             $("#chat-content").append(newrow);

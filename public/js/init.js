@@ -23,6 +23,10 @@ class Queue {
         }
     }
 }
+
+//0: Light Theme
+//1: Dark Theme
+
 $("small").hide();
 $("#join-spinner").hide();
 $("#suff-spinner").hide();
@@ -46,4 +50,3 @@ html.data('scroll-position', scrollPosition);
 html.data('previous-overflow', html.css('overflow'));
 html.css('overflow', 'hidden');
 $("html,body").animate({ scrollTop: 0 }, 'fast');
-

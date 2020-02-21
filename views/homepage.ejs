@@ -63,14 +63,16 @@
                 </div>
                 <div class="card-footer d-flex justify-content-end row theme-header-light" style="flex-wrap: nowrap;">
                     <div class="input-group mr-3">
-                        <div class="btn-group dropup">
-                            <button type="button" class="btn theme-emoji-light dropdown-toggle border" data-toggle="dropdown"
-                                aria-haspopup="true" aria-expanded="false">
-                                <i class="fa fa-smile-o" style="font-size: large;"></i>
-                            </button>
-                            <div class="dropdown-menu bg-light" id="icon-list"
-                                style="max-height: 17rem; width: 20rem; overflow: scroll;">
-                                <!-- Emoji list go here -->
+                        <div class="input-group-prepend">
+                            <div class="btn-group dropup">
+                                <button type="button" class="btn theme-emoji-light dropdown-toggle border" data-toggle="dropdown"
+                                    aria-haspopup="true" aria-expanded="false">
+                                    <i class="fa fa-smile-o" style="font-size: large;"></i>
+                                </button>
+                                <div class="dropdown-menu bg-light" id="icon-list"
+                                    style="max-height: 17rem; width: 20rem; overflow: scroll;">
+                                    <!-- Emoji list go here -->
+                                </div>
                             </div>
                         </div>
                         <input class="form-control theme-message" type="text" id="message" value="" placeholder="Your message...">
@@ -507,9 +509,14 @@
     </div>
     <!-- //Being kicked modal -->
     <script src="jquery/dist/jquery.min.js"></script>
+    <script src="jquery-cookie/jquery-cookie.min.js"></script>
+    <script>
+        $("html,body").animate({ scrollTop: 0 }, 'fast');
+    </script>
     <script src="js/init.js"></script>
     <script src="socket.io/socket.io.js"></script>
     <script src="peerjs/peer.min.js"></script>
+    <script src="js/ulti.js"></script>
     <script src="js/main.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
         integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
@@ -518,7 +525,6 @@
     <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
     <script src="js/video-call.js"></script>
     <script src="js/group-call.js"></script>
-    <script src="js/ulti.js"></script>
 </body>
 
 </html>
