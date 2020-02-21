@@ -44,6 +44,7 @@ var roomCheck = false;
 var room = "Public";
 var roomMember = new Array();
 var inVideoCall = '(In video call)'
+var firstName = true;
 
 socket.on('init', function () {
     switch($.cookie('theme')){
@@ -76,11 +77,11 @@ socket.on("server_send", function (data) {
     if (data.type == 1) {
         var message = htmlFilter(data.message)
         var newrow;
-        if (currentTheme == 0) {
+        if ($.cookie('theme') == 'light') {
             newrow = '<tr class="chat-line"><td class="text-info chat-name align-middle pl-3">'
                 + data.username + ': <span class="text-break text-center theme-text-light">' + message + '</span></td></tr>'
         }
-        else if (currentTheme == 1) {
+        else if ($.cookie('theme') == 'dark') {
             newrow = '<tr class="chat-line"><td class="text-info chat-name align-middle pl-3">'
                 + data.username + ': <span class="text-break text-center theme-text-dark">' + message + '</span></td></tr>'
         }
@@ -250,7 +251,7 @@ $(document).ready(function () {
 
     $('#changename').click(function () {
         if ($("#username").val() != "") {
-            if ($("#username").val() != username) {
+            if ($("#username").val() != username || firstName == true) {
                 // Declare variables
                 var table, tr, td, txtValue, check = false;
                 table = document.getElementById("room-member");
@@ -273,6 +274,7 @@ $(document).ready(function () {
                     username = $("#username").val()
                     $.cookie("username", username, { expires: 7 });
                     socket.emit("change_username", { username: $("#username").val() })
+                    firstName = false
                 }
                 else {
                     var warning = "There is a person with that name. Please choose another name."
@@ -372,11 +374,11 @@ function sendMessage() {
         var message = htmlFilter($("#message").val())
         socket.emit("send_message", { message: message })
         var newrow;
-        if (currentTheme == 0) {
+        if ($.cookie('theme') == 'light') {
             newrow = '<tr class="chat-line"><td class="text-info chat-name align-middle pl-3">'
                 + username + ': <span class="text-break text-center theme-text-light">' + message + '</span></td></tr>'
         }
-        else if (currentTheme == 1) {
+        else if ($.cookie('theme') == 'dark') {
             newrow = '<tr class="chat-line"><td class="text-info chat-name align-middle pl-3">'
                 + username + ': <span class="text-break text-center theme-text-dark">' + message + '</span></td></tr>'
         }
