@@ -52,6 +52,7 @@ socket.on('init', function () {
             break;
         }
         default:{
+            $.cookie("theme", "light", { expires: 7 });
             break;
         }
     }
