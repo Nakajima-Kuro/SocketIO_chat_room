@@ -45,8 +45,14 @@ var room = "Public";
 var roomMember = new Array();
 var inVideoCall = '(In video call)'
 
-socket.on('init', function(){
+socket.on('init', function () {
     $(".loader-wrapper").fadeOut('slow');
+    setTimeout(function () {
+        // un-lock scroll position
+        var html = jQuery('html');
+        var scrollPosition = html.data('scroll-position');
+        html.css('overflow', html.data('previous-overflow'));
+    }, 700)
 })
 
 //client nhận dữ liệu từ server
@@ -361,7 +367,7 @@ function joinRoomInit(room) {
         $("#join-room-id").val(room);
         $("#join-modal").modal();
     }
-    else{
+    else {
         socket.emit("join", { room: "Public", password: "", type: 0 });
     }
 }

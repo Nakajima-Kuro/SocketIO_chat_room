@@ -7,7 +7,8 @@ body, html {
     height: 100%;
     width: 100%;
     background-color: #242F3F;
-    position: absolute;
+    position: -webkit-sticky; /* Safari */
+    position: fixed;
     top: 0;
     left: 0;
     display: flex;
