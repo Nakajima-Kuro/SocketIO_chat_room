@@ -182,7 +182,7 @@ io.on("connection", function (socket) {
                 //1: Okay
                 //2: Name duplicate
                 var joinRoom = building.getRoom(data.room)
-                if (data.password != joinRoom.password) {//sai mk
+                if (joinRoom.name != 'Public' && data.password != joinRoom.password) {//sai mk
                     socket.emit("join_respond", { status: 0 });
                     check = true;
                 }
