@@ -189,7 +189,7 @@ socket.on("room_update", function (data) {
     }
     else if($.cookie('theme') == 'dark'){
         for (let i = 0; i < data.roomList.length; i++) {
-            $('#room-list').append('<tr class="pointer" onclick="joinRoomInit(\'' + data.roomList[i].roomName + '\')"><th class="theme-headline" scope="row" width="20%">'
+            $('#room-list').append('<tr class="pointer" onclick="joinRoomInit(\'' + data.roomList[i].roomName + '\')"><th class="theme-headline text-info" scope="row" width="20%">'
                 + (i + 1) + '</th><td class="theme-text-dark" width="55%">' + data.roomList[i].roomName + '</td><td class="theme-text-dark" width="25%">' + data.roomList[i].roomPopulation + '</td></tr>')
         }
     }
@@ -208,7 +208,12 @@ socket.on("join_respond", function (data) {
     else if (data.status == 1) {
         if (room != $("#join-room-id").val()) {//vao room khac
             $("#chat-content tr").remove()
-            room = $("#join-room-id").val();
+            if($("#join-room-id").val() != ""){
+                room = $("#join-room-id").val();
+            }
+            else{
+                room = 'Public'
+            }
             password = $("#join-room-password").val();
             document.getElementById('room-iddisplay').innerHTML = "Room " + room;
             data.messageList.forEach(function (data) {
@@ -401,14 +406,19 @@ function sendMessage() {
     }
 }
 
-function joinRoomInit(room) {
-    if (room != "Public") {
-        $("#join-room-username").val(username);
-        $("#join-room-id").val(room);
-        $("#join-modal").modal();
+function joinRoomInit(joinRoom) {
+    if(joinRoom != room){
+        if (joinRoom != "Public") {
+            $("#join-room-username").val(username);
+            $("#join-room-id").val(joinRoom);
+            $("#join-modal").modal();
+        }
+        else {
+            socket.emit("join", { room: "Public", password: "", type: 0 });
+        }
     }
-    else {
-        socket.emit("join", { room: "Public", password: "", type: 0 });
+    else{
+        $('#room-modal').modal('hide')
     }
 }
 
