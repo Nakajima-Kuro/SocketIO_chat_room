@@ -47,17 +47,17 @@ var inVideoCall = '(In video call)'
 var firstName = true;
 
 socket.on('init', function () {
-    switch($.cookie('theme')){
-        case 'dark':{
+    switch ($.cookie('theme')) {
+        case 'dark': {
             lightToDark();
             break;
         }
-        default:{
+        default: {
             $.cookie("theme", "light", { expires: 7 });
             break;
         }
     }
-    if($.cookie('username') != null){
+    if ($.cookie('username') != null) {
         $("#username").val($.cookie('username'));
     }
     $(".loader-wrapper").fadeOut('slow');
@@ -180,13 +180,13 @@ socket.on("no_longer_typing", function (data) {
 socket.on("room_update", function (data) {
     existRoom = data.roomList;
     $("#room-list").empty();
-    if($.cookie('theme') == 'light'){
+    if ($.cookie('theme') == 'light') {
         for (let i = 0; i < data.roomList.length; i++) {
             $('#room-list').append('<tr class="pointer" onclick="joinRoomInit(\'' + data.roomList[i].roomName + '\')"><th class="theme-headline" scope="row" width="20%">'
                 + (i + 1) + '</th><td class="theme-text-light" width="55%">' + data.roomList[i].roomName + '</td><td class="theme-text-light" width="25%">' + data.roomList[i].roomPopulation + '</td></tr>')
         }
     }
-    else if($.cookie('theme') == 'dark'){
+    else if ($.cookie('theme') == 'dark') {
         for (let i = 0; i < data.roomList.length; i++) {
             $('#room-list').append('<tr class="pointer" onclick="joinRoomInit(\'' + data.roomList[i].roomName + '\')"><th class="theme-headline text-info" scope="row" width="20%">'
                 + (i + 1) + '</th><td class="theme-text-dark" width="55%">' + data.roomList[i].roomName + '</td><td class="theme-text-dark" width="25%">' + data.roomList[i].roomPopulation + '</td></tr>')
@@ -207,10 +207,10 @@ socket.on("join_respond", function (data) {
     else if (data.status == 1) {
         if (room != $("#join-room-id").val()) {//vao room khac
             $("#chat-content tr").remove()
-            if($("#join-room-id").val() != ""){
+            if ($("#join-room-id").val() != "") {
                 room = $("#join-room-id").val();
             }
-            else{
+            else {
                 room = 'Public'
             }
             password = $("#join-room-password").val();
@@ -237,7 +237,15 @@ socket.on("kick_user", function (data) {
     document.getElementById("kicker").innerHTML = data.kicker
     $("#join-room-id").val("Public")
     $("#kicked-modal").modal()
+    username = 'Anonymous';
+    socket.emit("reset_username")
+    $("#username").val($.cookie('username'));
     socket.emit("join", { room: "Public", password: "", type: 0 });
+    setTimeout(
+        function () {
+            var newrow = '<tr class="chat-line"><td class="text-success align-middle pl-3">Your name has been changed back to "Anonymous" by server</td></tr>'
+            $("#chat-content").append(newrow);
+        }, 1000);
     setTimeout(
         function () {
             $("#kicked-modal").modal('hide');
@@ -312,7 +320,7 @@ $(document).ready(function () {
                 if (username != $("#join-room-username").val()) {
                     socket.emit("change_username", { username: $("#join-room-username").val() }),
                         username = $("#join-room-username").val();
-                        $.cookie("username", username, { expires: 7 });
+                    $.cookie("username", username, { expires: 7 });
                     $("#username").val($("#join-room-username").val());
                 }
                 socket.emit("join", { room: $("#join-room-id").val(), password: $("#join-room-password").val(), type: 0 });
@@ -406,7 +414,7 @@ function sendMessage() {
 }
 
 function joinRoomInit(joinRoom) {
-    if(joinRoom != room){
+    if (joinRoom != room) {
         if (joinRoom != "Public") {
             $("#join-room-username").val(username);
             $("#join-room-id").val(joinRoom);
@@ -416,7 +424,7 @@ function joinRoomInit(joinRoom) {
             socket.emit("join", { room: "Public", password: "", type: 0 });
         }
     }
-    else{
+    else {
         $('#room-modal').modal('hide')
     }
 }

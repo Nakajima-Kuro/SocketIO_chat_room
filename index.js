@@ -145,7 +145,9 @@ io.on("connection", function (socket) {
     socket.on("no_longer_typing", function () {
         socket.broadcast.to(room.name).emit('no_longer_typing', { username: self.name });
     });
-
+    socket.on('reset_username', function () {
+        self.name = 'Anonymous'
+    })
     //Change username
     socket.on("change_username", function (data) {
         try {//viec check trung ten da duoc kiem tra phia client de giam ganh nang cho server
@@ -186,7 +188,7 @@ io.on("connection", function (socket) {
                     socket.emit("join_respond", { status: 0 });
                     check = true;
                 }
-                else if(joinRoom.name != "Public" || self.name != "Anonymous"){
+                else if (joinRoom.name != "Public" || self.name != "Anonymous") {
                     pos = joinRoom.roomMember.map(function (e) { return e.name; }).indexOf(self.name);
                     if (pos != -1) {//da co nguoi voi ten nay
                         socket.emit("server_send", { message: "This username has been taken", type: 2 })
@@ -251,7 +253,7 @@ io.on("connection", function (socket) {
     socket.on('group_call_status', function (data) {
         if (data.status == 'join') {
             room.onlineList.push(self)
-            room.onlineList.forEach(function(user){
+            room.onlineList.forEach(function (user) {
                 socket.broadcast.to(user.id).emit("group_call_status", { username: self.name, type: 'join' })
             })
         }
@@ -260,7 +262,7 @@ io.on("connection", function (socket) {
             if (index != -1) {
                 room.onlineList.splice(index, 1)
             }
-            room.onlineList.forEach(function(user){
+            room.onlineList.forEach(function (user) {
                 socket.broadcast.to(user.id).emit("group_call_status", { username: self.name, type: 'left' })
             })
         }
