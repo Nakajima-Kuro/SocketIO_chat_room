@@ -181,9 +181,17 @@ socket.on("no_longer_typing", function (data) {
 socket.on("room_update", function (data) {
     existRoom = data.roomList;
     $("#room-list").empty();
-    for (let i = 0; i < data.roomList.length; i++) {
-        $('#room-list').append('<tr class="pointer" onclick="joinRoomInit(\'' + data.roomList[i].roomName + '\')"><th scope="row" width="20%">'
-            + (i + 1) + '</th><td width="55%">' + data.roomList[i].roomName + '</td><td width="25%">' + data.roomList[i].roomPopulation + '</td></tr>')
+    if($.cookie('theme') == 'light'){
+        for (let i = 0; i < data.roomList.length; i++) {
+            $('#room-list').append('<tr class="pointer" onclick="joinRoomInit(\'' + data.roomList[i].roomName + '\')"><th class="theme-headline" scope="row" width="20%">'
+                + (i + 1) + '</th><td class="theme-text-light" width="55%">' + data.roomList[i].roomName + '</td><td class="theme-text-light" width="25%">' + data.roomList[i].roomPopulation + '</td></tr>')
+        }
+    }
+    else if($.cookie('theme') == 'dark'){
+        for (let i = 0; i < data.roomList.length; i++) {
+            $('#room-list').append('<tr class="pointer" onclick="joinRoomInit(\'' + data.roomList[i].roomName + '\')"><th class="theme-headline" scope="row" width="20%">'
+                + (i + 1) + '</th><td class="theme-text-dark" width="55%">' + data.roomList[i].roomName + '</td><td class="theme-text-dark" width="25%">' + data.roomList[i].roomPopulation + '</td></tr>')
+        }
     }
 })
 socket.on("join_respond", function (data) {

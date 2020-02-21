@@ -32,7 +32,7 @@
         </div>
         <div class="row mb-3">
             <div class="col-lg-5 mb-2">
-                <input type="text" class="form-control" id="username" placeholder="Username">
+                <input type="text" class="form-control theme-input" id="username" placeholder="Username">
             </div>
             <div class="col-lg-7 mb-2 d-flex flex-row justify-content-start" id="button-section">
                 <button class="btn btn-info text-center" id="changename" type="button"
@@ -75,7 +75,7 @@
                                 </div>
                             </div>
                         </div>
-                        <input class="form-control theme-message" type="text" id="message" value="" placeholder="Your message...">
+                        <input class="form-control theme-input" type="text" id="message" value="" placeholder="Your message...">
                     </div>
                     <button class="btn btn-info btn-block text-center" id="send" style="max-width: 70px;">Send</button>
                 </div>
@@ -99,6 +99,7 @@
                 </div>
             </div>
         </div>
+        <!-- Trigger -->
         <!-- <button class="btn btn-outline-info btn-block" data-toggle="modal" data-target="#call-window-group">Trigger</button> -->
     </div>
     <div class="loader-wrapper">
@@ -109,14 +110,14 @@
     <div class="modal bd-example-modal-lg fade" id="call-window" tabindex="-1" role="dialog"
         aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
         <div class="modal-dialog modal-lg" role="document">
-            <div class="modal-content call-modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Video Call</h5>
+            <div class="modal-content call-modal-content border-secondary">
+                <div class="modal-header theme-header-light">
+                    <h5 class="modal-title theme-headline">Video Call</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body container-fluid">
+                <div class="modal-body container-fluid theme-content-light">
                     <div class="row d-flex justify-content-center">
                         <div class="col-lg-11 col-sm-12 col-md-12">
                             <div class="d-flex justify-content-sm-start">
@@ -126,7 +127,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="modal-footer d-flex justify-content-between">
+                <div class="modal-footer d-flex justify-content-between theme-header-light">
                     <h6 id="calling-status" class="ml-5"></h6>
                     <button type="button" id="end-call-button" class="btn btn-info" data-dismiss="modal">End
                         Call</button>
@@ -139,14 +140,14 @@
     <div class="modal bd-example-modal-xl fade" id="call-window-group" tabindex="-1" role="dialog"
         aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
         <div class="modal-dialog modal-xl" role="document">
-            <div class="modal-content call-modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Group Call</h5>
+            <div class="modal-content call-modal-content border-secondary">
+                <div class="modal-header theme-header-light">
+                    <h5 class="modal-title theme-headline">Group Call</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body container-fluid" id="group-call-body">
+                <div class="modal-body container-fluid theme-content-light" id="group-call-body">
                     <div id="group-call-row1" class="row d-flex justify-content-center">
                         <div class="col">
                             <video id="localGroupVideo" autoplay playsinline
@@ -158,7 +159,7 @@
                         <!-- Remote group video -->
                     </div>
                 </div>
-                <div class="modal-footer justify-content-between">
+                <div class="modal-footer justify-content-between theme-header-light">
                     <h6 id="group-calling-status" class="ml-5"></h6>
                     <div>
                         <button type="button" id="add-new-callee" class="btn btn-success mr-2">Add</button>
@@ -185,7 +186,7 @@
                     <div class="row mh-100">
                         <div class="col-lg-3">
                             <div class="form-group">
-                                <input type="text" class="form-control mt-2" id="people-search-input"
+                                <input type="text" class="form-control mt-2 theme-input" id="people-search-input"
                                     placeholder="Search" onkeyup="groupCallFilter()">
                             </div>
                             <div class="form-check">
@@ -318,44 +319,49 @@
     <div class="modal bd-example-modal-xl fade" id="room-modal" tabindex="-1" role="dialog"
         aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
         <div class="modal-dialog modal-xl" role="document">
-            <div class="modal-content container-fluid room-modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Join a room</h5>
+            <div class="modal-content container-fluid room-modal-content border-secondary">
+                <div class="modal-header theme-header-light row">
+                    <h5 class="modal-title theme-headline">Join a room</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body container-fluid">
-                    <div class="row mh-100">
-                        <div class="col-lg-3">
-                            <div class="form-group">
-                                <input type="text" class="form-control mt-2" id="room-search-input"
-                                    placeholder="Search a room" onkeyup="roomFilter()">
+                <div class="modal-body row theme-content-light">
+                    <div class="container-fluid">
+                        <div class="row mh-100">
+                            <div class="col-lg-3">
+                                <div class="form-group">
+                                    <input type="text" class="form-control mt-2 theme-input" id="room-search-input"
+                                        placeholder="Search a room" onkeyup="roomFilter()">
+                                </div>
+                            </div>
+                            <div class="col-lg-9">
+                                <table class="table fixed">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col" width="20%" class="align-middle theme-headline">#</th>
+                                            <th scope="col" width="50%" class="align-middle theme-headline">Room name</th>
+                                            <th scope="col" width="30%" class="align-middle theme-headline">Number of poeple</th>
+                                        </tr>
+                                    </thead>
+                                </table>
                             </div>
                         </div>
-                        <div class="col-lg-9">
-                            <table class="table fixed">
-                                <thead>
-                                    <tr>
-                                        <th scope="col" width="20%" class="align-middle">#</th>
-                                        <th scope="col" width="50%" class="align-middle">Room name</th>
-                                        <th scope="col" width="30%" class="align-middle">Number of poeple</th>
-                                    </tr>
-                                </thead>
-                            </table>
-                        </div>
-                    </div>
-                    <div class="row mh-100">
-                        <div class="col-lg-9 room-suff float-right">
-                            <table class="table table-hover fixed">
-                                <tbody id="room-list">
-
-                                </tbody>
-                            </table>
+                        <div class="row mh-100">
+                            <div class="col-lg-9 room-suff order-lg-2 pl-lg-4 pr-lg-4">
+                                <table class="table table-hover fixed">
+                                    <tbody id="room-list">
+    
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="col-lg-3 order-lg-1">
+                                <p></p>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="modal-footer row">
+                <div class="modal-footer row theme-header-light">
                     <div class="col-sm-3">
                         <div id="suff-spinner" class="spinner-grow text-info" role="status"></div>
                     </div>
@@ -373,31 +379,31 @@
     <div class="modal bd-example-modal-md fade" id="join-modal" tabindex="-1" role="dialog"
         aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
         <div class="modal-dialog" role="document">
-            <div class="modal-content container-fluid">
-                <div class="modal-header">
-                    <h5 class="modal-title">Join a room</h5>
+            <div class="modal-content container-fluid border-secondary">
+                <div class="modal-header theme-header-light row">
+                    <h5 class="modal-title theme-headline">Join a room</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body theme-content-light theme-margin">
                     <div class="form-group">
-                        <label for="join-room-username">Username</label>
-                        <input type="text" class="form-control" id="join-room-username" placeholder="Username">
+                        <label for="join-room-username" class="theme-text-light">Username</label>
+                        <input type="text" class="form-control theme-input" id="join-room-username" placeholder="Username">
                         <small id="join-name-taken" class="form-text text-danger">This name is already taken</small>
                         <small id="join-name-empty" class="form-text text-danger">You don't have a name?</small>
                     </div>
                     <div class="form-group">
-                        <label for="join-room-id">Room name</label>
-                        <input class="form-control border" id="join-room-id" disabled>
+                        <label for="join-room-id" class="theme-text-light">Room name</label>
+                        <input class="form-control border theme-input" id="join-room-id" disabled>
                     </div>
                     <div class="form-group">
-                        <label for="join-room-password">Password</label>
-                        <input type="text" class="form-control" id="join-room-password" placeholder="Room password">
+                        <label for="join-room-password" class="theme-text-light">Password</label>
+                        <input type="text" class="form-control theme-input" id="join-room-password" placeholder="Room password">
                         <small id="join-password-wrong" class="form-text text-danger">Wrong password</small>
                     </div>
                 </div>
-                <div class="modal-footer row">
+                <div class="modal-footer row theme-header-light">
                     <div class="col-sm-3">
                         <div id="join-spinner" class="spinner-grow text-info" role="status"></div>
                     </div>
@@ -413,22 +419,23 @@
         </div>
     </div>
     <!-- //Join room -->
+
     <!-- Host room -->
     <div class="modal bd-example-modal-md fade" id="host-modal" tabindex="-1" role="dialog"
         aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
         <div class="modal-dialog" role="document">
-            <div class="modal-content container-fluid">
-                <div class="modal-header">
-                    <h5 class="modal-title">Host a room</h5>
+            <div class="modal-content container-fluid border-secondary">
+                <div class="modal-header row theme-header-light">
+                    <h5 class="modal-title theme-headline">Host a room</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body theme-margin theme-content-light">
                     <form>
                         <div class="form-group">
-                            <label for="host-room-id">Room name</label>
-                            <input type="text" class="form-control mb-2" id="host-room-id" placeholder="Room name"
+                            <label for="host-room-id" class="theme-text-light">Room name</label>
+                            <input type="text" class="form-control mb-2 theme-input" id="host-room-id" placeholder="Room name"
                                 list="exist-room">
                             <small id="host-room-taken" class="form-text text-danger">This room name is already
                                 taken</small>
@@ -437,12 +444,12 @@
                                 <strong>special character</strong></small>
                         </div>
                         <div class="form-group">
-                            <label for="host-room-password">Password</label>
-                            <input type="text" class="form-control" id="host-room-password" placeholder="Room password">
+                            <label for="host-room-password" class="theme-text-light">Password</label>
+                            <input type="text" class="form-control theme-input" id="host-room-password" placeholder="Room password">
                         </div>
                     </form>
                 </div>
-                <div class="modal-footer row">
+                <div class="modal-footer row theme-header-light">
                     <div class="col-sm-3">
                         <div id="host-spinner" class="spinner-grow text-info" role="status"></div>
                     </div>
@@ -463,18 +470,18 @@
     <div class="modal bd-example-modal-md fade" id="call-no-name" tabindex="-1" role="dialog"
         aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
         <div class="modal-dialog" role="document">
-            <div class="modal-content container-fluid">
-                <div class="modal-header">
-                    <h5 class="modal-title">Please add a name first.</h5>
+            <div class="modal-content container-fluid border-secondary">
+                <div class="modal-header theme-header-light theme-margin">
+                    <h5 class="modal-title theme-headline">Please add a name first.</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body">
-                    <h6>For security reason, please change your name first.</h6>
-                    <h6>Then you will be able to call other people.</h6>
+                <div class="modal-body theme-content-light theme-margin">
+                    <h6 class="theme-text-light">For security reason, please change your name first.</h6>
+                    <h6 class="theme-text-light">Then you will be able to call other people.</h6>
                 </div>
-                <div class="modal-footer row">
+                <div class="modal-footer row theme-header-light">
                     <div class="col-sm-4">
                         <button type="button" class="btn btn-secondary btn-block" data-dismiss="modal"
                             data-target="#join-host-modal">Close</button>
@@ -488,17 +495,17 @@
     <div class="modal bd-example-modal-md fade" id="kicked-modal" tabindex="-1" role="dialog"
         aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
         <div class="modal-dialog" role="document">
-            <div class="modal-content container-fluid">
-                <div class="modal-header">
-                    <h5 class="modal-title">You have been kicked</h5>
+            <div class="modal-content container-fluid border-secondary">
+                <div class="modal-header theme-header-light theme-margin">
+                    <h5 class="modal-title theme-headline">You have been kicked</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body">
-                    <h6>You have been kicked by <span id="kicker" class="text-info"></span></h6>
+                <div class="modal-body theme-content-light theme-margin">
+                    <h6 class="theme-text-light">You have been kicked by <span id="kicker" class="text-info"></span></h6>
                 </div>
-                <div class="modal-footer row">
+                <div class="modal-footer row theme-header-light">
                     <div class="col-sm-4">
                         <button type="button" class="btn btn-secondary btn-block" data-dismiss="modal"
                             data-target="#join-host-modal">Close</button>

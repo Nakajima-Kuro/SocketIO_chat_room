@@ -185,6 +185,7 @@ function stopStreamedVideo(videoElem) {
     videoElem.srcObject = null;
   }
 }
+
 // Video element where stream will be placed.
 const localVideo = document.querySelector('video#localVideo');
 const remoteVideo = document.querySelector('video#remoteVideo');
