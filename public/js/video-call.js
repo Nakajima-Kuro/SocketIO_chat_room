@@ -8,6 +8,8 @@ window.isBusy = false;
 window.callerID = "";
 var callType;
 window.groupCall = new GroupVideoCall();
+var callee
+var inCall = false
 //1: 1 - 1 call
 //2: group call
 
@@ -34,6 +36,7 @@ function callInit(username) {
           isBusy = true;
           socket.emit("request_peer_id", { username: username })
           $("#call-window").modal()
+          callee = username
         }
       })
   }
@@ -42,12 +45,31 @@ function callInit(username) {
   }
 }
 
+$('#end-call-button').click(function () {
+  if(inCall == false){
+    socket.emit('change_my_mind', { callee: callee })
+  }
+})
+
+socket.on('change_my_mind', function (data) {
+  $("#call-incomming").modal('hide');
+  getCallRing.stop()
+  setTimeout(function () {
+    $("#call-window").modal('hide');
+    stopStreamedVideo(remoteVideo)
+  }, 3000)
+  if (!$('#call-window').is(':visible')) {
+    selfWarning('You just missed a call from <span class="text-info">' + data.username + '</span>')
+  }
+})
+
 socket.on("get_peer_id", function (data) {
   if (isBusy == false) {
     callerID = data.socketID;
     $('#caller-id').text(data.socketID)
     $('#caller-name').text(data.username)
     $("#call-incomming").modal();
+    getCallRing.play()
   }
   else {
     socket.emit("get_peer_id_respone", { peerID: peer.id, socketID: data.socketID, status: 2 })
@@ -56,6 +78,7 @@ socket.on("get_peer_id", function (data) {
 })
 
 function callRespone(status) {
+  getCallRing.stop();
   if (status == 1) {
     isBusy = true;
     callType = 1;
@@ -70,7 +93,13 @@ socket.on("request_peer_id_respone", function (data) {
     $('#calling-status').removeClass('text-info text-danger glow').addClass('text-success').text('Connected')
     const call = peer.call(data.peerID, localStream);
     call.on('stream', (remoteStream) => {
-      remoteVideo.srcObject = remoteStream
+      if ($('#call-window').is(':visible')) {
+        inCall = true
+        remoteVideo.srcObject = remoteStream
+      }
+      else{
+        socket.emit('change_my_mind', { callee: callee })
+      }
     });
     call.on('close', function () {
       disconnectedNoti();
@@ -148,6 +177,7 @@ peer.on('call', function (call) {
 
 $('#call-window').on('hidden.bs.modal', function () {
   isBusy = false;
+  inCall = false;
   stopStreamedVideo(localVideo);
 });
 

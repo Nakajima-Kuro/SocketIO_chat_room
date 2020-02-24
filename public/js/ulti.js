@@ -15,7 +15,7 @@ function changeTheme() {
 }
 
 function lightToDark() {
-    $('#theme-icon').attr('src', 'assets/moon.svg')
+    $('#theme-icon').attr('src', 'assets/images/moon.svg')
     $(".theme-body-light").map(function () {
         $(this).removeClass('theme-body-light').addClass('theme-body-dark')
     });
@@ -45,7 +45,7 @@ function lightToDark() {
 }
 
 function darkToLight() {
-    $('#theme-icon').attr('src', 'assets/sunny.svg')
+    $('#theme-icon').attr('src', 'assets/images/sunny.svg')
     $(".theme-body-dark").map(function () {
         $(this).removeClass('theme-body-dark').addClass('theme-body-light')
     });

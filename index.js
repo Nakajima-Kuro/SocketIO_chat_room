@@ -268,6 +268,10 @@ io.on("connection", function (socket) {
         socket.broadcast.to(data.socketID).emit("request_peer_id_respone", { peerID: data.peerID, status: data.status })
         // console.log("send the peer id to the caller");        
     });
+    socket.on('change_my_mind', function (data) {
+        var callee = room.getUser(data.callee);
+        socket.broadcast.to(callee.id).emit('change_my_mind', { username: self.name })
+    })
     socket.on('group_call_request', function (data) {
         if (data.type == 'new') {
             data.groupCallMember.forEach(function (user) {

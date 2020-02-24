@@ -82,6 +82,7 @@ socket.on("server_send", function (data) {
     lastChat = false;
     if (data.type == 1) {
         pushMessage(data.username, data.message)
+        messageNoti.play()
     }
     else if (data.type == 2) {
         var newrow = '<tr class="chat-line"><td class="text-success align-middle pl-3">' + data.message + "</td></tr>"
