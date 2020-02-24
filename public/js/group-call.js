@@ -99,7 +99,7 @@ socket.on('group_call_status', function (data) {
         groupTimeOut = 3000
     }
     else if (data.type == 'left') {
-        $("#group-calling-status").empty().append('<span class="text-info">' + data.username + '</span> has joined')
+        $("#group-calling-status").empty().append('<span class="text-info">' + data.username + '</span> has left')
         $("#group-call-" + data.username).find('span').empty()
         groupTimeOut = 3000
     }

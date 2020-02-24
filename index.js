@@ -1,3 +1,31 @@
+class Queue {
+    constructor(maxSize) {
+        this.queue = [];
+        this.maxSize = maxSize
+    }
+    size() {
+        return this.queue.length
+    }
+    isEmpty() {
+        if (this.queue.length == 0)
+            return true
+        return false
+    }
+    shift() {
+        var value = this.queue[0]
+        this.queue.splice(0, 1)
+        return value
+    }
+    push(val) {
+        this.queue.push(val)
+        if (this.queue.length > this.maxSize)
+            this.queue.splice(0, 1)
+        // console.log(this.queue.length + "/" + this.maxSize);
+    }
+    reset() {
+        this.queue = []
+    }
+}
 class Building {
     constructor() {
         this.roomList = new Array();//luu cac room
@@ -31,11 +59,16 @@ class Building {
     }
 }
 class Room {
-    constructor(name, password, admin) {
+    constructor(name, password, admin, type) {
         this.name = name;//ten phong
         this.password = password;//password
         this.roomMember = new Array();//luu cac user (co dang 1 class User)
-        this.messageList = new Array();//Luu cac doan message vao day
+        if (type == 'Public') {
+            this.messageList = new Queue(1000);//Luu cac doan message vao day
+        }
+        else if (type = 'Private') {
+            this.messageList = new Queue(100);//Luu cac doan message vao day
+        }
         this.admin = admin;
         this.onlineList = [];
     }
@@ -98,7 +131,7 @@ var server = require("http").Server(app);
 var io = require("socket.io")(server);
 server.listen(port);
 var building = new Building();//luu cac room_name trong day
-building.pushRoom(new Room("Public", ""));
+building.pushRoom(new Room("Public", "", "", 'Public'));
 
 // tạo kết nối giữa client và server
 io.on("connection", function (socket) {
@@ -114,7 +147,7 @@ io.on("connection", function (socket) {
         groupUpdate();
         self.peerID = data.peerID;
         io.emit("room_update", { roomList: building.getRoomList() })
-        socket.emit("init")
+        socket.emit("init", { messageList: room.messageList.queue })
     })
     //server lắng nghe dữ liệu từ client
 
@@ -131,9 +164,7 @@ io.on("connection", function (socket) {
     //4: warning
     socket.on("send_message", function (data) {
         //sau khi lắng nghe dữ liệu, server phát lại dữ liệu này đến các client khác
-        if (room.name != "Public") {
-            room.addMessage(self.name, data.message)
-        }
+        room.addMessage(self.name, data.message)
         socket.broadcast.to(room.name).emit('server_send', { message: data.message, username: self.name, type: 1 });
     });
     socket.on("send_warning", function (data) {
@@ -155,7 +186,7 @@ io.on("connection", function (socket) {
                 socket.broadcast.to(room.name).emit("server_send", { message: self.name + " has changed name to " + data.username, type: 2 });
             }
             self.name = data.username;
-            socket.emit("server_send", { message: "You has changed your name to " + self.name, type: 2 });
+            socket.emit("server_send", { message: "You have changed your name to " + self.name, type: 2 });
             groupUpdate();
         } catch (e) {
             socket.emit("server_send", { message: "Something wrong...", type: 2 });
@@ -168,7 +199,7 @@ io.on("connection", function (socket) {
         if (data.type == 1) { //room chua duoc tao (Host)
             // console.log("Host");
             roomChange();
-            room = new Room(data.room, data.password, self);
+            room = new Room(data.room, data.password, self, 'Private');
             building.pushRoom(room);
             room.pushUser(self);
             socket.join(data.room);
@@ -202,7 +233,7 @@ io.on("connection", function (socket) {
                     roomTemp.pushUser(self);
                     roomChange();
                     room = roomTemp;
-                    socket.emit("join_respond", { status: 1, messageList: room.messageList })
+                    socket.emit("join_respond", { status: 1, messageList: room.messageList.queue })
                     if (data.type == 0) {
                         io.to(data.room).emit("server_send", { message: self.name + " has joined!", type: 2 });
                     }

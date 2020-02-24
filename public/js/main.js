@@ -46,7 +46,7 @@ var roomMember = new Array();
 var inVideoCall = '(In video call)'
 var firstName = true;
 
-socket.on('init', function () {
+socket.on('init', function (data) {
     switch ($.cookie('theme')) {
         case 'dark': {
             lightToDark();
@@ -59,7 +59,24 @@ socket.on('init', function () {
     }
     if ($.cookie('username') != null) {
         $("#username").val($.cookie('username'));
+        $("#changename").click()
     }
+    data.messageList.forEach(function (data) {
+        var message = htmlFilter(data.message)
+        if ($.cookie('theme') == 'light') {
+            newrow = '<tr class="chat-line"><td class="text-info chat-name align-middle pl-3">'
+                + data.username + ': <span class="text-break text-center theme-text-light">' + message + '</span></td></tr>'
+        }
+        else if ($.cookie('theme') == 'dark') {
+            newrow = '<tr class="chat-line"><td class="text-info chat-name align-middle pl-3">'
+                + data.username + ': <span class="text-break text-center theme-text-dark">' + message + '</span></td></tr>'
+        }
+        if (!$(".is-typing").length)
+            $("#chat-content").append(newrow);
+        else {
+            $(".is-typing").first().before(newrow);
+        }
+    })
     $(".loader-wrapper").fadeOut('slow');
     setTimeout(function () {
         // un-lock scroll position
@@ -214,11 +231,17 @@ socket.on("join_respond", function (data) {
                 room = 'Public'
             }
             password = $("#join-room-password").val();
-            document.getElementById('room-iddisplay').innerHTML = "Room " + room;
+            document.getElementById('room-iddisplay').innerHTML = room;
             data.messageList.forEach(function (data) {
                 var message = htmlFilter(data.message)
-                var newrow = '<tr class="chat-line"><td class="text-break text-right align-middle" colspan="2">' + message + '</td>'
-                    + '<td class="text-info chat-name text-center align-middle">' + data.username + '</td></tr>'
+                if ($.cookie('theme') == 'light') {
+                    newrow = '<tr class="chat-line"><td class="text-info chat-name align-middle pl-3">'
+                        + data.username + ': <span class="text-break text-center theme-text-light">' + message + '</span></td></tr>'
+                }
+                else if ($.cookie('theme') == 'dark') {
+                    newrow = '<tr class="chat-line"><td class="text-info chat-name align-middle pl-3">'
+                        + data.username + ': <span class="text-break text-center theme-text-dark">' + message + '</span></td></tr>'
+                }
                 if (!$(".is-typing").length)
                     $("#chat-content").append(newrow);
                 else {
@@ -352,7 +375,7 @@ $(document).ready(function () {
                     room = $("#host-room-id").val();
                     password = $("#host-room-password").val();
                     socket.emit("join", { room: $("#host-room-id").val(), password: $("#host-room-password").val(), type: 1 });
-                    document.getElementById('room-iddisplay').innerHTML = "Room " + $("#host-room-id").val();
+                    document.getElementById('room-iddisplay').innerHTML = $("#host-room-id").val();
                 }
                 roomCheck = true
                 socket.emit("room_update")
