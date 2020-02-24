@@ -46,6 +46,9 @@ var roomMember = new Array();
 var inVideoCall = '(In video call)'
 var firstName = true;
 
+var URLexpression = /(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})/gi;
+var urlRegex = new RegExp(URLexpression);
+
 socket.on('init', function (data) {
     switch ($.cookie('theme')) {
         case 'dark': {
@@ -62,20 +65,7 @@ socket.on('init', function (data) {
         $("#changename").click()
     }
     data.messageList.forEach(function (data) {
-        var message = htmlFilter(data.message)
-        if ($.cookie('theme') == 'light') {
-            newrow = '<tr class="chat-line"><td class="text-info chat-name align-middle pl-3">'
-                + data.username + ': <span class="text-break text-center theme-text-light">' + message + '</span></td></tr>'
-        }
-        else if ($.cookie('theme') == 'dark') {
-            newrow = '<tr class="chat-line"><td class="text-info chat-name align-middle pl-3">'
-                + data.username + ': <span class="text-break text-center theme-text-dark">' + message + '</span></td></tr>'
-        }
-        if (!$(".is-typing").length)
-            $("#chat-content").append(newrow);
-        else {
-            $(".is-typing").first().before(newrow);
-        }
+        pushMessage(data.username, data.message)
     })
     $(".loader-wrapper").fadeOut('slow');
     setTimeout(function () {
@@ -91,21 +81,7 @@ socket.on("server_send", function (data) {
     var id = data.username + "-is-typing";
     lastChat = false;
     if (data.type == 1) {
-        var message = htmlFilter(data.message)
-        var newrow;
-        if ($.cookie('theme') == 'light') {
-            newrow = '<tr class="chat-line"><td class="text-info chat-name align-middle pl-3">'
-                + data.username + ': <span class="text-break text-center theme-text-light">' + message + '</span></td></tr>'
-        }
-        else if ($.cookie('theme') == 'dark') {
-            newrow = '<tr class="chat-line"><td class="text-info chat-name align-middle pl-3">'
-                + data.username + ': <span class="text-break text-center theme-text-dark">' + message + '</span></td></tr>'
-        }
-        if (!$(".is-typing").length)
-            $("#chat-content").append(newrow);
-        else {
-            $(".is-typing").first().before(newrow);
-        }
+        pushMessage(data.username, data.message)
     }
     else if (data.type == 2) {
         var newrow = '<tr class="chat-line"><td class="text-success align-middle pl-3">' + data.message + "</td></tr>"
@@ -233,20 +209,7 @@ socket.on("join_respond", function (data) {
             password = $("#join-room-password").val();
             document.getElementById('room-iddisplay').innerHTML = room;
             data.messageList.forEach(function (data) {
-                var message = htmlFilter(data.message)
-                if ($.cookie('theme') == 'light') {
-                    newrow = '<tr class="chat-line"><td class="text-info chat-name align-middle pl-3">'
-                        + data.username + ': <span class="text-break text-center theme-text-light">' + message + '</span></td></tr>'
-                }
-                else if ($.cookie('theme') == 'dark') {
-                    newrow = '<tr class="chat-line"><td class="text-info chat-name align-middle pl-3">'
-                        + data.username + ': <span class="text-break text-center theme-text-dark">' + message + '</span></td></tr>'
-                }
-                if (!$(".is-typing").length)
-                    $("#chat-content").append(newrow);
-                else {
-                    $(".is-typing").first().before(newrow);
-                }
+                pushMessage(data.username, data.message)
             })
         }
         roomCheck = true
@@ -355,27 +318,29 @@ $(document).ready(function () {
         }
     })
     $("#host-button").click(function () {
-        if ($('#host-room-id').val() == "") {
+        var roomID = $('#host-room-id').val().trim()
+        if (roomID == "") {
             //room name empty
             $("#host-room-empty").show()
         }
-        else if (existRoom.map(function (e) { return e.roomName }).indexOf($('#host-room-id').val()) != -1) {
+        else if (existRoom.map(function (e) { return e.roomName }).indexOf(roomID) != -1) {
             //room name taken
             $("#host-room-taken").show();
         }
         else {
-            var regex = /[^a-zA-Z0-9]/;
-            if (regex.test($("#host-room-id").val())) {
+            var nameExpression = /^[_A-z0-9]*((-|\s)*[_A-z0-9])*$/g;
+            var nameRegex = new RegExp(nameExpression);
+            if (nameExpression.test(roomID) == false) {
                 $('#host-room-regex-error').show()
             }
             else {
                 $("#host-spinner").show();
-                if (room != $("#host-room-id").val()) {//Tao mot room moi
+                if (room != roomID) {//Tao mot room moi
                     $("#chat-content tr").remove()
-                    room = $("#host-room-id").val();
+                    room = roomID;
                     password = $("#host-room-password").val();
-                    socket.emit("join", { room: $("#host-room-id").val(), password: $("#host-room-password").val(), type: 1 });
-                    document.getElementById('room-iddisplay').innerHTML = $("#host-room-id").val();
+                    socket.emit("join", { room: roomID, password: $("#host-room-password").val(), type: 1 });
+                    document.getElementById('room-iddisplay').innerHTML = roomID;
                 }
                 roomCheck = true
                 socket.emit("room_update")
@@ -414,23 +379,9 @@ $(document).ready(function () {
 
 function sendMessage() {
     if ($("#message").val() != "") {
-        var message = htmlFilter($("#message").val())
+        var message = $("#message").val()
         socket.emit("send_message", { message: message })
-        var newrow;
-        if ($.cookie('theme') == 'light') {
-            newrow = '<tr class="chat-line"><td class="text-info chat-name align-middle pl-3">'
-                + username + ': <span class="text-break text-center theme-text-light">' + message + '</span></td></tr>'
-        }
-        else if ($.cookie('theme') == 'dark') {
-            newrow = '<tr class="chat-line"><td class="text-info chat-name align-middle pl-3">'
-                + username + ': <span class="text-break text-center theme-text-dark">' + message + '</span></td></tr>'
-        }
-        //neu co dong Somebody + is typing => chen message len tren dong do
-        if (!$(".is-typing").length)
-            $("#chat-content").append(newrow);
-        else {
-            $(".is-typing").first().before(newrow);
-        }
+        pushMessage(username, message)
         $("#message").val('');
         $("#chat-card").scrollTop($("#chat-table").height());
     }
@@ -495,4 +446,25 @@ function htmlFilter(input) {
 
 function kickInit(username) {
     socket.emit("kick_user", { username: username })
+}
+
+function pushMessage(username, message) {
+    var message = htmlFilter(message)
+    if (message.match(urlRegex)) {
+        newrow = '<tr class="chat-line"><td class="text-info chat-name align-middle pl-3">'
+            + username + ': <a href="' + message + '" class="text-break text-center" target="_blank">' + message + '</a></td></tr>'
+    }
+    else if ($.cookie('theme') == 'light') {
+        newrow = '<tr class="chat-line"><td class="text-info chat-name align-middle pl-3">'
+            + username + ': <span class="text-break text-center theme-text-light">' + message + '</span></td></tr>'
+    }
+    else if ($.cookie('theme') == 'dark') {
+        newrow = '<tr class="chat-line"><td class="text-info chat-name align-middle pl-3">'
+            + username + ': <span class="text-break text-center theme-text-dark">' + message + '</span></td></tr>'
+    }
+    if (!$(".is-typing").length)
+        $("#chat-content").append(newrow);
+    else {
+        $(".is-typing").first().before(newrow);
+    }
 }
