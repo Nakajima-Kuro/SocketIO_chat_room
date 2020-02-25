@@ -6,14 +6,14 @@
 window.hasWebcam = false;
 window.isBusy = false;
 window.callerID = "";
-var callType;
+var callType;//goi group hoac video hoac phone call
 window.groupCall = new GroupVideoCall();
 var callee
 var inCall = false
 //1: 1 - 1 call
 //2: group call
 
-const mediaStreamConstraints = {
+var mediaStreamConstraints = {
   video: true,
   audio: true
 };
@@ -26,17 +26,21 @@ peer.on('open', function (id) {
   socket.emit("init", { peerID: id })
 });
 
-function callInit(username) {
-  if ($("#username").val() != "") {
-    $('#calling-status').removeClass('text-danger text-success').addClass('text-info glow').text('Calling...')
+function callInit(tempCallee) {
+  mediaStreamConstraints.video = true;
+  if (username != "" && username != 'Anonymous') {
+    $('.calling-status').removeClass('text-danger text-success').addClass('text-info glow').text('Calling...')
     navigator.mediaDevices.getUserMedia(mediaStreamConstraints)
       .then(gotLocalMediaStream).catch(handleLocalMediaStreamError)
       .then(function () {
         if (hasWebcam == true) {
+          mutedToogle(localVideo)
           isBusy = true;
-          socket.emit("request_peer_id", { username: username })
+          socket.emit("request_peer_id", { username: tempCallee, type: 'video_call' })
+          timerStop()
           $("#call-window").modal()
-          callee = username
+          callee = tempCallee
+          callingSound.play()
         }
       })
   }
@@ -45,8 +49,30 @@ function callInit(username) {
   }
 }
 
-$('#end-call-button').click(function () {
-  if(inCall == false){
+function dialInit(tempCallee) {
+  mediaStreamConstraints.video = false
+  if (username != "" && username != 'Anonymous') {
+    $('.calling-status').removeClass('text-danger text-success').addClass('text-info glow').text('Calling...')
+    navigator.mediaDevices.getUserMedia(mediaStreamConstraints)
+      .then(gotLocalMediaStream).catch(handleLocalMediaStreamError)
+      .then(function () {
+        mutedToogle(localVideo)
+        isBusy = true;
+        socket.emit("request_peer_id", { username: tempCallee, type: 'phone_call' })
+        $('#phone-caller-name').text(tempCallee)
+        timerStop()
+        $("#phonecall-window").modal()
+        callee = tempCallee
+        callingSound.play()
+      })
+  }
+  else {
+    $("#call-no-name").modal();
+  }
+}
+
+$('.end-call-button').click(function () {
+  if (inCall == false) {
     socket.emit('change_my_mind', { callee: callee })
   }
 })
@@ -54,11 +80,13 @@ $('#end-call-button').click(function () {
 socket.on('change_my_mind', function (data) {
   $("#call-incomming").modal('hide');
   getCallRing.stop()
+  callingSound.stop()
   setTimeout(function () {
     $("#call-window").modal('hide');
+    $("#phonecall-window").modal('hide');
     stopStreamedVideo(remoteVideo)
   }, 3000)
-  if (!$('#call-window').is(':visible')) {
+  if (!$('#call-window').is(':visible') && !$('#phonecall-window').is(':visible')) {
     selfWarning('You just missed a call from <span class="text-info">' + data.username + '</span>')
   }
 })
@@ -68,7 +96,14 @@ socket.on("get_peer_id", function (data) {
     callerID = data.socketID;
     $('#caller-id').text(data.socketID)
     $('#caller-name').text(data.username)
+    if (data.type == 'phone_call') {
+      $('#get-call-header').text('Phone Call')
+    }
+    else {
+      $('#get-call-header').text('Video Call')
+    }
     $("#call-incomming").modal();
+    callType = data.type
     getCallRing.play()
   }
   else {
@@ -81,7 +116,7 @@ function callRespone(status) {
   getCallRing.stop();
   if (status == 1) {
     isBusy = true;
-    callType = 1;
+    $('#phone-caller-name').text($('#caller-name').text())
   }
   socket.emit("get_peer_id_respone", { peerID: peer.id, socketID: $('#caller-id').text(), status: status })
 }
@@ -90,26 +125,29 @@ socket.on("request_peer_id_respone", function (data) {
   // console.log("got the peer id, let call");
   // console.log(data.peerID);
   if (data.status == 1) {
-    $('#calling-status').removeClass('text-info text-danger glow').addClass('text-success').text('Connected')
+    $('.calling-status').removeClass('text-info text-danger glow').addClass('text-success').text('Connected')
+    timerStart()
     const call = peer.call(data.peerID, localStream);
     call.on('stream', (remoteStream) => {
-      if ($('#call-window').is(':visible')) {
+      if ($('#call-window').is(':visible') || $('#phonecall-window').is(':visible')) {
+        mutedToogle(localVideo)
         inCall = true
         remoteVideo.srcObject = remoteStream
+        callingSound.stop()
       }
-      else{
+      else {
         socket.emit('change_my_mind', { callee: callee })
       }
     });
     call.on('close', function () {
       disconnectedNoti();
     })
-    $('#end-call-button').click(function () {
+    $('.end-call-button').click(function () {
       call.close();
     })
   }
   else if (data.status == 0) {
-    $('#calling-status').removeClass('text-info text-success glow').addClass('text-danger').text('Disconnected')
+    disconnectedNoti()
     setTimeout(
       function () {
         $('#call-window').modal('hide');
@@ -121,7 +159,7 @@ socket.on("request_peer_id_respone", function (data) {
 })
 
 socket.on("webcam_fail", function () {
-  $('#calling-status').removeClass('text-info text-success glow').addClass('text-danger').text('Error')
+  $('.calling-status').removeClass('text-info text-success glow').addClass('text-danger').text('Error')
   setTimeout(
     function () {
       $('#call-window').modal('hide');
@@ -129,17 +167,30 @@ socket.on("webcam_fail", function () {
 })
 
 peer.on('call', function (call) {
-  if (callType == 1) {
-    $('#calling-status').removeClass('text-info text-danger glow').addClass('text-success').text('Connected')
+  if (callType == 'video_call' || callType == 'phone_call') {
+    if (callType == 'video_call') {
+      mediaStreamConstraints.video = true
+    }
+    else {
+      mediaStreamConstraints.video = false
+    }
+    $('.calling-status').removeClass('text-info text-danger glow').addClass('text-success').text('Connected')
+    timerStart()
     navigator.mediaDevices.getUserMedia(mediaStreamConstraints)
       .then(gotLocalMediaStream).catch(handleLocalMediaStreamError)
       .then(function () {
-        if (hasWebcam == true) {
+        if (hasWebcam == true || callType == 'phone_call') {
           call.answer(localStream);
           call.on('stream', (remoteStream) => {
             remoteVideo.srcObject = remoteStream
+            inCall = true
           });
-          $('#call-window').modal();
+          if (callType == 'phone_call') {
+            $('#phonecall-window').modal();
+          }
+          else if (callType == 'video_call') {
+            $('#call-window').modal();
+          }
         }
         else {
           socket.emit("webcam_fail", { caller: callerID })
@@ -149,7 +200,7 @@ peer.on('call', function (call) {
     call.on('close', function () {
       disconnectedNoti()
     })
-    $('#end-call-button').click(function () {
+    $('.end-call-button').click(function () {
       call.close()
     })
   } else {
@@ -179,40 +230,84 @@ $('#call-window').on('hidden.bs.modal', function () {
   isBusy = false;
   inCall = false;
   stopStreamedVideo(localVideo);
+  callingSound.stop()
+  timerStop()
+});
+
+$('#phonecall-window').on('hidden.bs.modal', function () {
+  isBusy = false;
+  inCall = false;
+  stopStreamedVideo(localVideo);
+  callingSound.stop()
+  timerStop()
 });
 
 function disconnectedNoti() {
-  $('#calling-status').removeClass('text-info text-success glow').addClass('text-danger').text('Disconnected');
+  $('.calling-status').removeClass('text-info text-success glow').addClass('text-danger').text('Disconnected');
+  callingSound.stop()
+  hangupSound.play()
+  try {
+    var audioElem = localVideo
+    if (audioElem != null) {
+      let stream = audioElem.srcObject;
+      if (stream != null) {
+        stream.getAudioTracks()[0].enabled = false;
+      }
+    }
+  }
+  catch (e) {
+    alert(e)
+  }
   setTimeout(
     function () {
       stopStreamedVideo(remoteVideo);
       $('#call-window').modal('hide');
+      $('#phonecall-window').modal('hide');
       isBusy = false;
-      // console.log("Disconnected");
+      hangupSound.stop()
     }, 1500);
 }
 
 function busyNoti() {
-  $('#calling-status').removeClass('text-info text-success glow').addClass('text-danger').text('Busy')
+  $('.calling-status').removeClass('text-info text-success glow').addClass('text-danger').text('Busy')
   setTimeout(
     function () {
       $('#call-window').modal('hide');
+      $('#phonecall-window').modal('hide');
       isBusy = false;
     }, 2000);
 }
 
 function stopStreamedVideo(videoElem) {
-  if (videoElem != null) {
-    let stream = videoElem.srcObject;
-    if (stream != null) {
-      let tracks = stream.getTracks();
+  try {
+    if (videoElem != null) {
+      let stream = videoElem.srcObject;
+      if (stream != null) {
+        let tracks = stream.getTracks();
 
-      tracks.forEach(function (track) {
-        track.stop();
-      });
+        tracks.forEach(function (track) {
+          track.stop();
+        });
+      }
+      videoElem.srcObject = null;
     }
+  }
+  catch (e) {
+    alert(e)
+  }
+}
 
-    videoElem.srcObject = null;
+function mutedToogle(audioElem) {
+  try {
+    if (audioElem != null) {
+      let stream = audioElem.srcObject;
+      if (stream != null) {
+        stream.getAudioTracks()[0].enabled = !(stream.getAudioTracks()[0].enabled);
+      }
+    }
+  }
+  catch (e) {
+    alert(e)
   }
 }
 

@@ -138,6 +138,7 @@ socket.on("group_update", function (data) {
                 $("#room-member").append('<tr style="height: 3.2rem;"><td class="text-info align-middle" style="max-width: 190px;">' + member +
                     '</td><td style="width: 45px;" class="align-middle">' +
                     '<div class="btn-group" role="group">' +
+                    '<button type="button" id="' + member + '" onclick="dialInit(this.id)" class="btn btn-sm btn-outline-info call"><i class="fa fa-phone" aria-hidden="true"></i></button>' +
                     '<button type="button" id="' + member + '" onclick="callInit(this.id)" class="btn btn-sm btn-outline-info call"><i class="fa fa-video-camera" aria-hidden="true"></i></button>' +
                     '<button type="button" id="' + member + '" onclick="kickInit(this.id)" class="btn btn-sm btn-outline-danger"><i class="fa fa-times" aria-hidden="true"></i></button>' +
                     '</div></td></tr>');
@@ -154,6 +155,7 @@ socket.on("group_update", function (data) {
                 $("#room-member").append('<tr style="height: 3.2rem;"><td class="text-info align-middle" style="max-width: 190px;">' + member +
                     '</td><td style="width: 45px;" class="align-middle">' +
                     '<div class="btn-group" role="group">' +
+                    '<button type="button" id="' + member + '" onclick="dialInit(this.id)" class="btn btn-sm btn-outline-info call"><i class="fa fa-phone" aria-hidden="true"></i></button>' +
                     '<button type="button" id="' + member + '" onclick="callInit(this.id)" class="btn btn-sm btn-outline-info call"><i class="fa fa-video-camera" aria-hidden="true"></i></button>' +
                     '</div></td></tr>');
             }
@@ -238,6 +240,17 @@ socket.on("kick_user", function (data) {
             $("#kicked-modal").modal('hide');
         }, 5000);
 })
+socket.on('change_name_respone', function (data) {
+    if (data.status == 'good') {
+        username = $("#username").val()
+        $.cookie("username", username, { expires: 7 });
+        firstName = false
+        selfWarning('You have changed your name to ' + username)
+    }
+    else if(data.status == 'bad'){
+        selfWarning('There is a person with that name. Please choose another name.');
+    }
+})
 //client gửi dữ liệu lên server
 $(document).ready(function () {
     //check xem da join room nao chua
@@ -264,7 +277,7 @@ $(document).ready(function () {
                 table = document.getElementById("room-member");
                 tr = table.getElementsByTagName("tr");
 
-                // Loop through all table rows, and hide those who don't match the search query
+                //kiem tra xem co ai trung ten khong
                 for (let i = 0; i < tr.length; i++) {
                     td = tr[i].getElementsByTagName("td")[0];
                     if (td) {
@@ -278,10 +291,7 @@ $(document).ready(function () {
                     }
                 }
                 if (check == false) {
-                    username = $("#username").val()
-                    $.cookie("username", username, { expires: 7 });
                     socket.emit("change_username", { username: $("#username").val() })
-                    firstName = false
                 }
                 else {
                     var warning = "There is a person with that name. Please choose another name."

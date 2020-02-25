@@ -28,3 +28,9 @@ var messageNoti = new AudioElement('assets/sounds/message_noti.ogg')
 
 //Get call ringing
 var getCallRing = new AudioElement('assets/sounds/getcall.ogg', true)
+
+//Calling
+var callingSound = new AudioElement('assets/sounds/calling.ogg', true)
+
+//Hang up
+var hangupSound = new AudioElement('assets/sounds/silience.ogg', true)

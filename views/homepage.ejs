@@ -103,12 +103,46 @@
             </div>
         </div>
         <!-- Trigger -->
-        <!-- <button class="btn btn-outline-info btn-block" data-toggle="modal" data-target="#call-incomming">Trigger</button> -->
+        <!-- <button class="btn btn-outline-info btn-block" data-toggle="modal" data-target="#phonecall-window">Trigger</button> -->
     </div>
+
+    <!-- Loading screen -->
     <div class="loader-wrapper">
         <!-- Loading square for squar.red network -->
         <span class="loader"><span class="loader-inner"></span></span>
     </div>
+    <!-- //Loading screen -->
+
+    <!-- Phonecall Window -->
+    <div class="modal bd-example-modal-md fade" id="phonecall-window" tabindex="-1" role="dialog"
+        aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog modal-md" role="document">
+            <div class="modal-content theme-modal-outline">
+                <div class="modal-header theme-header-light theme-modal-header">
+                    <h5 class="modal-title theme-headline">Phone Call</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span class="theme-cross" aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body container-fluid theme-content-light">
+                    <div class="row d-flex justify-content-center">
+                        <div class="col-sm-6">
+                            <h6 id="phone-caller-name" class="text-info text-right"></h6>
+                        </div>
+                        <div class="col-sm-6">
+                            <h6 class="text-info text-left"><span id="call-minutes">00</span>:<span id="call-seconds">00</span></h6>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer d-flex justify-content-between theme-header-light theme-modal-footer">
+                    <h6 class="calling-status ml-5"></h6>
+                    <button type="button" class="end-call-button btn btn-info" data-dismiss="modal">End
+                        Call</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- //Phonecall Window -->
     <!-- Call Window -->
     <div class="modal bd-example-modal-lg fade" id="call-window" tabindex="-1" role="dialog"
         aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
@@ -131,8 +165,8 @@
                     </div>
                 </div>
                 <div class="modal-footer d-flex justify-content-between theme-header-light theme-modal-footer">
-                    <h6 id="calling-status" class="ml-5"></h6>
-                    <button type="button" id="end-call-button" class="btn btn-info" data-dismiss="modal">End
+                    <h6 class="calling-status ml-5"></h6>
+                    <button type="button" class="end-call-button btn btn-info" data-dismiss="modal">End
                         Call</button>
                 </div>
             </div>
@@ -301,7 +335,7 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content theme-modal-outline">
                 <div class="modal-header theme-header-light theme-modal-header">
-                    <h5 class="modal-title theme-headline">Video Call</h5>
+                    <h5 class="modal-title theme-headline" id="get-call-header">Video Call</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span class="theme-cross" aria-hidden="true">&times;</span>
                     </button>
@@ -544,6 +578,7 @@
     <script src="bootstrap/dist/js/bootstrap.min.js"></script>
     <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
     <script src="js/video-call.js"></script>
+    <script src="js/phone-call.js"></script>
     <script src="js/group-call.js"></script>
 </body>
 

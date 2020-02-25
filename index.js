@@ -181,13 +181,19 @@ io.on("connection", function (socket) {
     })
     //Change username
     socket.on("change_username", function (data) {
-        try {//viec check trung ten da duoc kiem tra phia client de giam ganh nang cho server
-            if (room.name != "Public") {
-                socket.broadcast.to(room.name).emit("server_send", { message: self.name + " has changed name to " + data.username, type: 2 });
+        try {
+            pos = room.roomMember.map(function (e) { return e.name; }).indexOf(data.username);
+            if (pos == -1) {//Khong trung ten
+                if (room.name != "Public") {
+                    socket.broadcast.to(room.name).emit("server_send", { message: self.name + " has changed name to " + data.username, type: 2 });
+                }
+                self.name = data.username;
+                socket.emit('change_name_respone', { status: 'good' })
+                groupUpdate();
             }
-            self.name = data.username;
-            socket.emit("server_send", { message: "You have changed your name to " + self.name, type: 2 });
-            groupUpdate();
+            else {
+                socket.emit('change_name_respone', { status: 'bad' })
+            }
         } catch (e) {
             socket.emit("server_send", { message: "Something wrong...", type: 2 });
         }
@@ -261,7 +267,7 @@ io.on("connection", function (socket) {
         // console.log("request_recived");
         var callee = room.getUser(data.username);
         // console.log(callee);
-        socket.broadcast.to(callee.id).emit("get_peer_id", { socketID: socket.id, username: self.name })
+        socket.broadcast.to(callee.id).emit("get_peer_id", { socketID: socket.id, username: self.name, type: data.type })
     });
     socket.on('get_peer_id_respone', function (data) {
         // console.log("got the peer ID");
