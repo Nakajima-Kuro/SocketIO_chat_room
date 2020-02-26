@@ -6,9 +6,12 @@ class GroupVideoCall {
     }
     deleteVideo(peer) {
         var index = this.peerList.indexOf(peer);
-        $("#" + peer).remove();
-        if (index < 3) {
-            $("#group-call-row1").append($("#" + this.peerList[this.peerList.length - 1]))
+        if ($('#group-call-row1').find('#' + peer).length == 1) {
+            $("#" + peer).remove();
+            $("#group-call-row1").append($("#group-call-row2 div")[0])
+        }
+        else{
+            $("#" + peer).remove();
         }
         this.videoNum -= 1;
         if (this.videoNum == 1 && this.fresh == false) {
@@ -114,15 +117,17 @@ socket.on("group_update", function (data) {
     data.group.forEach(function (member) {
         if (member != username && member != "Anonymous") {
             if (data.onlineName.indexOf(member) == -1) {
-                $("#group-call-member").append('<tr class="pointer" id="group-call-' + member + '" onclick="groupCallPush(' + member + ')">' +
-                    '<td width="15%">' + i + '</td><td class="text-info align-middle user" width="70%">' + member +
-                    '<span class="text-success ml-2"></span>' +
+                $("#group-call-member").append('<tr class="cursor-pointer" id="group-call-' + member + '" onclick="groupCallPush(\'' + member + '\')">' +
+                    '<td width="15%" class="text-info highlight-0">' + i + '</td>' +
+                    '<td class="text-info align-middle user highlight-0" width="70%">' + member +
+                    '<span class="text-success ml-2 highlight-0"></span>' +
                     '</td><td><i class="fa fa-check text-info" aria-hidden="true" style="display: none;" width="15%"></i></td></tr>');
             }
             else {
-                $("#group-call-member").append('<tr class="pointer" id="group-call-' + member + '" onclick="groupCallPush(' + member + ')">' +
-                    '<td width="15%">' + i + '</td><td class="text-info align-middle user" width="70%">' + member +
-                    '<span class="text-success ml-2">' + inVideoCall + '</span>' +
+                $("#group-call-member").append('<tr class="cursor-pointer" id="group-call-' + member + '" onclick="groupCallPush(\'' + member + '\')">' +
+                    '<td width="15%" class="text-info highlight-0">' + i + '</td>' +
+                    '<td class="text-info align-middle user highlight-0" width="70%">' + member +
+                    '<span class="text-success ml-2 highlight-0">' + inVideoCall + '</span>' +
                     '</td><td><i class="fa fa-check text-info" aria-hidden="true" style="display: none;" width="15%"></i></td></tr>');
             }
             i++;
@@ -131,11 +136,13 @@ socket.on("group_update", function (data) {
     if (room != "Public" && data.admin.name == username) {
         data.group.forEach(function (member) {
             if (member == username || member == "Anonymous") {
-                $("#room-member").prepend('<tr style="height: 3.2rem;"><td class="text-info align-middle" style="max-width: 190px;">' + member +
+                $("#room-member").prepend('<tr style="height: 3.2rem;">' +
+                    '<td class="text-info align-middle cursor-default highlight-0" style="max-width: 190px;">' + member +
                     '</td><td style="width: 45px;"></td></tr>');
             }
             else {
-                $("#room-member").append('<tr style="height: 3.2rem;"><td class="text-info align-middle" style="max-width: 190px;">' + member +
+                $("#room-member").append('<tr style="height: 3.2rem;">' +
+                    '<td class="text-info align-middle cursor-default highlight-0" style="max-width: 190px;">' + member +
                     '</td><td style="width: 45px;" class="align-middle">' +
                     '<div class="btn-group" role="group">' +
                     '<button type="button" id="' + member + '" onclick="dialInit(this.id)" class="btn btn-sm btn-outline-info call"><i class="fa fa-phone" aria-hidden="true"></i></button>' +
@@ -148,11 +155,13 @@ socket.on("group_update", function (data) {
     else {
         data.group.forEach(function (member) {
             if (member == username || member == "Anonymous") {
-                $("#room-member").prepend('<tr style="height: 3.2rem;"><td class="text-info align-middle" style="max-width: 190px;">' + member +
+                $("#room-member").prepend('<tr style="height: 3.2rem;">' +
+                    '<td class="text-info align-middle cursor-default highlight-0" style="max-width: 190px;">' + member +
                     '</td><td style="width: 45px;"></td></tr>');
             }
             else {
-                $("#room-member").append('<tr style="height: 3.2rem;"><td class="text-info align-middle" style="max-width: 190px;">' + member +
+                $("#room-member").append('<tr style="height: 3.2rem;">' +
+                    '<td class="text-info align-middle cursor-default highlight-0" style="max-width: 190px;">' + member +
                     '</td><td style="width: 45px;" class="align-middle">' +
                     '<div class="btn-group" role="group">' +
                     '<button type="button" id="' + member + '" onclick="dialInit(this.id)" class="btn btn-sm btn-outline-info call"><i class="fa fa-phone" aria-hidden="true"></i></button>' +
@@ -178,14 +187,14 @@ socket.on("room_update", function (data) {
     $("#room-list").empty();
     if ($.cookie('theme') == 'light') {
         for (let i = 0; i < data.roomList.length; i++) {
-            $('#room-list').append('<tr class="pointer" onclick="joinRoomInit(\'' + data.roomList[i].roomName + '\')"><th class="theme-headline" scope="row" width="20%">'
-                + (i + 1) + '</th><td class="theme-text-light" width="55%">' + data.roomList[i].roomName + '</td><td class="theme-text-light" width="25%">' + data.roomList[i].roomPopulation + '</td></tr>')
+            $('#room-list').append('<tr class="cursor-pointer" onclick="joinRoomInit(\'' + data.roomList[i].roomName + '\')"><th class="theme-headline highlight-0" scope="row" width="20%">'
+                + (i + 1) + '</th><td class="theme-text-light highlight-0" width="55%">' + data.roomList[i].roomName + '</td><td class="theme-text-light highlight-0" width="25%">' + data.roomList[i].roomPopulation + '</td></tr>')
         }
     }
     else if ($.cookie('theme') == 'dark') {
         for (let i = 0; i < data.roomList.length; i++) {
-            $('#room-list').append('<tr class="pointer" onclick="joinRoomInit(\'' + data.roomList[i].roomName + '\')"><th class="theme-headline text-info" scope="row" width="20%">'
-                + (i + 1) + '</th><td class="theme-text-dark" width="55%">' + data.roomList[i].roomName + '</td><td class="theme-text-dark" width="25%">' + data.roomList[i].roomPopulation + '</td></tr>')
+            $('#room-list').append('<tr class="cursor-pointer" onclick="joinRoomInit(\'' + data.roomList[i].roomName + '\')"><th class="theme-headline text-info highlight-0" scope="row" width="20%">'
+                + (i + 1) + '</th><td class="theme-text-dark highlight-0" width="55%">' + data.roomList[i].roomName + '</td><td class="theme-text-dark highlight-0" width="25%">' + data.roomList[i].roomPopulation + '</td></tr>')
         }
     }
 })
@@ -247,8 +256,9 @@ socket.on('change_name_respone', function (data) {
         firstName = false
         selfWarning('You have changed your name to ' + username)
     }
-    else if(data.status == 'bad'){
+    else if (data.status == 'bad') {
         selfWarning('There is a person with that name. Please choose another name.');
+        $("#username").val('')
     }
 })
 //client gửi dữ liệu lên server
@@ -296,6 +306,7 @@ $(document).ready(function () {
                 else {
                     var warning = "There is a person with that name. Please choose another name."
                     selfWarning(warning)
+                    $("#username").val('')
                 }
             }
         }

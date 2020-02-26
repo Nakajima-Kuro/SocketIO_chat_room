@@ -53,13 +53,9 @@ input::-webkit-calendar-picker-indicator {
   }
 }
 
-.btn:focus,.btn:active {
+.btn:focus, .btn:active {
   outline: none !important;
   box-shadow: none;
-}
-
-.pointer:hover{
-  cursor: pointer;
 }
 
 .fixed {
@@ -93,7 +89,7 @@ input::-webkit-calendar-picker-indicator {
   display: none !important;
 }
 
-.display-none{
+.display-none {
   display: none;
 }
 
@@ -102,13 +98,33 @@ input::-webkit-calendar-picker-indicator {
   box-shadow: none;
 }
 
-.main-chat-group{
+.main-chat-group {
   height: calc(100% - 160px);
   min-height: 300px;
 }
 
 ::-webkit-scrollbar {
   display: none;
+}
+
+.highlight-0::selection {
+  color: none;
+  background: none;
+}
+
+/* For Mozilla Firefox */
+
+.highlight-0::-moz-selection {
+  color: none;
+  background: none;
+}
+
+.cursor-default:hover {
+  cursor: default;
+}
+
+.cursor-pointer:hover {
+  cursor: pointer;
 }
 
 @-webkit-keyframes glow {

@@ -19,7 +19,7 @@
 <body class="theme-body-light">
     <div class="container">
         <nav class="navbar navbar-light pb-0">
-            <span class="navbar-brand h1 text-info text-center" style="width: 100%;">
+            <span class="navbar-brand h1 text-info text-center highlight-0 cursor-default" style="width: 100%;">
                 <button class="btn btn-sm float-right" onclick="changeTheme()">
                     <img id="theme-icon" src="assets/images/sunny.svg" style="height: 25px;">
                 </button>
@@ -49,8 +49,8 @@
             <div class="card col-xl-9 parent theme-content-light theme-main-section" style="height: 100%;">
                 <div class="card-header row d-flex justify-content-between theme-header-light"
                     style="min-height: 56px;">
-                    <div class="theme-text-light">Chat Section</div>
-                    <div class="theme-text-light text-info" id="room-iddisplay">Public</div>
+                    <div class="theme-text-light highlight-0 cursor-default">Chat Section</div>
+                    <div class="theme-text-light text-info highlight-0 cursor-default" id="room-iddisplay">Public</div>
                 </div>
                 <div class="card-body">
                     <div style="height: 100%; padding: 5px 0 0 0 !important;" id="chat-card">
@@ -85,7 +85,8 @@
             </div>
             <div class="card col-xl-3 theme-content-light theme-main-section" style="height: 100%;">
                 <div class="card-header row d-flex justify-content-between theme-header-light" style="height: 56px;">
-                    <div class="theme-text-light"><span id="people-number" class="text-info">0</span> people</div>
+                    <div class="theme-text-light highlight-0 cursor-default"><span id="people-number"
+                            class="text-info highlight-0 cursor-default">0</span> people</div>
                     <!-- group-call button -->
                     <button type="button" class="btn btn-sm btn-outline-info call align-middle theme-btn"
                         onclick="groupCallHit()">Group Call<i class="fa fa-video-camera ml-2"
@@ -119,7 +120,7 @@
         <div class="modal-dialog modal-md" role="document">
             <div class="modal-content theme-modal-outline">
                 <div class="modal-header theme-header-light theme-modal-header">
-                    <h5 class="modal-title theme-headline">Phone Call</h5>
+                    <h5 class="modal-title theme-headline highlight-0 cursor-default">Phone Call</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span class="theme-cross" aria-hidden="true">&times;</span>
                     </button>
@@ -127,10 +128,14 @@
                 <div class="modal-body container-fluid theme-content-light">
                     <div class="row d-flex justify-content-center">
                         <div class="col-sm-6">
-                            <h6 id="phone-caller-name" class="text-info text-right"></h6>
+                            <h6 id="phone-caller-name" class="text-info text-right cursor-default highlight-0"></h6>
                         </div>
                         <div class="col-sm-6">
-                            <h6 class="text-info text-left"><span id="call-minutes">00</span>:<span id="call-seconds">00</span></h6>
+                            <h6 class="text-info text-left highlight-0 cursor-default">
+                                <span class="highlight-0 cursor-default" id="call-minutes">00</span>
+                                :
+                                <span class="highlight-0 cursor-default" id="call-seconds">00</span>
+                            </h6>
                         </div>
                     </div>
                 </div>
@@ -149,7 +154,7 @@
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content call-modal-content theme-modal-outline">
                 <div class="modal-header theme-header-light theme-modal-header">
-                    <h5 class="modal-title theme-headline">Video Call</h5>
+                    <h5 class="modal-title theme-headline highlight-0 cursor-default">Video Call</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span class="theme-cross" aria-hidden="true">&times;</span>
                     </button>
@@ -179,7 +184,7 @@
         <div class="modal-dialog modal-xl" role="document">
             <div class="modal-content call-modal-content theme-modal-outline">
                 <div class="modal-header theme-header-light theme-modal-header">
-                    <h5 class="modal-title theme-headline">Group Call</h5>
+                    <h5 class="modal-title theme-headline highlight-0 cursor-default">Group Call</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span class="theme-cross" aria-hidden="true">&times;</span>
                     </button>
@@ -214,7 +219,7 @@
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content container-fluid room-modal-content theme-modal-outline">
                 <div class="modal-header theme-header-light theme-margin theme-modal-header">
-                    <h5 class="modal-title theme-headline">Create a group call</h5>
+                    <h5 class="modal-title theme-headline highlight-0 cursor-default">Create a group call</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span class="theme-cross" aria-hidden="true">&times;</span>
                     </button>
@@ -228,17 +233,21 @@
                                         placeholder="Search" onkeyup="groupCallFilter()">
                                 </div>
                                 <div class="form-check">
-                                    <input type="checkbox" class="form-check-input" id="group-check-all"
+                                    <input type="checkbox" class="form-check-input cursor-pointer" id="group-check-all"
                                         onclick="groupSelectAll()">
-                                    <label class="form-check-label theme-text-light" for="group-check-all">Select all</label>
+                                    <label class="form-check-label theme-text-light highlight-0 cursor-pointer"
+                                        for="group-check-all">Select
+                                        all</label>
                                 </div>
                             </div>
                             <div class="col-lg-9">
                                 <table class="table fixed">
                                     <thead>
                                         <tr>
-                                            <th scope="col" width="15%" class="align-middle theme-headline">#</th>
-                                            <th scope="col" width="70%" class="align-middle theme-headline">Name</th>
+                                            <th scope="col" width="15%"
+                                                class="align-middle theme-headline highlight-0 cursor-default">#</th>
+                                            <th scope="col" width="70%"
+                                                class="align-middle theme-headline highlight-0 cursor-default">Name</th>
                                             <th scope="col" width="15%" class="align-middle"></th>
                                         </tr>
                                     </thead>
@@ -286,13 +295,16 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content theme-modal-outline">
                 <div class="modal-header theme-header-light theme-modal-header">
-                    <h5 class="modal-title theme-headline">Video Call</h5>
+                    <h5 class="modal-title theme-headline highlight-0 cursor-default">Video Call</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span class="theme-cross" aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body theme-content-light">
-                    <h6 class="theme-text-light"><span id="group-caller-name" class="text-info"></span> made a group video call.</h6>
+                    <h6 class="theme-text-light highlight-0 cursor-default">
+                        <span id="group-caller-name" class="text-info highlight-0 cursor-default"></span>
+                        made a group video call.
+                    </h6>
                 </div>
                 <div class="modal-footer theme-header-light theme-modal-footer">
                     <button type="button" onclick="groupCallRespone(1)" class="btn btn-success"
@@ -310,13 +322,14 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content theme-modal-outline">
                 <div class="modal-header theme-header-light theme-modal-header">
-                    <h5 class="modal-title theme-headline">Video Call</h5>
+                    <h5 class="modal-title theme-headline highlight-0 cursor-default">Video Call</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span class="theme-cross" aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body theme-content-light">
-                    <h6 class="theme-text-light">Do you want to join group call with <span class="text-info" id="group-call-join-name"></span> ?
+                    <h6 class="theme-text-light highlight-0 cursor-default">Do you want to join group call with
+                        <span class="text-info highlight-0 cursor-default" id="group-call-join-name"></span> ?
                     </h6>
                 </div>
                 <div class="modal-footer theme-header-light theme-modal-footer">
@@ -335,14 +348,21 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content theme-modal-outline">
                 <div class="modal-header theme-header-light theme-modal-header">
-                    <h5 class="modal-title theme-headline" id="get-call-header">Video Call</h5>
+                    <h5 class="modal-title theme-headline highlight-0 cursor-default" id="get-call-header">Video Call
+                    </h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span class="theme-cross" aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body theme-content-light">
-                    <h6 class="theme-text-light"><span id="caller-name" class="text-info"></span> is calling.</h6>
-                    <h6 class="theme-text-light">Caller id: <span id="caller-id"></span></h6>
+                    <h6 class="theme-text-light highlight-0 cursor-default">
+                        <span id="caller-name" class="text-info highlight-0 cursor-default"></span>
+                        is calling.
+                    </h6>
+                    <h6 class="theme-text-light highlight-0 cursor-default">
+                        Caller id:
+                        <span class="highlight-0 cursor-default" id="caller-id"></span>
+                    </h6>
                 </div>
                 <div class="modal-footer theme-header-light theme-modal-footer">
                     <button type="button" onclick="callRespone(1)" class="btn btn-success"
@@ -361,7 +381,7 @@
         <div class="modal-dialog modal-xl" role="document">
             <div class="modal-content container-fluid room-modal-content theme-modal-outline">
                 <div class="modal-header theme-header-light row theme-modal-header">
-                    <h5 class="modal-title theme-headline">Join a room</h5>
+                    <h5 class="modal-title theme-headline highlight-0 cursor-default">Join a room</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span class="theme-cross" aria-hidden="true">&times;</span>
                     </button>
@@ -379,10 +399,13 @@
                                 <table class="table fixed">
                                     <thead>
                                         <tr>
-                                            <th scope="col" width="20%" class="align-middle theme-headline">#</th>
-                                            <th scope="col" width="50%" class="align-middle theme-headline">Room name
+                                            <th scope="col" width="20%"
+                                                class="align-middle theme-headline highlight-0 cursor-default">#</th>
+                                            <th scope="col" width="50%"
+                                                class="align-middle theme-headline highlight-0 cursor-default">Room name
                                             </th>
-                                            <th scope="col" width="30%" class="align-middle theme-headline">Number of
+                                            <th scope="col" width="30%"
+                                                class="align-middle theme-headline highlight-0 cursor-default">Number of
                                                 poeple</th>
                                         </tr>
                                     </thead>
@@ -423,25 +446,25 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content container-fluid theme-modal-outline">
                 <div class="modal-header theme-header-light row theme-modal-header">
-                    <h5 class="modal-title theme-headline">Join a room</h5>
+                    <h5 class="modal-title theme-headline highlight-0 cursor-default">Join a room</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span class="theme-cross" aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body theme-content-light theme-margin">
                     <div class="form-group">
-                        <label for="join-room-username" class="theme-headline">Username</label>
+                        <label for="join-room-username" class="theme-headline highlight-0 cursor-default">Username</label>
                         <input type="text" class="form-control theme-input" id="join-room-username"
                             placeholder="Username">
                         <small id="join-name-taken" class="form-text text-danger">This name is already taken</small>
                         <small id="join-name-empty" class="form-text text-danger">You don't have a name?</small>
                     </div>
                     <div class="form-group">
-                        <label for="join-room-id" class="theme-headline">Room name</label>
+                        <label for="join-room-id" class="theme-headline highlight-0 cursor-default">Room name</label>
                         <input class="form-control border theme-input" id="join-room-id" disabled>
                     </div>
                     <div class="form-group">
-                        <label for="join-room-password" class="theme-headline">Password</label>
+                        <label for="join-room-password" class="theme-headline highlight-0 cursor-default">Password</label>
                         <input type="text" class="form-control theme-input" id="join-room-password"
                             placeholder="Room password">
                         <small id="join-password-wrong" class="form-text text-danger">Wrong password</small>
@@ -470,7 +493,7 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content container-fluid theme-modal-outline">
                 <div class="modal-header row theme-header-light theme-modal-header">
-                    <h5 class="modal-title theme-headline">Host a room</h5>
+                    <h5 class="modal-title theme-headline highlight-0 cursor-default">Host a room</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span class="theme-cross" aria-hidden="true">&times;</span>
                     </button>
@@ -478,7 +501,7 @@
                 <div class="modal-body theme-margin theme-content-light">
                     <form>
                         <div class="form-group">
-                            <label for="host-room-id" class="theme-headline">Room name</label>
+                            <label for="host-room-id" class="theme-headline highlight-0 cursor-default">Room name</label>
                             <input type="text" class="form-control mb-2 theme-input" id="host-room-id"
                                 placeholder="Room name" list="exist-room">
                             <small id="host-room-taken" class="form-text text-danger">This room name is already
@@ -488,7 +511,7 @@
                                 <strong>special character</strong></small>
                         </div>
                         <div class="form-group">
-                            <label for="host-room-password" class="theme-headline">Password</label>
+                            <label for="host-room-password" class="theme-headline highlight-0 cursor-default">Password</label>
                             <input type="text" class="form-control theme-input" id="host-room-password"
                                 placeholder="Room password">
                         </div>
@@ -517,14 +540,14 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content container-fluid theme-modal-outline">
                 <div class="modal-header theme-header-light theme-margin theme-modal-header">
-                    <h5 class="modal-title theme-headline">Please add a name first.</h5>
+                    <h5 class="modal-title theme-headline highlight-0 cursor-default">Please add a name first.</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span class="theme-cross" aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body theme-content-light theme-margin">
-                    <h6 class="theme-text-light">For security reason, please change your name first.</h6>
-                    <h6 class="theme-text-light">Then you will be able to call other people.</h6>
+                    <h6 class="theme-text-light highlight-0 cursor-default">For security reason, please change your name first.</h6>
+                    <h6 class="theme-text-light highlight-0 cursor-default">Then you will be able to call other people.</h6>
                 </div>
                 <div class="modal-footer row theme-header-light theme-modal-footer">
                     <div class="col-sm-4">
@@ -542,13 +565,14 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content container-fluid theme-modal-outline">
                 <div class="modal-header theme-header-light theme-margin theme-modal-header">
-                    <h5 class="modal-title theme-headline">You have been kicked</h5>
+                    <h5 class="modal-title theme-headline highlight-0 cursor-default">You have been kicked</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span class="theme-cross" aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body theme-content-light theme-margin">
-                    <h6 class="theme-text-light">You have been kicked by <span id="kicker" class="text-info"></span>
+                    <h6 class="theme-text-light highlight-0 cursor-default">You have been kicked by 
+                        <span id="kicker" class="text-info highlight-0 cursor-default"></span>
                     </h6>
                 </div>
                 <div class="modal-footer row theme-header-light theme-modal-footer">

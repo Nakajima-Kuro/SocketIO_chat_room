@@ -1,6 +1,6 @@
 var groupCallMember = new Queue();
 var groupTimeOut = 3000
-var maxCall = 5//so nguoi max co the goi
+const maxCall = 5//so nguoi max co the goi
 var avaCall = maxCall;//so nguoi thuc te con lai de goi (trong TH them nguoi khi dang goi => so nguoi co the them < so nguoi max)
 
 function groupCallHit() {
@@ -35,25 +35,25 @@ function groupSelectAll() {
 }
 
 function groupCallPush(user) {
-    userDom = $("#group-call-" + user.id);
+    userDom = $("#group-call-" + user);
     if (userDom.find('span').text() != inVideoCall) {
         if (userDom.find('i').is(':visible') == false) {//neu chua duoc tick => show
-            if (avaCall > 0) {
-                if (groupCallMember.size() >= avaCall) {
-                    deleteName = groupCallMember.pop();
-                    $("#group-call-" + deleteName).find('i').hide();
-                }
-                groupCallMember.push(userDom.find('.user').text())
-                userDom.find('i').toggle();
+            console.log('show');
+            if (groupCallMember.size() >= avaCall) {//trong TH chon qua so nguoi gioi han => pop nguoi cuoi cung trong queue
+                deleteName = groupCallMember.pop();
+                $("#group-call-" + deleteName).find('i').hide();
             }
+            groupCallMember.push(userDom.find('.user').text())
+            userDom.find('i').show();
         }
         else {//neu da duoc tick => hide
+            console.log('hide');
             groupCallMember.remove(userDom.find('.user').text())
-            userDom.find('i').toggle();
+            userDom.find('i').hide();
         }
     }
     else if ($('#call-window-group').is(':visible') == false) {//neu dang ko o trong video call => tham gia cuoc goi do luon
-        $("#group-call-join-name").text(user.id)
+        $("#group-call-join-name").text(user)
         $("#group-call-join-confirm").modal()
     }
 }
