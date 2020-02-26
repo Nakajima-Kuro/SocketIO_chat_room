@@ -9,6 +9,7 @@ function groupCallHit() {
     }
     else {
         avaCall = maxCall;//goi duoc max cho 5 nguoi
+        groupCallMember = new Queue()
         $("#group-call-init").modal()
     }
 }
