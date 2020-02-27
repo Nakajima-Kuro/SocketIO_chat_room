@@ -39,7 +39,6 @@ function groupCallPush(user) {
     userDom = $("#group-call-" + user);
     if (userDom.find('span').text() != inVideoCall) {
         if (userDom.find('i').is(':visible') == false) {//neu chua duoc tick => show
-            console.log('show');
             if (groupCallMember.size() >= avaCall) {//trong TH chon qua so nguoi gioi han => pop nguoi cuoi cung trong queue
                 deleteName = groupCallMember.pop();
                 $("#group-call-" + deleteName).find('i').hide();
@@ -48,7 +47,6 @@ function groupCallPush(user) {
             userDom.find('i').show();
         }
         else {//neu da duoc tick => hide
-            console.log('hide');
             groupCallMember.remove(userDom.find('.user').text())
             userDom.find('i').hide();
         }
@@ -63,19 +61,24 @@ function groupCallInit() {
     var table = $("#group-call-member tr")
     $("#group-call-init").modal('hide')
     if ($('#call-window-group').is(':visible') == false) {//goi lan dau
-        if (groupCallMember.size() > 0) {//co nguoi de goi trong danh sach goi
-            socket.emit("group_call_status", { status: 'join' })
-            isBusy = true;
-            groupCallMember.queue.unshift(username)
-            groupCall.peerList = [peer.id]
-            navigator.mediaDevices.getUserMedia(mediaStreamConstraints)
-                .then(gotGroupLocalMediaStream).catch(handleLocalMediaStreamError)
-                .then(function () {
-                    if (hasWebcam == true) {
-                        $("#call-window-group").modal();
-                        socket.emit("group_call_request", { groupCallMember: groupCallMember.queue, type: 'new' })
-                    }
-                })
+        if ($("#group-call-init").find('span').text() == inVideoCall) {
+            $('#max-group-call-modal').modal()
+        }
+        else {
+            if (groupCallMember.size() > 0) {//co nguoi de goi trong danh sach goi
+                socket.emit("group_call_status", { status: 'join' })
+                isBusy = true;
+                groupCallMember.queue.unshift(username)
+                groupCall.peerList = [peer.id]
+                navigator.mediaDevices.getUserMedia(mediaStreamConstraints)
+                    .then(gotGroupLocalMediaStream).catch(handleLocalMediaStreamError)
+                    .then(function () {
+                        if (hasWebcam == true) {
+                            $("#call-window-group").modal();
+                            socket.emit("group_call_request", { groupCallMember: groupCallMember.queue, type: 'new' })
+                        }
+                    })
+            }
         }
     }
     else {//add them nguoi vao video call
@@ -102,6 +105,7 @@ socket.on('group_call_status', function (data) {
     else if (data.type == 'left') {
         $("#group-calling-status").empty().append('<span class="text-info">' + data.username + '</span> has left')
         $("#group-call-" + data.username).find('span').empty()
+        groupCall.deleteVideo(data.peerID)
         groupTimeOut = 3000
     }
     setTimeout(function () {
@@ -133,7 +137,6 @@ function groupCallRespone(status) {
                             });
                             call.on('close', function () {
                                 stopStreamedVideo(remoteVideo);
-                                groupCall.deleteVideo(call.peer)
                             })
                             $('#end-group-call-button').click(function () {
                                 call.close();
@@ -152,7 +155,7 @@ $('#call-window-group').on('hidden.bs.modal', function () {
     groupCall = new GroupVideoCall();
     isBusy = false
     stopStreamedVideo(localGroupVideo);
-    socket.emit("group_call_status", { status: 'left' })
+    socket.emit("group_call_status", { status: 'left', peerID: peer.id })
 });
 
 $("#add-new-callee").click(function (event) {

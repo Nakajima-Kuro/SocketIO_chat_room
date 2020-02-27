@@ -215,7 +215,6 @@ peer.on('call', function (call) {
     });
     call.on('close', function () {
       stopStreamedVideo(remoteVideo);
-      groupCall.deleteVideo(call.peer)
     })
     $('#end-group-call-button').click(function () {
       call.close()

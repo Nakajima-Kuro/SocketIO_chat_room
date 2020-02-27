@@ -17,6 +17,10 @@ body, html {
     z-index: 3;
 }
 
+.theme-loader-wrapper-light{
+  background-color: #fff !important;
+}
+
 .loader {
   display: inline-block;
   width: 30px;

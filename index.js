@@ -304,7 +304,7 @@ io.on("connection", function (socket) {
                 room.onlineList.splice(index, 1)
             }
             room.onlineList.forEach(function (user) {
-                socket.broadcast.to(user.id).emit("group_call_status", { username: self.name, type: 'left' })
+                socket.broadcast.to(user.id).emit("group_call_status", { username: self.name, type: 'left', peerID: data.peerID })
             })
         }
         groupUpdate();
